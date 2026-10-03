@@ -10,6 +10,13 @@ psycopg[binary]>=3.2
 celery>=5.4
 redis>=5.0
 
+# Serving
+# gunicorn is the WSGI server the Dockerfile and every PaaS run-command use.
+gunicorn>=22.0
+# Serves collected static files from the app process, so no separate static
+# host (S3, nginx, CDN) is required on a free tier.
+whitenoise>=6.6
+
 # Classical ML / data stack
 numpy>=1.26
 pandas>=2.0
@@ -17,12 +24,12 @@ scipy>=1.13
 scikit-learn>=1.5
 joblib>=1.4
 
-# Deep learning / computer vision (optional for inference; torch/torchvision in requirements-dev)
-torch>=2.1
-torchvision>=0.16
-
-# OCR (optional)
-easyocr>=1.7
+# Deep learning / computer vision and OCR are NOT here on purpose. They add
+# ~3 GB of wheels, which no free hosting tier can build or hold. The app runs
+# without them: apps/ml_engine/vision/classifier.py guards its torch import and
+# reports an explicit allback source, and the OCR provider degrades to
+# heuristic. Install them only where the heavy inference is actually wanted:
+#     pip install -r requirements-ml.txt
 
 # PDF parsing for manual data imports (data_ingestion).
 # The importer degrades gracefully without it, but the validation tests and

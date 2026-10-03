@@ -9,6 +9,7 @@ day-to-day use; this folder holds the reference material.
 | --- | --- |
 | [REPOSITORY_STRUCTURE.md](REPOSITORY_STRUCTURE.md) | What every folder and top-level file is, and what is deliberately not committed |
 | [TECH_STACK.txt](TECH_STACK.txt) | Languages, frameworks, versions and the runtime flow diagram |
+| [DEPLOYMENT.md](DEPLOYMENT.md) | Deploying for free from GitHub, what the free tiers cost, and how the production settings behave |
 | [BACKEND_API_INVENTORY.md](BACKEND_API_INVENTORY.md) | The REST endpoints, grouped by app |
 | [MODEL_CARD.md](MODEL_CARD.md) | The equipment image classifier: architecture, training data, measured metrics, limits |
 | [KNOWN_LIMITATIONS_AND_NEXT_STEPS.md](KNOWN_LIMITATIONS_AND_NEXT_STEPS.md) | What is incomplete or risky. **Read this before trusting a number.** |

@@ -27,10 +27,11 @@ env/
 ENV/
 
 # --- Secrets ----------------------------------------------------------------
-# .env.example IS committed; the real .env never is.
+# The real .env is never committed. .env.example is not either - it is kept
+# locally as a setup template only.
 .env
 .env.*
-!.env.example
+.env.example
 *.pem
 *.key
 secrets.json

@@ -1,0 +1,25 @@
+# Optional heavy dependencies: computer vision and OCR.
+#
+# Deliberately kept out of requirements.txt. torch + torchvision + easyocr add
+# roughly 3 GB of wheels, which is more than the disk and build-time budget of
+# the free hosting tiers this project targets (Render, Koyeb and similar give
+# 512 MB - 1 GB). Including them there means the deploy never finishes.
+#
+# The application runs without them:
+#   * apps/ml_engine/vision/classifier.py guards its `import torch` and reports
+#     an explicit `fallback` source when no artifact is available, so equipment
+#     image analysis degrades instead of erroring.
+#   * apps/ml_engine/ocr/ reports provider = "heuristic" when the OCR library is
+#     absent, and OCR output is treated as supporting evidence only.
+#
+# Install where the heavy inference is genuinely wanted:
+#     pip install -r requirements.txt -r requirements-ml.txt
+#
+# On a workstation this also needs the trained artifact, which is not committed:
+#     ML_EQUIPMENT_CLASSIFIER_WEIGHTS=/path/to/equipment_classifier_mobilenetv3_top6_v1.pt
+
+torch>=2.1
+torchvision>=0.16
+
+# OCR (optional)
+easyocr>=1.7

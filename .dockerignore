@@ -1,0 +1,43 @@
+# Keep the build context small and free of local state. Without this the whole
+# 1.1 GB .venv, the local database and 186 uploaded media files are shipped to
+# the daemon on every build.
+.git
+.gitignore
+.venv
+venv
+__pycache__
+*.pyc
+*.pyo
+.pytest_cache
+.mypy_cache
+.ruff_cache
+
+# Local runtime state - must never end up in an image.
+db.sqlite3
+db.sqlite3-journal
+media/
+logs/
+staticfiles/
+data/ingested/
+data/raw/
+data/tmp/
+
+.env
+.env.*
+.env.example
+
+# Large generated/artifact files.
+*.pt
+*.pth
+*.onnx
+*.joblib
+*.pkl
+*.h5
+*.tflite
+*.safetensors
+
+docs/frontend.txt
+node_modules
+*.md.bak
+*.orig
+*.rej

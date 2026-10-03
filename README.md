@@ -35,6 +35,7 @@ python manage.py seed_platform      # benchmarks, schemes, knowledge base, catal
 | `run_live.ps1` | Publishes to a public `https://*.trycloudflare.com` URL through a Cloudflare tunnel. See the warning it prints before exposing a development server. |
 | `verify.py` | End-to-end verification against a real HTTP surface. |
 | `docs/` | Reference documentation - structure, API inventory, model card, tech stack. |
+| `render.yaml` | Render blueprint. One container serves the API, the pages and the static files - see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). |
 
 ## Setup
 

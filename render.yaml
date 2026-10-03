@@ -1,0 +1,35 @@
+# Render blueprint - deploy with: Infrastructure as Code -> New Blueprint
+# Or simply create a Web Service and connect this repository; Render reads the
+# Dockerfile in the repo root either way.
+#
+# Cost: the free web service tier. Note its two limits before relying on it:
+#   * it sleeps after ~15 minutes idle, so the first request after a gap waits
+#     while the container wakes;
+#   * the filesystem is ephemeral and the included free Postgres expires after
+#     30 days, so uploaded media and the SQLite file are lost on redeploy.
+# Set envVars to swap in a real database and durable storage when you need them.
+
+services:
+  - type: web
+    name: farmgridai
+    runtime: docker
+    plan: free
+    region: singapore # closest to Asia/Kolkata; drop the line for any region
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      # DJANGO_ALLOWED_HOSTS is intentionally not set here. Render injects the
+      # public hostname at run time and settings.production reads it, so the
+      # deploy needs no manual step. Set it explicitly to pin the host.
+      - key: DJANGO_DEBUG
+        value: "false"
+      - key: TRUST_PROXY_HEADERS
+        value: "true"
+      - key: SECURE_SSL_REDIRECT
+        value: "true"
+      - key: CELERY_TASK_ALWAYS_EAGER
+        value: "true"
+      - key: DB_ENGINE
+        value: sqlite
