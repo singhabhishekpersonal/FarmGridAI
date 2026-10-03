@@ -1113,6 +1113,38 @@ def pass4_static():
          "{% t %} inside content= uses single quotes" if not nested
          else "content= uses double quotes and so does the {% t %} tag")
 
+    # A requirements file that is one stray character away from valid breaks the
+    # container build, not the app: pip aborts at `pip install -r` and the
+    # failure only shows up in a remote build log. This happened when a form-feed
+    # byte split a comment across two lines, leaving pip to read "allback source"
+    # as a requirement name. Assert every non-comment line looks like a
+    # requirement and that no control characters crept in.
+    section("PASS 4h - requirements files parse the way pip reads them")
+    req_root = os.path.join(str(settings.BASE_DIR))
+    req_re = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*(\[[A-Za-z0-9,._-]+\])?\s*(>=|<=|==|~=|!=|<|>|\s|$)")
+    for req_name in ("requirements.txt", "requirements-ml.txt"):
+        req_path = os.path.join(req_root, req_name)
+        if not os.path.exists(req_path):
+            step(f"{req_name} exists", False, "not found at the repository root")
+            continue
+        raw = open(req_path, "rb").read()
+        ctrl = sorted({b for b in raw if b < 9 or b in (11, 12) or 13 < b < 32})
+        step(f"{req_name} has no stray control characters", not ctrl,
+             "clean" if not ctrl else "found bytes %s - these split comments and "
+                                      "make pip read them as requirements" % [hex(b) for b in ctrl])
+        bad_lines = []
+        count = 0
+        for i, line in enumerate(raw.decode("utf-8", "replace").splitlines(), 1):
+            s = line.strip()
+            if not s or s.startswith("#"):
+                continue
+            count += 1
+            if not req_re.match(s):
+                bad_lines.append("L%d: %r" % (i, s[:60]))
+        step(f"{req_name} lines are all valid requirements", not bad_lines,
+             "%d requirements" % count if not bad_lines
+             else "%d malformed: %s" % (len(bad_lines), "; ".join(bad_lines[:3])))
+
     # The server-side checks above prove the catalog and the {% t %} tags line
     # up, but the language switch and every KS.t() lookups happen in the
     # browser. Run the node harness that loads the real app.js against a fake
