@@ -1,0 +1,41 @@
+Django>=6.1
+djangorestframework>=3.16
+djangorestframework-simplejwt>=5.3
+django-cors-headers>=4.4
+django-filter>=24.3
+drf-spectacular>=0.27
+python-dotenv>=1.0
+Pillow>=10.0
+psycopg[binary]>=3.2
+celery>=5.4
+redis>=5.0
+
+# Classical ML / data stack
+numpy>=1.26
+pandas>=2.0
+scipy>=1.13
+scikit-learn>=1.5
+joblib>=1.4
+
+# Deep learning / computer vision (optional for inference; torch/torchvision in requirements-dev)
+torch>=2.1
+torchvision>=0.16
+
+# OCR (optional)
+easyocr>=1.7
+
+# PDF parsing for manual data imports (data_ingestion).
+# The importer degrades gracefully without it, but the validation tests and
+# the "PDF integrity verified" audit claim both require it, so it is pinned here
+# rather than left to chance on a deployed environment.
+pypdf>=4.2
+
+# Testing
+pytest>=8.0
+pytest-django>=4.8
+factory-boy>=3.3
+requests>=2.31
+beautifulsoup4>=4.12
+
+# Scraping / data collection helpers (CLI only)
+lxml>=5.0

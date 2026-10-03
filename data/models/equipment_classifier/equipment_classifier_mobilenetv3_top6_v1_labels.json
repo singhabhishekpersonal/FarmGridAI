@@ -1,0 +1,22 @@
+{
+  "classes": [
+    "Farmtrac",
+    "John Deere",
+    "Mahindra",
+    "New Holland",
+    "Powertrac",
+    "Sonalika",
+    "other"
+  ],
+  "class_to_idx": {
+    "Farmtrac": 0,
+    "John Deere": 1,
+    "Mahindra": 2,
+    "New Holland": 3,
+    "Powertrac": 4,
+    "Sonalika": 5,
+    "other": 6
+  },
+  "architecture": "mobilenet_v3_large",
+  "version": "v1"
+}

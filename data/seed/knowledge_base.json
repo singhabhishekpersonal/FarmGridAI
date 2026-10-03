@@ -1,0 +1,290 @@
+{
+  "intents": [
+    {
+      "key": "hello",
+      "patterns": [
+        "\\b(hi|hello|hey|namaste|salaam)\\b",
+        "\\bgood\\s*(morning|evening|afternoon)\\b"
+      ],
+      "response": "Namaste! I am FarmGrid, your farm finance assistant. I can help with subsidy schemes, solar costs, machinery decisions, crop expenses and energy costs for your farm.",
+      "suggestions": [
+        "What subsidies can I get?",
+        "Estimate my solar pump cost",
+        "Compare tractor purchase vs hiring"
+      ],
+      "priority": 90
+    },
+    {
+      "key": "subsidy",
+      "patterns": [
+        "\\bsubsid",
+        "\\bgrant\\b",
+        "\\bscheme\\b",
+        "\\bsarkari\\s+(sahayata|yojana)\\b",
+        "\\bpm\\s*kusum",
+        "\\bsmam\\b"
+      ],
+      "response": "I can run an eligibility check against the schemes I know about (solar pumps, mechanization, credit, insurance). Any match is preliminary and always needs official verification. Go to the Subsidies page for your farm to see matched schemes, benefit ranges and application steps.",
+      "suggestions": [
+        "Match subsidies for my farm",
+        "What documents do I need?",
+        "Tell me about PM-KUSUM"
+      ],
+      "priority": 80
+    },
+    {
+      "key": "solar",
+      "patterns": [
+        "\\bsolar\\b",
+        "\\bsur(i)?ya\\b",
+        "\\bpanel\\b",
+        "\\bphotovoltaic\\b",
+        "\\bsolaris\\b"
+      ],
+      "response": "Solar pump decisions depend on pump size, water source, hours of pumping and your current diesel/grid cost. Use the Energy page to run a solar vs grid vs diesel comparison with payback and NPV. Solar costs are benchmark estimates - verify with an empanelled vendor and current scheme.",
+      "suggestions": [
+        "Run solar feasibility",
+        "What is the subsidy on solar pumps?",
+        "Solar vs diesel running cost"
+      ],
+      "priority": 80
+    },
+    {
+      "key": "machine",
+      "patterns": [
+        "\\btractor\\b",
+        "\\bmachine\\b",
+        "\\bequipment\\b",
+        "\\bkharid\\s*(karo|karna)\\b",
+        "\\bhiring\\b",
+        "\\bpurchase\\b"
+      ],
+      "response": "For machinery, log your equipment, upload a photo for condition/OCR analysis, and check the Recommendations page for a buy-vs-hire comparison based on your usage hours. All prices are benchmark ranges, and scraped model data is unverified.",
+      "suggestions": [
+        "Buy or hire a tractor?",
+        "Log my equipment",
+        "Upload equipment photo"
+      ],
+      "priority": 50
+    },
+    {
+      "key": "expense",
+      "patterns": [
+        "\\bexpense\\b",
+        "\\bkharch\\b",
+        "\\bspend\\b",
+        "\\bbudget\\b",
+        "\\banomaly\\b"
+      ],
+      "response": "The Expenses page tracks typed expenses and flags anomaly months versus your own history and national benchmarks. It uses an isolation-forest model with a fallback, so treat flagged months as review prompts, not alarms.",
+      "suggestions": [
+        "Add an expense",
+        "Show my expense summary",
+        "Why was a month flagged?"
+      ],
+      "priority": 60
+    },
+    {
+      "key": "crop",
+      "patterns": [
+        "\\bcrop\\b",
+        "\\bwheat\\b",
+        "\\bpaddy\\b",
+        "\\bfasal\\b",
+        "\\bseed\\b",
+        "\\byield\\b"
+      ],
+      "response": "Crop costs are estimated from benchmark input ranges (seed, fertilizer, labour, machinery) per crop as grown on your farm, summed per season. Benchmarks are planning ranges and not official market prices.",
+      "suggestions": [
+        "Plan my rabi crops",
+        "Estimate wheat input cost",
+        "Estimate paddy cost"
+      ],
+      "priority": 60
+    },
+    {
+      "key": "energy",
+      "patterns": [
+        "\\benergy\\b",
+        "\\belectric",
+        "\\bbijli\\b",
+        "\\bmeter\\b",
+        "\\btariff\\b",
+        "\\bslab\\b",
+        "\\bunit\\s*cost\\b",
+        "\\bpower\\s*(bill|cost)\\b",
+        "\\bpetrol\\b",
+        "\\bdiesel\\b",
+        "\\bfuel\\b",
+        "\\bpetroleum\\b"
+      ],
+      "response": "Energy benchmarks include electricity tariff and diesel price references per state, plus solar capital costs. They feed the solar comparison and expense anomaly checks. These are benchmark records - confirm current rates with your DISCOM or fuel retailer.",
+      "suggestions": [
+        "Compare solar vs diesel",
+        "What is the tariff in my state?",
+        "Diesel cost estimate"
+      ],
+      "priority": 70
+    },
+    {
+      "key": "loan",
+      "patterns": [
+        "\\bloan\\b",
+        "\\bkcc\\b",
+        "\\bcredit\\b",
+        "\\bfinance\\b",
+        "\\bkarz\\b"
+      ],
+      "response": "The Finance page helps you compare credit options against your farm income estimates. Scheme-level loan support (like KCC) appears in Subsidies. Loan figures are illustrative and always require bank confirmation.",
+      "suggestions": [
+        "Show finance options",
+        "What documents for KCC?",
+        "Estimate a tractor loan"
+      ],
+      "priority": 75
+    },
+    {
+      "key": "maintenance",
+      "patterns": [
+        "\\bmaintenance\\b",
+        "\\bservice\\b",
+        "\\brepair\\b",
+        "\\boverhaul\\b",
+        "\\bdhikam\\b"
+      ],
+      "response": "Record maintenance events on your equipment to build a repair-cost history. The platform uses it for operating-cost estimates and replacement suggestions. Service intervals depend on hours used - log your usage records yearly.",
+      "suggestions": [
+        "Log a maintenance event",
+        "Estimate my tractor running cost"
+      ],
+      "priority": 70
+    },
+    {
+      "key": "bigha",
+      "patterns": [
+        "\\bbigha\\b",
+        "\\bacre\\s*to\\s*bigha",
+        "\\bconvert\\b"
+      ],
+      "response": "Bigha has no single universal size - it varies by state/district (e.g. roughly 2500 sqm in parts of UP/Bihar, ~2023 sqm in parts of MP). The platform uses stored regional rules, all marked unverified, so you must confirm with local land records before any legal use.",
+      "suggestions": [
+        "Convert bigha to acre",
+        "How is bigha defined in my state?"
+      ],
+      "priority": 65
+    },
+    {
+      "key": "fallback",
+      "patterns": [],
+      "response": "I did not find a confident answer in my knowledge base. Please rephrase your question, use one of the suggested topics, or consult a human advisor. Every figure I give is a benchmark estimate, never official.",
+      "suggestions": [
+        "Subsidy schemes",
+        "Solar feasibility",
+        "Crop cost estimate"
+      ],
+      "priority": 0
+    }
+  ],
+  "articles": [
+    {
+      "topic": "subsidy",
+      "title": "How subsidy matches work on FarmGrid",
+      "slug": "how-subsidy-matches-work",
+      "content": "Subsidy matches are computed against declarative eligibility rules on stored scheme records. A match only means 'preliminarily plausible given the data you entered'. Rules cover land holding, irrigation, state/district and category. Always confirm with the official scheme page, the district agriculture office, or the disbursing agency before acting, because officer discretion, notification windows and budget floors change every season.",
+      "tags": [
+        "subsidy",
+        "scheme",
+        "eligibility",
+        "match"
+      ],
+      "source": "curated",
+      "is_active": true
+    },
+    {
+      "topic": "solar",
+      "title": "Solar pump economics in plain terms",
+      "slug": "solar-pump-economics",
+      "content": "A solar pump's value is the avoided cost of the diesel/grid pumping it replaces, minus capital and maintenance. Key inputs are pump rating, operating hours, irrigation days, current per-unit grid tariff or diesel price, and capital cost per kW. The Energy page runs a year-by-year comparison and reports payback and NPV. Treat all costs as benchmark ranges and get a vendor quote for your site.",
+      "tags": [
+        "solar",
+        "pump",
+        "payback",
+        "npv",
+        "energy"
+      ],
+      "source": "curated",
+      "is_active": true
+    },
+    {
+      "topic": "machine",
+      "title": "Buying vs hiring farm machinery",
+      "slug": "buy-vs-hire-machinery",
+      "content": "Ownership makes sense when annual operating hours are high enough to spread fixed cost (depreciation, insurance, storage) over enough acreage; low hours usually favour hiring or a custom-hiring centre. The Recommendations page computes a threshold using your usage hours, fuel cost, maintenance history and a benchmark price range.",
+      "tags": [
+        "machine",
+        "tractor",
+        "buy",
+        "hire",
+        "cost"
+      ],
+      "source": "curated",
+      "is_active": true
+    },
+    {
+      "topic": "expense",
+      "title": "Why a month is flagged as an anomaly",
+      "slug": "expense-anomaly-explanation",
+      "content": "Expense anomalies are found by comparing each month's typed costs with your own spending pattern and with category benchmarks. The detector uses an isolation-forest model when enough history exists, and a statistical fallback otherwise. A flagged month means 'investigate this', not 'this is wrong'. Confidence and assumptions are stored on each analysis record.",
+      "tags": [
+        "expense",
+        "anomaly",
+        "analysis",
+        "forecast"
+      ],
+      "source": "curated",
+      "is_active": true
+    },
+    {
+      "topic": "crop",
+      "title": "How crop input costs are estimated",
+      "slug": "crop-input-cost-estimate",
+      "content": "For each crop you grow, the platform multiplies per-acre benchmark cost ranges (seed, fertilizer, pesticide, labour, machinery, irrigation) by the area, then sums by season. Benchmarks are marked synthetic/unverified and are planning ranges, not official market prices. Actual prices move with season, district and input brands.",
+      "tags": [
+        "crop",
+        "cost",
+        "benchmark",
+        "season"
+      ],
+      "source": "curated",
+      "is_active": true
+    },
+    {
+      "topic": "bigha",
+      "title": "The bigha problem: no universal size",
+      "slug": "bigha-has-no-universal-size",
+      "content": "Unlike an acre or hectare, a bigha is defined differently in different regions - even within a state, 'pucca' and 'kachcha' bighas differ. Example customary values: ~2508 sqm in much of Uttar Pradesh and Uttarakhand, ~2529 sqm in Bihar, ~2023 sqm in parts of Madhya Pradesh, ~1338 sqm in parts of Assam. The platform stores rules per state/district and flags every one as unverified; confirm with local revenue records (khatuni/patwari) before relying on area for subsidy or legal purposes.",
+      "tags": [
+        "bigha",
+        "land",
+        "unit",
+        "conversion"
+      ],
+      "source": "curated",
+      "is_active": true
+    },
+    {
+      "topic": "energy",
+      "title": "Interpreting tariff and diesel benchmarks",
+      "slug": "tariff-diesel-benchmarks",
+      "content": "Electricity tariffs vary by state, DISCOM and slab, and diesel prices change frequently with state taxation. Benchmark records are general references used inside solar comparisons and expense checks. For decisions, verify the current agricultural tariff with your DISCOM bill and today's diesel rate at your local outlet.",
+      "tags": [
+        "energy",
+        "tariff",
+        "diesel",
+        "electricity"
+      ],
+      "source": "curated",
+      "is_active": true
+    }
+  ]
+}

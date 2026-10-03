@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% load text_tags %}
+
+{% block title %}{% t "Add equipment &amp; photos" %} - {% t "FarmGrid AI" %}{% endblock %}
+
+{% block content %}
+<section class="ks-container ks-container--narrow">
+  <nav class="ks-breadcrumb" aria-label="{% t "Breadcrumb" %}">
+    <a href="{% url 'web:dashboard' %}">{% t "Dashboard" %}</a>
+    <span aria-hidden="true">/</span>
+    <a href="{% url 'web:equipment_list' farm_id %}">{% t "Equipment" %}</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{% if equipment_id %}{% t "Add photos" %}{% else %}{% t "Add equipment" %}{% endif %}</span>
+  </nav>
+
+  <header class="ks-page-head">
+    <p class="ks-eyebrow">{% t "FarmGrid AI — your farm, in numbers you can check" %}</p>
+    <h1 class="ks-page-title">
+      {% if equipment_id %}{% t "Add photos" %}{% else %}{% t "Add equipment" %}{% endif %}
+    </h1>
+    <p class="ks-lede ks-muted">
+      {% if not equipment_id %}
+        {% t "First record the machine, then upload a photo. The photo is what lets the model try to read the brand name." %}
+      {% else %}
+        {% t "Take a clear photo of the name plate or the side panel where the brand is printed. The model will show you how confident it is and will always ask you to confirm." %}
+      {% endif %}
+    </p>
+  </header>
+
+  {# ---------------------------------------------------------------- #}
+  {# Step 1 - create the equipment record (only when it does not exist) #}
+  {# ---------------------------------------------------------------- #}
+  {% if not equipment_id %}
+  <p class="ks-small ks-muted">
+    {% t "First record the machine, then upload a photo. The photo is what lets the model try to read the brand name." %}
+  </p>
+
+  <div class="ks-card ks-mb-4" data-ks-catalog-picker>
+    <div class="ks-card-head">
+      <h2 class="ks-card-title">{% t "Or pick from our catalogue" %}</h2>
+    </div>
+    <p class="ks-muted ks-small">
+      {% t "Choose a model and we will fill in the brand, type, horsepower and typical price for you. Only verified models are listed, and prices are indicative - check with a dealer." %}
+    </p>
+    <div data-ks-catalog-list></div>
+  </div>
+
+  <div class="ks-card ks-mb-4">
+    <h2 class="ks-card-title">{% t "1. Equipment details" %}</h2>
+
+    <form class="ks-form" data-ks-equipment-form novalidate>
+      {% csrf_token %}
+      <div data-ks-error-summary></div>
+
+      {# Populated from GET /equipment/categories — see pages.equipmentUpload. #}
+      <div data-ks-equip-category></div>
+
+      <div class="ks-grid ks-grid-2">
+        <div class="ks-field">
+          <label class="ks-label" for="eq-brand">{% t "Brand" %}</label>
+          <input class="ks-input" type="text" id="eq-brand" name="custom_brand"
+                 maxlength="80" list="ks-brand-options" placeholder="{% t "e.g. Mahindra" %}">
+          <datalist id="ks-brand-options">
+            <option value="Mahindra"></option>
+            <option value="Sonalika"></option>
+            <option value="Farmtrac"></option>
+            <option value="John Deere"></option>
+            <option value="New Holland"></option>
+            <option value="Powertrac"></option>
+            <option value="Kubota"></option>
+            <option value="Tafe"></option>
+          </datalist>
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="eq-model">{% t "Model" %}</label>
+          <input class="ks-input" type="text" id="eq-model" name="custom_model"
+                 maxlength="80" placeholder="{% t "e.g. 575 DI" %}">
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="eq-hp">{% t "Horsepower" %}</label>
+          <input class="ks-input" type="number" id="eq-hp" name="horsepower"
+                 step="0.1" min="0" inputmode="decimal" data-validate="positive">
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="eq-year">{% t "Purchase year" %}</label>
+          <input class="ks-input" type="number" id="eq-year" name="purchase_year"
+                 step="1" min="1950" inputmode="numeric">
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="eq-price">{% t "Purchase price" %}</label>
+          <input class="ks-input" type="number" id="eq-price" name="purchase_price"
+                 step="0.01" min="0" inputmode="decimal" data-validate="nonnegative">
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="eq-hours">{% t "Hours used per year" %}</label>
+          <input class="ks-input" type="number" id="eq-hours" name="usage_hours_per_year"
+                 step="1" min="0" inputmode="numeric" data-validate="nonnegative">
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="eq-area">{% t "Area served (acres)" %}</label>
+          <input class="ks-input" type="number" id="eq-area" name="area_served_acres"
+                 step="0.01" min="0" inputmode="decimal" data-validate="nonnegative">
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="eq-condition">{% t "Condition" %}</label>
+          <select class="ks-select" id="eq-condition" name="condition">
+            <option value="unknown">{% t "Not sure" %}</option>
+            <option value="good">{% t "Good" %}</option>
+            <option value="moderate">{% t "Moderate" %}</option>
+            <option value="poor">{% t "Poor" %}</option>
+          </select>
+          <p class="ks-help">{% t "Your honest answer here matters more than the photo analysis." %}</p>
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="eq-fuel">{% t "Fuel type" %}</label>
+          <select class="ks-select" id="eq-fuel" name="fuel_type">
+            <option value="diesel">{% t "Diesel" %}</option>
+            <option value="petrol">{% t "Petrol" %}</option>
+            <option value="electric">{% t "Electric" %}</option>
+            <option value="solar">{% t "Solar" %}</option>
+            <option value="manual">{% t "Manual / non-motorised" %}</option>
+            <option value="unknown">{% t "Not sure" %}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="ks-consent">
+        <label class="ks-check">
+          <input type="checkbox" name="is_owned" value="true" checked>
+          <span>{% t "I own this equipment" %}</span>
+        </label>
+        <label class="ks-check">
+          <input type="checkbox" name="is_operational" value="true" checked>
+          <span>{% t "It is currently working" %}</span>
+        </label>
+      </div>
+
+      <div class="ks-field">
+        <label class="ks-label" for="eq-notes">{% t "Notes" %}</label>
+        <textarea class="ks-textarea" id="eq-notes" name="notes" rows="2" maxlength="500"
+                  placeholder="Optional — e.g. serviced every 250 hours"></textarea>
+      </div>
+
+      <div class="ks-form-actions">
+        <button class="ks-btn ks-btn-block" type="submit">{% t "Save and continue to photos" %}</button>
+      </div>
+    </form>
+  </div>
+  {% else %}
+
+  {# -------------------------------------------------------------- #}
+  {# Step 2 - the photo uploader (equipment already exists)          #}
+  {# -------------------------------------------------------------- #}
+  <p class="ks-small ks-muted">
+    {% t "Take a clear photo of the name plate or the side panel where the brand is printed. The model will show you how confident it is and will always ask you to confirm." %}
+  </p>
+
+  <div class="ks-alert ks-alert-info ks-mb-4">
+    <span aria-hidden="true">📷</span>
+    <div>
+      <strong class="ks-alert-title">{% t "What works best" %}</strong>
+      {% t "Daylight, the name plate filling most of the frame, and text that is not cut off. Avoid shadows across the lettering and hold the phone steady." %}
+    </div>
+  </div>
+
+  <div class="ks-card ks-mb-4">
+    <h2 class="ks-card-title">{% t "Upload a photo" %}</h2>
+
+    <div data-ks-upload-status></div>
+
+    <div class="ks-dropzone" data-ks-dropzone tabindex="0" role="button"
+         aria-label="{% t "Choose an equipment photo to upload" %}">
+      <input class="ks-visually-hidden" type="file" data-ks-file
+             accept=".jpg,.jpeg,.png,.webp" aria-hidden="true" tabindex="-1">
+      <span class="ks-dropzone-icon" aria-hidden="true">📷</span>
+      <span class="ks-dropzone-text" data-ks-dz-hint>
+        {% t "Tap to take or choose a photo" %}
+      </span>
+      <span class="ks-dropzone-hint">{% t "JPG, PNG or WEBP · up to 10 MB" %}</span>
+    </div>
+
+    <div data-ks-progress></div>
+
+    <div class="ks-form-actions">
+      <button class="ks-btn ks-btn-secondary" type="button" data-ks-upload-btn>
+        {% t "Choose a photo" %}
+      </button>
+    </div>
+
+    <p class="ks-tiny ks-muted">
+      {% t "By uploading you confirm this is your own equipment photo. Photos are used for brand identification and to improve the model." %}
+    </p>
+  </div>
+
+  <div class="ks-card ks-mb-4">
+    <h2 class="ks-card-title">{% t "Your photos" %}</h2>
+    <div class="ks-upload-gallery" data-ks-gallery>
+      <p class="ks-tiny ks-muted">{% t "No photos uploaded yet." %}</p>
+    </div>
+  </div>
+
+  {# Filled after each upload with classify + OCR + condition results. #}
+  <div class="ks-mb-4" data-ks-analysis></div>
+
+  <div class="ks-card">
+    <h2 class="ks-card-title">{% t "What this analysis can and cannot tell you" %}</h2>
+    <ul class="ks-checklist">
+      <li><strong>{% t "Can:" %}</strong> {% t "guess the brand from a logo, and read printed text such as a model number." %}</li>
+      <li><strong>{% t "Can:" %}</strong> {% t "flag broad visible condition from the age and condition you recorded." %}</li>
+      <li><strong>{% t "Cannot:" %}</strong> {% t "see engine condition, gearbox wear, tyre wear, fuel mileage or service history." %}</li>
+      <li><strong>{% t "Cannot:" %}</strong> {% t "confirm safety. Only a mechanic can do that." %}</li>
+    </ul>
+  </div>
+
+  <div class="ks-form-actions ks-mt-4">
+    <a class="ks-btn ks-btn-secondary" href="{% url 'web:equipment_detail' farm_id equipment_id %}">
+      {% t "Back to equipment details" %}
+    </a>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
+

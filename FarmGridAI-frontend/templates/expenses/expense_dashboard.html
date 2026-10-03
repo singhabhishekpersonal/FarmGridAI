@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load text_tags %}
+
+{% block title %}{% t "Expenses" %} - {% t "FarmGrid AI" %}{% endblock %}
+
+{% block content %}
+<section class="ks-container">
+  <nav class="ks-breadcrumb" aria-label="{% t "Breadcrumb" %}">
+    <a href="{% url 'web:dashboard' %}">{% t "Dashboard" %}</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{% t "Expenses" %}</span>
+  </nav>
+
+  <div class="ks-page-head">
+    <div>
+      <h1 class="ks-page-title">{% t "Expenses" %}</h1>
+      <p class="ks-small ks-muted">
+        {% t "What you have recorded, and what it means for your cost per hectare." %}
+      </p>
+    </div>
+    <div class="ks-page-actions">
+      <a class="ks-btn" href="{% url 'web:expense_entry' farm_id %}">{% t "+ Record expense" %}</a>
+      <button class="ks-btn ks-btn-secondary" type="button" data-ks-analyze-expenses>
+        {% t "Analyse for anomalies" %}
+      </button>
+    </div>
+  </div>
+
+  {# Headline numbers: yearly spend with its range, cost per hectare, confidence. #}
+  <div class="ks-card ks-mb-4" data-ks-expense-total>
+    <div class="ks-skeleton ks-skeleton--title"></div>
+    <div class="ks-skeleton ks-skeleton--text"></div>
+  </div>
+
+  <div class="ks-grid ks-grid-2 ks-mb-4">
+    <div class="ks-card">
+      <div class="ks-card-head">
+        <h2 class="ks-card-title">{% t "Spending by category" %}</h2>
+        <span class="ks-badge">{% t "Your recorded data" %}</span>
+      </div>
+      <div data-ks-expense-bars>
+        <div class="ks-skeleton ks-skeleton--text"></div>
+        <div class="ks-skeleton ks-skeleton--text"></div>
+        <div class="ks-skeleton ks-skeleton--text"></div>
+      </div>
+    </div>
+
+    <div class="ks-card">
+      <div class="ks-card-head">
+        <h2 class="ks-card-title">{% t "Anomalies &amp; observations" %}</h2>
+        <span class="ks-badge ks-badge-warn">{% t "Needs a look" %}</span>
+      </div>
+      <p class="ks-small ks-muted ks-mb-3">
+        {% t "Unusual spikes, missing months and entries worth double-checking. Nothing here is an error message — it is a prompt to verify your own records." %}
+      </p>
+      <div data-ks-expense-analysis>
+        <p class="ks-tiny ks-muted">
+          {% t "Press" %} <strong>{% t "Analyse for anomalies" %}</strong> {% t "above to check your records." %}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="ks-card">
+    <div class="ks-card-head">
+      <h2 class="ks-card-title">{% t "All recorded expenses" %}</h2>
+      <div class="ks-cluster">
+        <button class="ks-btn ks-btn-sm ks-btn-quiet" type="button"
+                data-ks-expense-filter="all" aria-pressed="true">{% t "All" %}</button>
+        <button class="ks-btn ks-btn-sm ks-btn-quiet" type="button"
+                data-ks-expense-filter="fuel" aria-pressed="false">{% t "Fuel" %}</button>
+        <button class="ks-btn ks-btn-sm ks-btn-quiet" type="button"
+                data-ks-expense-filter="input" aria-pressed="false">{% t "Inputs" %}</button>
+        <button class="ks-btn ks-btn-sm ks-btn-quiet" type="button"
+                data-ks-expense-filter="labour" aria-pressed="false">{% t "Labour" %}</button>
+        <button class="ks-btn ks-btn-sm ks-btn-quiet" type="button"
+                data-ks-expense-filter="electricity" aria-pressed="false">{% t "Electricity" %}</button>
+      </div>
+    </div>
+    <div data-ks-expense-list>
+      <div class="ks-skeleton ks-skeleton--text"></div>
+      <div class="ks-skeleton ks-skeleton--text"></div>
+    </div>
+    <div data-ks-expense-pager></div>
+  </div>
+
+  {# Mount point for the page controller: shows load and connection errors. #}
+  <div data-ks-expenses></div>
+</section>
+{% endblock %}
+
+

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load text_tags %}
+
+{% block title %}{% t "Recommendations" %} - {% t "FarmGrid AI" %}{% endblock %}
+
+{% block content %}
+<section class="ks-container">
+  <nav class="ks-breadcrumb" aria-label="{% t "Breadcrumb" %}">
+    <a href="{% url 'web:dashboard' %}">{% t "Dashboard" %}</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{% t "Recommendations" %}</span>
+  </nav>
+
+  <div class="ks-page-head">
+    <p class="ks-eyebrow">{% t "FarmGrid AI — your farm, in numbers you can check" %}</p>
+    <div>
+      <h1 class="ks-page-title">{% t "What to do next" %}</h1>
+      <p class="ks-small ks-muted">
+        {% t "Suggestions are ranked by likely money saved. Each one tells you what it is based on, how confident we are, and what you need to check yourself." %}
+      </p>
+    </div>
+    <div class="ks-page-actions">
+      <button class="ks-btn" type="button" data-ks-run-recs>{% t "Run the engine" %}</button>
+    </div>
+  </div>
+
+  {# Shown after a run: how the engine was configured and what it could not see. #}
+  <div class="ks-mb-4" data-ks-run-summary></div>
+
+  <div class="ks-card ks-mb-4">
+    <div class="ks-card-head">
+      <h2 class="ks-card-title">{% t "Cost-saving opportunities" %}</h2>
+      <span class="ks-badge">{% t "Ranked by estimated saving" %}</span>
+    </div>
+    <p class="ks-small ks-muted ks-mb-3">
+      {% t "Each opportunity is an estimate, not a promise. Savings depend on prices, weather and what you can actually change." %}
+    </p>
+    <div data-ks-opportunities></div>
+  </div>
+
+  <div class="ks-card">
+    <div class="ks-card-head">
+      <h2 class="ks-card-title">{% t "All recommendations" %}</h2>
+      <span class="ks-badge">{% t "Includes long-term actions" %}</span>
+    </div>
+    <div data-ks-recs></div>
+  </div>
+
+  {# Every previous engine run for this farm, from
+     GET /api/v1/farms/{id}/recommendation-runs. Populated by dashboard.js. #}
+  <div class="ks-card ks-mt-4">
+    <div class="ks-card-head">
+      <h2 class="ks-card-title">{% t "Previous analysis runs" %}</h2>
+      <span class="ks-badge">{% t "Audit trail" %}</span>
+    </div>
+    <p class="ks-small ks-muted ks-mb-3">
+      {% t "What the engine computed on each run, and which models it used. Useful when you want to check how a recommendation changed after you edited your farm data." %}
+    </p>
+    <div data-ks-run-history></div>
+  </div>
+
+  {# Explanations are rendered inline, per recommendation, into
+     data-ks-explain-host="<recommendation id>" by dashboard.js. A separate
+     static panel here was never populated and its Close button was never
+     bound, so it has been removed. #}
+</section>
+{% endblock %}
+

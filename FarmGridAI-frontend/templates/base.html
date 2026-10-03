@@ -1,0 +1,62 @@
+{% load text_tags %}
+{% load static %}<!DOCTYPE html>
+<html lang="{% if preferred_language == 'hi' %}hi{% else %}en{% endif %}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#1f6f3f">
+  <meta name="description" content="{% t 'FarmGrid AI - transparent farm cost, subsidy and energy estimates for Indian farmers.' %}">
+  <title>{% block title %}{% t "FarmGrid AI" %}{% endblock %}</title>
+
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <meta name="ks-page" content="{{ ks_page|default:'' }}">
+  <meta name="ks-farm-id" content="{{ farm_id|default:'' }}">
+  <meta name="ks-lang" content="{{ ks_lang|default:'en' }}">
+
+  <link rel="icon" href="{% static 'images/favicon.svg' %}" type="image/svg+xml">
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  {% block head_extra %}{% endblock %}
+</head>
+
+<body
+  class="{% block body_class %}{% endblock %}{% if page_bg_class %} {{ page_bg_class }}{% endif %}"
+  {% if page_bg_image %}style="--page-bg: url('{{ page_bg_image }}')"{% endif %}
+  data-ks-page="{{ ks_page|default:'' }}"
+  data-ks-require-auth="{% if require_auth %}true{% else %}false{% endif %}"
+  {% if farm_id %}data-ks-farm-id="{{ farm_id }}"{% endif %}
+  {% if equipment_id %}data-ks-equip-id="{{ equipment_id }}"{% endif %}>
+
+  <a class="ks-skip-link" href="#ks-main">{% t "Skip to main content" %}</a>
+
+  {% block header %}
+    {% include "partials/nav.html" %}
+  {% endblock %}
+
+  <div data-ks-page-error></div>
+
+  <main id="ks-main" class="ks-main" role="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% block footer %}
+    {% include "partials/footer.html" %}
+  {% endblock %}
+
+  <div class="ks-toasts" id="ks-toasts" role="status" aria-live="polite" aria-atomic="false"></div>
+
+  <!-- The Hindi catalog, injected before any script so JS-rendered strings can
+       be translated too. Empty when the active language is English. -->
+  <script>window.KS_I18N = {{ ks_i18n_json|default:"{}"|safe }};</script>
+  <script src="{% static 'js/app.js' %}"></script>
+  {% block scripts %}{% endblock %}
+  <script src="{% static 'js/dashboard.js' %}"></script>
+  {% block scripts_extra %}{% endblock %}
+  <script src="{% static 'js/uploads.js' %}"></script>
+  {% block scripts_last %}{% endblock %}
+</body>
+</html>
+
+

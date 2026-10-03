@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% load text_tags %}
+
+{% block title %}{% t "Add your farm" %} - {% t "FarmGrid AI" %}{% endblock %}
+
+{% block content %}
+<section class="ks-container ks-container--narrow">
+  <nav class="ks-breadcrumb" aria-label="{% t "Breadcrumb" %}">
+    <a href="{% url 'web:dashboard' %}">{% t "Dashboard" %}</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{% t "Add farm" %}</span>
+  </nav>
+
+  <h1 class="ks-page-title">{% t "Add your farm" %}</h1>
+  <p class="ks-small ks-muted">
+    {% t "Enter your land in the unit you actually use. FarmGrid AI converts it to hectares for you and always shows the value it used." %}
+  </p>
+
+  <div class="ks-card">
+    <form class="ks-form" data-ks-farm-form novalidate>
+      {% csrf_token %}
+      <div data-ks-error-summary></div>
+
+      <div class="ks-field">
+        <label class="ks-label" for="farm-name">{% t "Farm name" %} <span class="ks-req">*</span></label>
+        <input class="ks-input" type="text" id="farm-name" name="name" required
+               maxlength="120" data-validate="required"
+               placeholder="{% t "e.g. Home farm, Rampur plot" %}">
+        <p class="ks-help">{% t "Any name that helps you tell your farms apart." %}</p>
+      </div>
+
+      <div class="ks-field">
+        <label class="ks-label" for="farm-description">{% t "Description" %}</label>
+        <textarea class="ks-textarea" id="farm-description" name="description" rows="2"
+                  maxlength="500" placeholder="Optional notes about this farm"></textarea>
+      </div>
+
+      <h2 class="ks-form-section">{% t "Where is it?" %}</h2>
+      <p class="ks-help ks-mb-3">
+        {% t "Location decides which crop advisories, tariffs and subsidy schemes apply to you." %}
+      </p>
+
+      <div class="ks-grid ks-grid-2">
+        <div class="ks-field">
+          <label class="ks-label" for="farm-state">{% t "State" %}</label>
+          <input class="ks-input" type="text" id="farm-state" name="state" maxlength="60"
+                 autocomplete="address-level1">
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="farm-district">{% t "District" %}</label>
+          <input class="ks-input" type="text" id="farm-district" name="district" maxlength="60"
+                 autocomplete="address-level2">
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="farm-village">{% t "Village" %}</label>
+          <input class="ks-input" type="text" id="farm-village" name="village" maxlength="80"
+                 autocomplete="address-level3">
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="farm-pincode">{% t "Pincode" %}</label>
+          <input class="ks-input" type="text" id="farm-pincode" name="pincode"
+                 inputmode="numeric" maxlength="6" data-validate="pincode">
+        </div>
+      </div>
+
+      <h2 class="ks-form-section">{% t "First land parcel" %}</h2>
+      <p class="ks-help ks-mb-3">
+        {% t "You can add more parcels later. Each one is recorded with its own area, ownership and irrigation, because they usually differ." %}
+      </p>
+
+      <div class="ks-grid ks-grid-2">
+        <div class="ks-field">
+          <label class="ks-label" for="farm-parcel-area">{% t "Area" %} <span class="ks-req">*</span></label>
+          <input class="ks-input" type="number" id="farm-parcel-area" name="parcel_area"
+                 required step="0.001" min="0" inputmode="decimal" data-validate="positive">
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="farm-parcel-unit">{% t "Unit" %} <span class="ks-req">*</span></label>
+          <select class="ks-select" id="farm-parcel-unit" name="parcel_unit" required>
+            <option value="acre">{% t "Acre" %}</option>
+            <option value="hectare">{% t "Hectare" %}</option>
+            <option value="bigha">{% t "Bigha" %}</option>
+            <option value="guntha">{% t "Guntha" %}</option>
+            <option value="kaththa">{% t "Kaththa (local)" %}</option>
+            <option value="cent">{% t "Cent" %}</option>
+            <option value="sqm">{% t "Square meter" %}</option>
+            <option value="sqft">{% t "Square foot" %}</option>
+          </select>
+          <p class="ks-help">
+            {% t "Bigha and kaththa vary by state. We will show you the hectare figure we derived and let you correct it." %}
+          </p>
+        </div>
+      </div>
+
+      <div class="ks-consent">
+        <label class="ks-check">
+          <input type="checkbox" name="is_default" value="true" checked>
+          <span>{% t "Make this my main farm (used by default on other pages)" %}</span>
+        </label>
+      </div>
+
+      <div class="ks-form-actions">
+        <button class="ks-btn ks-btn-block" type="submit">{% t "Save farm" %}</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="ks-card ks-mt-4">
+    <h2 class="ks-card-title">{% t "Already added a farm?" %}</h2>
+    <p class="ks-small ks-muted">
+      {% t "Open it from the dashboard to add land parcels, crops and equipment." %}
+    </p>
+    <a class="ks-btn ks-btn-secondary" href="{% url 'web:dashboard' %}">{% t "Go to dashboard" %}</a>
+  </div>
+</section>
+{% endblock %}
+
+

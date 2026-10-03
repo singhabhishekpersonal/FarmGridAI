@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load text_tags %}
+
+{% block title %}{% t "Subsidies you may qualify for" %} - {% t "FarmGrid AI" %}{% endblock %}
+
+{% block content %}
+<section class="ks-container">
+  <nav class="ks-breadcrumb" aria-label="{% t "Breadcrumb" %}">
+    <a href="{% url 'web:dashboard' %}">{% t "Dashboard" %}</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{% t "Subsidies" %}</span>
+  </nav>
+
+  <div class="ks-page-head">
+    <p class="ks-eyebrow">{% t "FarmGrid AI — your farm, in numbers you can check" %}</p>
+    <div>
+      <h1 class="ks-page-title">{% t "Subsidies you may qualify for" %}</h1>
+      <p class="ks-small ks-muted">
+        {% t "Matched against your land, location, crops and equipment. Matching is an estimate — only the concerned office can confirm your eligibility." %}
+      </p>
+    </div>
+    <div class="ks-page-actions">
+      <button class="ks-btn ks-btn-secondary" type="button" data-ks-rematch>
+        {% t "Re-check my schemes" %}
+      </button>
+    </div>
+  </div>
+
+  <div class="ks-alert ks-alert-warn ks-mb-4">
+    <span aria-hidden="true">⚠</span>
+    <div>
+      <strong class="ks-alert-title">{% t "We cannot confirm your eligibility" %}</strong>
+      {% t "Scheme rules, cut-off dates and beneficiary lists change frequently and differ by district. Treat everything below as a shortlist to take to your Block agriculture officer, Gram Panchayat, or the State department — not as an approval." %}
+    </div>
+  </div>
+
+  <div data-ks-subsidies>
+    <div class="ks-skeleton ks-skeleton--title"></div>
+    <div class="ks-skeleton ks-skeleton--text"></div>
+    <div class="ks-skeleton ks-skeleton--text"></div>
+  </div>
+
+  {# Full scheme catalogue from GET /api/v1/subsidies, with per-scheme detail
+     fetched from GET /api/v1/subsidies/{id}. Populated by dashboard.js. #}
+  <section class="ks-section ks-mt-4" aria-labelledby="catalogue-heading">
+    <div class="ks-section-head">
+      <div>
+        <h2 id="catalogue-heading">{% t "All known schemes" %}</h2>
+        <p class="ks-muted ks-small">
+          {% t "Every scheme in our reference catalogue, whether or not it matched your farm. Check the current terms on the official portal before you apply." %}
+        </p>
+      </div>
+      <div class="ks-field">
+        <label class="ks-label" for="scheme-catalogue-filter">{% t "Filter" %}</label>
+        <input
+          class="ks-input"
+          id="scheme-catalogue-filter"
+          type="search"
+          placeholder="{% t "Name, category or state" %}"
+          data-ks-catalogue-filter
+        />
+      </div>
+    </div>
+    <div data-ks-scheme-catalogue>
+      <div class="ks-skeleton ks-skeleton--text"></div>
+      <div class="ks-skeleton ks-skeleton--text"></div>
+    </div>
+  </section>
+
+  {# Checklists are rendered inline, per scheme, into
+     data-ks-docs-host="<match id>" by dashboard.js. This static panel was
+     never populated and its Close button was never bound, so it is gone. #}
+</section>
+{% endblock %}
+
+

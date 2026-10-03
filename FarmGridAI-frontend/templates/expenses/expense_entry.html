@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+{% load text_tags %}
+
+{% block title %}{% t "Record an expense" %} - {% t "FarmGrid AI" %}{% endblock %}
+
+{% block content %}
+<section class="ks-container ks-container--narrow">
+  <nav class="ks-breadcrumb" aria-label="{% t "Breadcrumb" %}">
+    <a href="{% url 'web:expense_dashboard' farm_id %}">{% t "Expenses" %}</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{% t "Record" %}</span>
+  </nav>
+
+  <h1 class="ks-page-title">{% t "Record an expense" %}</h1>
+  <p class="ks-small ks-muted">
+    {% t "The amount is the only thing we truly need. Every extra field narrows the range on your cost estimates, so add whatever you know." %}
+  </p>
+
+  <div class="ks-card ks-mb-4">
+    <h2 class="ks-card-title">{% t "What are you recording?" %}</h2>
+    <div class="ks-type-grid" data-ks-type-picker role="group" aria-label="{% t "Expense type" %}"></div>
+  </div>
+
+  <div class="ks-card">
+    <form class="ks-form" data-ks-expense-form novalidate>
+      {% csrf_token %}
+      <div data-ks-error-summary></div>
+
+      {# ---------------- Fuel / diesel ---------------- #}
+      <section data-ks-type-form="fuel" hidden>
+        <h2 class="ks-form-section">{% t "⛽ Fuel" %}</h2>
+        <div class="ks-grid ks-grid-2">
+          <div class="ks-field">
+            <label class="ks-label" for="fuel-amount">{% t "Total amount" %} <span class="ks-req">*</span></label>
+            <input class="ks-input" type="number" id="fuel-amount" name="amount" required
+                   step="0.01" min="0" inputmode="decimal" data-validate="positive">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="fuel-date">{% t "Date" %} <span class="ks-req">*</span></label>
+            <input class="ks-input" type="date" id="fuel-date" name="occurred_on" required>
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="fuel-type">{% t "Fuel type" %}</label>
+            <select class="ks-select" id="fuel-type" name="fuel_type">
+              <option value="diesel">{% t "Diesel" %}</option>
+              <option value="petrol">{% t "Petrol" %}</option>
+              <option value="cng">{% t "CNG" %}</option>
+              <option value="lpg">{% t "LPG" %}</option>
+              <option value="electric">{% t "Electric" %}</option>
+            </select>
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="fuel-purpose">{% t "Used for" %}</label>
+            <select class="ks-select" id="fuel-purpose" name="purpose">
+              <option value="">{% t "Not specified" %}</option>
+              <option value="tractor">{% t "Tractor / machinery" %}</option>
+              <option value="pump">{% t "Water pump" %}</option>
+              <option value="transport">{% t "Transport" %}</option>
+              <option value="generator">{% t "Generator" %}</option>
+            </select>
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="fuel-litres">{% t "Litres bought" %}</label>
+            <input class="ks-input" type="number" id="fuel-litres" name="litre_volume"
+                   step="0.01" min="0" inputmode="decimal">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="fuel-price">{% t "Rate per litre" %}</label>
+            <input class="ks-input" type="number" id="fuel-price" name="price_per_litre"
+                   step="0.01" min="0" inputmode="decimal">
+            <p class="ks-help">{% t "Optional. If you give litres or rate, we can cross-check the amount." %}</p>
+          </div>
+        </div>
+        <div class="ks-field">
+          <label class="ks-label" for="fuel-note">{% t "Note" %}</label>
+          <input class="ks-input" type="text" id="fuel-note" name="note" maxlength="200"
+                 placeholder="{% t "Optional — e.g. which field was ploughed" %}">
+        </div>
+      </section>
+
+      {# ---------------- Seeds & fertiliser ---------------- #}
+      <section data-ks-type-form="input" hidden>
+        <h2 class="ks-form-section">{% t "🌱 Seeds, fertiliser &amp; pesticides" %}</h2>
+        <div class="ks-grid ks-grid-2">
+          <div class="ks-field">
+            <label class="ks-label" for="input-amount">{% t "Total amount" %} <span class="ks-req">*</span></label>
+            <input class="ks-input" type="number" id="input-amount" name="amount" required
+                   step="0.01" min="0" inputmode="decimal" data-validate="positive">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="input-date">{% t "Date" %} <span class="ks-req">*</span></label>
+            <input class="ks-input" type="date" id="input-date" name="occurred_on" required>
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="input-type">{% t "Input type" %}</label>
+            <select class="ks-select" id="input-type" name="input_type">
+              <option value="general">{% t "General" %}</option>
+              <option value="seed">{% t "Seed" %}</option>
+              <option value="fertilizer">{% t "Fertiliser" %}</option>
+              <option value="pesticide">{% t "Pesticide" %}</option>
+              <option value="manure">{% t "Manure / compost" %}</option>
+            </select>
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="input-product">{% t "Product name" %}</label>
+            <input class="ks-input" type="text" id="input-product" name="product_name"
+                   maxlength="120" placeholder="{% t "e.g. DAP, Urea, Mahyco variety" %}">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="input-qty">{% t "Quantity" %}</label>
+            <input class="ks-input" type="number" id="input-qty" name="quantity"
+                   step="0.001" min="0" inputmode="decimal">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="input-qty-unit">{% t "Quantity unit" %}</label>
+            <select class="ks-select" id="input-qty-unit" name="quantity_unit">
+              <option value="kg">{% t "kg" %}</option>
+              <option value="quintal">{% t "Quintal (100 kg)" %}</option>
+              <option value="tonne">{% t "Tonne" %}</option>
+              <option value="litre">{% t "Litre" %}</option>
+              <option value="packet">{% t "Packet" %}</option>
+              <option value="bag">{% t "Bag" %}</option>
+            </select>
+          </div>
+        </div>
+        <div class="ks-field">
+          <label class="ks-label" for="input-note">{% t "Note" %}</label>
+          <input class="ks-input" type="text" id="input-note" name="note" maxlength="200"
+                 placeholder="{% t "Optional — e.g. applied to which crop" %}">
+        </div>
+      </section>
+
+      {# ---------------- Labour ---------------- #}
+      <section data-ks-type-form="labour" hidden>
+        <h2 class="ks-form-section">{% t "👷 Labour" %}</h2>
+        <div class="ks-grid ks-grid-2">
+          <div class="ks-field">
+            <label class="ks-label" for="labour-amount">{% t "Total amount" %} <span class="ks-req">*</span></label>
+            <input class="ks-input" type="number" id="labour-amount" name="amount" required
+                   step="0.01" min="0" inputmode="decimal" data-validate="positive">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="labour-date">{% t "Date" %} <span class="ks-req">*</span></label>
+            <input class="ks-input" type="date" id="labour-date" name="occurred_on" required>
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="labour-type">{% t "How was the labour engaged?" %}</label>
+            <select class="ks-select" id="labour-type" name="labour_type">
+              <option value="daily">{% t "Daily wage" %}</option>
+              <option value="seasonal">{% t "Seasonal" %}</option>
+              <option value="contract">{% t "Contracted" %}</option>
+              <option value="family">{% t "Family labour" %}</option>
+            </select>
+            <p class="ks-help">{% t "Matches the records kept in the admin ledger, so your labour totals stay consistent." %}</p>
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="labour-days">{% t "Person-days" %}</label>
+            <input class="ks-input" type="number" id="labour-days" name="person_days"
+                   step="0.5" min="0" inputmode="decimal">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="labour-wage">{% t "Wage per day" %}</label>
+            <input class="ks-input" type="number" id="labour-wage" name="wage_per_day"
+                   step="0.01" min="0" inputmode="decimal">
+            <p class="ks-help">{% t "Optional. Lets us verify the amount and compare against local wages." %}</p>
+          </div>
+        </div>
+        <div class="ks-field">
+          <label class="ks-label" for="labour-note">{% t "Note" %}</label>
+          <input class="ks-input" type="text" id="labour-note" name="note" maxlength="200"
+                 placeholder="{% t "Optional — e.g. male or female workers" %}">
+        </div>
+      </section>
+
+      {# ---------------- Electricity ---------------- #}
+      <section data-ks-type-form="electricity" hidden>
+        <h2 class="ks-form-section">{% t "💡 Electricity bill" %}</h2>
+        <div class="ks-grid ks-grid-2">
+          <div class="ks-field">
+            <label class="ks-label" for="elec-amount">{% t "Bill amount" %} <span class="ks-req">*</span></label>
+            <input class="ks-input" type="number" id="elec-amount" name="amount" required
+                   step="0.01" min="0" inputmode="decimal" data-validate="positive">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="elec-date">{% t "Date" %} <span class="ks-req">*</span></label>
+            <input class="ks-input" type="date" id="elec-date" name="occurred_on" required>
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="elec-provider">{% t "Discom / provider" %}</label>
+            <input class="ks-input" type="text" id="elec-provider" name="provider"
+                   maxlength="80" placeholder="{% t "e.g. MSEB, KSEB, CESC" %}">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="elec-units">{% t "Units consumed (kWh)" %}</label>
+            <input class="ks-input" type="number" id="elec-units" name="units_kwh"
+                   step="0.01" min="0" inputmode="decimal">
+            <p class="ks-help">{% t 'Take this from the "units" line on your bill. It gives us the exact tariff you pay, which is better than a state average.' %}</p>
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="elec-month">{% t "Bill month" %}</label>
+            <input class="ks-input" type="month" id="elec-month" name="bill_month">
+          </div>
+        </div>
+        <div class="ks-field">
+          <label class="ks-label" for="elec-note">{% t "Note" %}</label>
+          <input class="ks-input" type="text" id="elec-note" name="note" maxlength="200"
+                 placeholder="{% t "Optional — e.g. connection is for the pump only" %}">
+        </div>
+      </section>
+
+      {# ---------------- Transport ---------------- #}
+      <section data-ks-type-form="transport" hidden>
+        <h2 class="ks-form-section">{% t "🚜 Transport" %}</h2>
+        <div class="ks-grid ks-grid-2">
+          <div class="ks-field">
+            <label class="ks-label" for="trn-amount">{% t "Total amount" %} <span class="ks-req">*</span></label>
+            <input class="ks-input" type="number" id="trn-amount" name="amount" required
+                   step="0.01" min="0" inputmode="decimal" data-validate="positive">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="trn-date">{% t "Date" %} <span class="ks-req">*</span></label>
+            <input class="ks-input" type="date" id="trn-date" name="occurred_on" required>
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="trn-vehicle">{% t "Vehicle" %}</label>
+            <select class="ks-select" id="trn-vehicle" name="vehicle_type">
+              <option value="tractor">{% t "Tractor with trailer" %}</option>
+              <option value="tempo">{% t "Tempo / mini truck" %}</option>
+              <option value="truck">{% t "Truck" %}</option>
+              <option value="auto">{% t "Auto-rickshaw" %}</option>
+              <option value="van">{% t "Van" %}</option>
+            </select>
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="trn-distance">{% t "Distance travelled (km)" %}</label>
+            <input class="ks-input" type="number" id="trn-distance" name="distance_km"
+                   step="0.1" min="0" inputmode="decimal">
+          </div>
+        </div>
+        <div class="ks-field">
+          <label class="ks-label" for="trn-note">{% t "Note" %}</label>
+          <input class="ks-input" type="text" id="trn-note" name="note" maxlength="200"
+                 placeholder="{% t "Optional — e.g. taking produce to mandi" %}">
+        </div>
+      </section>
+
+      {# ---------------- Equipment rental ---------------- #}
+      <section data-ks-type-form="rental" hidden>
+        <h2 class="ks-form-section">{% t "🔧 Equipment rental" %}</h2>
+        <div class="ks-grid ks-grid-2">
+          <div class="ks-field">
+            <label class="ks-label" for="rent-amount">{% t "Total amount" %} <span class="ks-req">*</span></label>
+            <input class="ks-input" type="number" id="rent-amount" name="amount" required
+                   step="0.01" min="0" inputmode="decimal" data-validate="positive">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="rent-date">{% t "Date" %} <span class="ks-req">*</span></label>
+            <input class="ks-input" type="date" id="rent-date" name="occurred_on" required>
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="rent-class">{% t "Equipment class" %}</label>
+            <select class="ks-select" id="rent-class" name="equipment_class">
+              <option value="tractor">{% t "Tractor" %}</option>
+              <option value="harvester">{% t "Harvester" %}</option>
+              <option value="cultivator">{% t "Cultivator" %}</option>
+              <option value="rotavator">{% t "Rotavator" %}</option>
+              <option value="seed_drill">{% t "Seed drill" %}</option>
+              <option value="sprayer">{% t "Sprayer" %}</option>
+              <option value="thresher">{% t "Thresher" %}</option>
+              <option value="laser_land_level">{% t "Laser land leveller" %}</option>
+            </select>
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="rent-hours">{% t "Hours hired" %}</label>
+            <input class="ks-input" type="number" id="rent-hours" name="rental_hours"
+                   step="0.5" min="0" inputmode="decimal">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="rent-days">{% t "Days hired" %}</label>
+            <input class="ks-input" type="number" id="rent-days" name="rental_days"
+                   step="0.5" min="0" inputmode="decimal">
+            <p class="ks-help">{% t "Give hours or days, whichever the hire record uses." %}</p>
+          </div>
+        </div>
+        <div class="ks-field">
+          <label class="ks-label" for="rent-note">{% t "Note" %}</label>
+          <input class="ks-input" type="text" id="rent-note" name="note" maxlength="200"
+                 placeholder="{% t "Optional — e.g. hired from a custom hire centre" %}">
+        </div>
+      </section>
+
+      <div class="ks-form-actions">
+        <button class="ks-btn ks-btn-block" type="submit">{% t "Save expense" %}</button>
+        <a class="ks-btn ks-btn-secondary" href="{% url 'web:expense_dashboard' farm_id %}">{% t "Cancel" %}</a>
+      </div>
+    </form>
+  </div>
+
+  {# Bills and receipts help us read your real tariffs instead of state averages. #}
+  <div class="ks-card ks-mt-4">
+    <h2 class="ks-card-title">{% t "Attach a bill or receipt" %}</h2>
+    <p class="ks-small ks-muted">
+      {% t "Optional. A photo of the bill lets us read the exact tariff and units, which usually narrows your energy estimates the most. PDF, JPG, PNG or WEBP up to 10&nbsp;MB." %}
+    </p>
+
+    <div data-ks-doc-status></div>
+    <div class="ks-dropzone" data-ks-doczone tabindex="0" role="button"
+         aria-label="{% t "Choose a bill or receipt to upload" %}">
+      <input class="ks-visually-hidden" type="file" data-ks-doc-file
+             accept=".pdf,.jpg,.jpeg,.png,.webp" aria-hidden="true" tabindex="-1">
+      <span class="ks-dropzone-icon" aria-hidden="true">📄</span>
+      <span class="ks-dropzone-text" data-ks-dz-hint>
+        {% t "Tap to choose a file, or drop it here" %}
+      </span>
+      <span class="ks-dropzone-hint">{% t "PDF, JPG, PNG or WEBP · up to 10 MB" %}</span>
+    </div>
+
+    <div class="ks-mt-3">
+      <label class="ks-label" for="doc-category">{% t "What is this document?" %}</label>
+      {# Values are ExpenseCategory.code, resolved server-side. The static
+         options keep the control usable before/without the API; the expense
+         panel replaces them with the seeded rows so a newly added category
+         shows up without a frontend release. #}
+      <select class="ks-select" id="doc-category" data-ks-doc-category>
+        <option value="">{% t "General receipt" %}</option>
+        <option value="electricity">{% t "Electricity bill" %}</option>
+        <option value="fuel">{% t "Fuel receipt" %}</option>
+        <option value="input">{% t "Fertiliser / seed bill" %}</option>
+        <option value="labour">{% t "Wage record" %}</option>
+        <option value="rental">{% t "Rental invoice" %}</option>
+      </select>
+    </div>
+
+    <div data-ks-doc-progress></div>
+
+    <div class="ks-form-actions">
+      <button class="ks-btn" type="button" data-ks-doc-upload disabled>{% t "Upload document" %}</button>
+    </div>
+
+    <div class="ks-mt-3" data-ks-doc-list></div>
+  </div>
+</section>
+{% endblock %}
+
+

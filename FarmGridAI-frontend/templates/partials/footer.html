@@ -1,0 +1,48 @@
+{% load text_tags %}
+{% load static %}
+<footer class="ks-footer">
+  <div class="ks-footer-inner">
+
+    <div class="ks-footer-col">
+      <h2 class="ks-footer-title">{% t "About these numbers" %}</h2>
+      <p class="ks-small">
+        {% t "FarmGrid AI produces" %} <strong>{% t "estimates" %}</strong> {% t "from the data you enter and from public reference sources. Every figure is shown as a range with a confidence level, the assumptions used and what we could not verify." %}
+      </p>
+    </div>
+
+    <div class="ks-footer-col">
+      <h2 class="ks-footer-title">{% t "Before you act" %}</h2>
+      <ul class="ks-footer-list">
+        <li>{% t "Confirm subsidy eligibility at your Block / Gram Panchayat office." %}</li>
+        <li>{% t "Confirm equipment condition with a mechanic, not a photo." %}</li>
+        <li>{% t "Compare quotes from at least two dealers or suppliers." %}</li>
+        <li>{% t "Tariffs and scheme rules change — verify current rates before paying." %}</li>
+      </ul>
+    </div>
+
+    <div class="ks-footer-col">
+      <h2 class="ks-footer-title">{% t "Your data" %}</h2>
+      <p class="ks-small">
+        {% t "You control what we may use. Withdrawing consent stops future processing and never deletes data you have already saved." %}
+      </p>
+      <p class="ks-small"><a href="{% url 'web:profile' %}">{% t "Privacy &amp; consent settings" %}</a></p>
+    </div>
+
+    <div class="ks-footer-col">
+      <h2 class="ks-footer-title">{% t "Need help?" %}</h2>
+      <p class="ks-small">
+        {% t "Ask a question in plain language, or contact your local Krishi Vigyan Kendra (KVK) or the State agriculture department for official advice." %}
+      </p>
+      <p class="ks-small"><a href="{% url 'web:chat' %}">{% t "Open the assistant" %}</a></p>
+    </div>
+  </div>
+
+  <div class="ks-footer-base">
+    <p class="ks-tiny">
+      {% t "FarmGrid AI is an advisory tool, not a financial, legal or engineering authority. Figures are indicative and must be verified before you spend money." %}
+    </p>
+    <p class="ks-tiny">© <span data-ks-year>2026</span> {% t "FarmGrid AI" %}</p>
+  </div>
+</footer>
+
+

@@ -1,0 +1,154 @@
+[
+  {
+    "model": "data_ingestion.datasource",
+    "pk": "21111111-1111-4111-8111-111111111101",
+    "fields": {
+      "name": "Category example: subsidy",
+      "base_url": "category-example://subsidy",
+      "source_type": "government",
+      "category": "subsidy",
+      "country": "IN",
+      "allowed_collection_methods": [
+        "manual_import_only"
+      ],
+      "approval_status": "pending",
+      "collection_enabled": false,
+      "notes": "Enumerated category reference fixture: subsidy.",
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "data_ingestion.datasource",
+    "pk": "21111111-1111-4111-8111-111111111102",
+    "fields": {
+      "name": "Category example: crop benchmark",
+      "base_url": "category-example://crop-benchmark",
+      "source_type": "public_dataset",
+      "category": "crop_benchmark",
+      "country": "IN",
+      "allowed_collection_methods": [
+        "manual_import_only"
+      ],
+      "approval_status": "pending",
+      "collection_enabled": false,
+      "notes": "Enumerated category reference fixture: crop_benchmark.",
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "data_ingestion.datasource",
+    "pk": "21111111-1111-4111-8111-111111111103",
+    "fields": {
+      "name": "Category example: machinery benchmark",
+      "base_url": "category-example://machinery-benchmark",
+      "source_type": "public_dataset",
+      "category": "machinery_benchmark",
+      "country": "IN",
+      "allowed_collection_methods": [
+        "manual_import_only"
+      ],
+      "approval_status": "pending",
+      "collection_enabled": false,
+      "notes": "Enumerated category reference fixture: machinery_benchmark.",
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "data_ingestion.datasource",
+    "pk": "21111111-1111-4111-8111-111111111104",
+    "fields": {
+      "name": "Category example: equipment catalog",
+      "base_url": "category-example://equipment-catalog",
+      "source_type": "official_manufacturer",
+      "category": "equipment_catalog",
+      "country": "IN",
+      "allowed_collection_methods": [
+        "manual_import_only"
+      ],
+      "approval_status": "pending",
+      "collection_enabled": false,
+      "notes": "Enumerated category reference fixture: equipment_catalog.",
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "data_ingestion.datasource",
+    "pk": "21111111-1111-4111-8111-111111111105",
+    "fields": {
+      "name": "Category example: equipment images",
+      "base_url": "category-example://equipment-images",
+      "source_type": "official_manufacturer",
+      "category": "equipment_images",
+      "country": "IN",
+      "allowed_collection_methods": [
+        "manual_import_only"
+      ],
+      "approval_status": "pending",
+      "collection_enabled": false,
+      "notes": "Enumerated category reference fixture: equipment_images.",
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "data_ingestion.datasource",
+    "pk": "21111111-1111-4111-8111-111111111106",
+    "fields": {
+      "name": "Category example: diesel benchmark",
+      "base_url": "category-example://diesel-benchmark",
+      "source_type": "government_api",
+      "category": "diesel_benchmark",
+      "country": "IN",
+      "allowed_collection_methods": [
+        "manual_import_only"
+      ],
+      "approval_status": "pending",
+      "collection_enabled": false,
+      "notes": "Enumerated category reference fixture: diesel_benchmark.",
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "data_ingestion.datasource",
+    "pk": "21111111-1111-4111-8111-111111111107",
+    "fields": {
+      "name": "Category example: solar benchmark",
+      "base_url": "category-example://solar-benchmark",
+      "source_type": "government",
+      "category": "solar_benchmark",
+      "country": "IN",
+      "allowed_collection_methods": [
+        "manual_import_only"
+      ],
+      "approval_status": "pending",
+      "collection_enabled": false,
+      "notes": "Enumerated category reference fixture: solar_benchmark.",
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "data_ingestion.datasource",
+    "pk": "21111111-1111-4111-8111-111111111108",
+    "fields": {
+      "name": "Category example: electricity benchmark",
+      "base_url": "category-example://electricity-benchmark",
+      "source_type": "government",
+      "category": "electricity_benchmark",
+      "country": "IN",
+      "allowed_collection_methods": [
+        "manual_import_only"
+      ],
+      "approval_status": "pending",
+      "collection_enabled": false,
+      "notes": "Enumerated category reference fixture: electricity_benchmark.",
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  }
+]

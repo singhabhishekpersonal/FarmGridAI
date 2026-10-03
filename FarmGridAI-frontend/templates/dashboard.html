@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load text_tags %}
+
+{% block title %}{% t "Dashboard" %} - {% t "FarmGrid AI" %}{% endblock %}
+
+{% block content %}
+<section class="ks-container">
+  <nav class="ks-breadcrumb" aria-label="{% t "Breadcrumb" %}">
+    <a href="{% url 'web:home' %}">{% t "Home" %}</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{% t "Dashboard" %}</span>
+  </nav>
+
+  <header class="ks-page-head">
+    <p class="ks-eyebrow">{% t "FarmGrid AI — your farm, in numbers you can check" %}</p>
+    <h1 class="ks-page-title">{% t "Dashboard" %}</h1>
+    <p class="ks-lede ks-muted">
+      {% t "Your farm at a glance. Every figure is a range with a confidence level — add more of your own data and the range narrows." %}
+    </p>
+    <div class="ks-page-actions">
+      <button class="ks-btn ks-btn-secondary" type="button" data-ks-logout>{% t "Sign out" %}</button>
+    </div>
+  </header>
+
+  {# Connection and model health, so the farmer knows what they are looking at. #}
+  <div class="ks-mb-4" data-ks-status></div>
+
+  {# Headline numbers for the active farm. #}
+  <div class="ks-grid ks-grid-4 ks-mb-4" data-ks-dashboard-tiles>
+    <div class="ks-card">
+      <div class="ks-skeleton ks-skeleton--title"></div>
+      <div class="ks-skeleton ks-skeleton--text"></div>
+    </div>
+  </div>
+
+  {# Top recommendations, with a route to the full list. #}
+  <div class="ks-card ks-mb-4">
+    <div class="ks-card-head">
+      <h2 class="ks-card-title">{% t "What to do next" %}</h2>
+      {% if farm_id %}
+        <a class="ks-btn ks-btn-sm ks-btn-ghost" href="{% url 'web:recommendations' farm_id %}">{% t "View all" %}</a>
+      {% endif %}
+    </div>
+    <div data-ks-dashboard-recs>
+      <div class="ks-skeleton ks-skeleton--text"></div>
+      <div class="ks-skeleton ks-skeleton--text"></div>
+    </div>
+  </div>
+
+  {# Main mount point: farm switcher, quick links and per-farm summary. #}
+  <div data-ks-dashboard>
+    <div class="ks-card">
+      <div class="ks-skeleton ks-skeleton--title"></div>
+      <div class="ks-skeleton ks-skeleton--text"></div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+

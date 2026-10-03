@@ -1,0 +1,3688 @@
+openapi: 3.0.3
+info:
+  title: FarmGrid AI API
+  version: 1.0.0
+  description: Personalized farm financial intelligence for Indian farmers. All analytical
+    outputs are estimates with confidence, assumptions and limitations. Subsidy outputs
+    are preliminary and require official verification.
+paths:
+  /api/v1/auth/consents/:
+    get:
+      operationId: auth_consents_list
+      description: |-
+        List the caller's consent records, or grant/revoke one purpose.
+
+        ``purpose`` must be a known entry in ``ConsentRecord.PURPOSES`` or the
+        request is rejected with 400. ``granted`` is parsed leniently as
+        bool/number/string so a literal ``"false"`` does not register as consent;
+        granting stamps the timestamp, version and remote IP.
+      summary: List the caller's consent records
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api_envelope'
+          description: Standard API envelope.
+    post:
+      operationId: auth_consents_grant
+      description: |-
+        List the caller's consent records, or grant/revoke one purpose.
+
+        ``purpose`` must be a known entry in ``ConsentRecord.PURPOSES`` or the
+        request is rejected with 400. ``granted`` is parsed leniently as
+        bool/number/string so a literal ``"false"`` does not register as consent;
+        granting stamps the timestamp, version and remote IP.
+      summary: Grant or revoke consent for one purpose
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsentRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConsentRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConsentRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/consent_record_item_envelope'
+          description: Standard API envelope.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+          description: Invalid consent purpose.
+  /api/v1/auth/language/:
+    get:
+      operationId: auth_language_list
+      description: |-
+        List language preferences, or set the caller's active language.
+
+        Only 'en' and 'hi' are accepted (400 otherwise); the choice is written both
+        to ``user.preferred_language``, which is what the rest of the app reads, and
+        as a primary UserLanguagePreference row.
+      summary: List the caller's language preferences
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api_envelope'
+          description: Standard API envelope.
+    post:
+      operationId: auth_language_set
+      description: |-
+        List language preferences, or set the caller's active language.
+
+        Only 'en' and 'hi' are accepted (400 otherwise); the choice is written both
+        to ``user.preferred_language``, which is what the rest of the app reads, and
+        as a primary UserLanguagePreference row.
+      summary: Set the caller's active language
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LanguagePreferenceRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LanguagePreferenceRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LanguagePreferenceRequestRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_language_preference_item_envelope'
+          description: Standard API envelope.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+          description: Unsupported language.
+  /api/v1/auth/login/:
+    post:
+      operationId: auth_login
+      description: |-
+        Exchange credentials for a JWT pair and start a Django session.
+
+        The session is not a convenience: the SPA pages gate on Django session auth,
+        which a bearer token alone cannot satisfy. Rate limited to 20/hour per
+        anonymous client, shared with the refresh endpoint.
+      summary: Obtain JWT pair and start a Django session
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/token_pair_envelope'
+          description: Standard API envelope.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+          description: Invalid credentials.
+  /api/v1/auth/login/refresh/:
+    post:
+      operationId: auth_token_refresh
+      description: |-
+        Exchange a refresh token for a new access token.
+
+        SIMPLE_JWT sets ROTATE_REFRESH_TOKENS = True, so a rotated refresh token is
+        returned when rotation happens and the client must replace its stored one.
+        Keeping the standard {success, data: {access, refresh?}} envelope means the
+        web client's api layer can treat login and refresh identically.
+      summary: Exchange a refresh token for a new access token
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/token_pair_envelope'
+          description: Standard API envelope.
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+          description: Session expired.
+  /api/v1/auth/logout/:
+    post:
+      operationId: auth_logout
+      description: |-
+        Close the Django session opened at login.
+
+        Server-side this only invalidates the session cookie; the JWTs are stateless
+        and must be discarded by the client, so the response is advisory rather than
+        a true revocation.
+      summary: Close the Django session and discard tokens
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/logout_envelope'
+          description: Standard API envelope.
+  /api/v1/auth/profile/:
+    get:
+      operationId: auth_profile_retrieve
+      description: |-
+        Read or partially update the caller's own farmer profile.
+
+        A missing profile is created lazily on first access, which is what keeps
+        superuser and ORM-created accounts from 500ing here. PATCH is partial and
+        stamps ``updated_by`` with the caller.
+      summary: Retrieve the farmer profile
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/farmer_profile_item_envelope'
+          description: Standard API envelope.
+    patch:
+      operationId: auth_profile_partial_update
+      description: |-
+        Read or partially update the caller's own farmer profile.
+
+        A missing profile is created lazily on first access, which is what keeps
+        superuser and ORM-created accounts from 500ing here. PATCH is partial and
+        stamps ``updated_by`` with the caller.
+      summary: Partially update the farmer profile
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFarmerProfileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedFarmerProfileRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedFarmerProfileRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/farmer_profile_item_envelope'
+          description: Standard API envelope.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+          description: Validation failed.
+  /api/v1/auth/register/:
+    post:
+      operationId: auth_register
+      description: |-
+        Create a user and farmer profile, and return the first JWT pair.
+
+        Atomic: the user, profile and a pre-seeded ungranted profile-purpose consent
+        are written together. Password rules are Django's ``validate_password``
+        (minimum length 8), and the response also opens a Django session so the
+        server-rendered pages are reachable. Anonymous-only, capped at 10/hour.
+      summary: Register a new farmer
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api_envelope'
+          description: Standard API envelope.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+          description: Validation failed.
+  /api/v1/bigha-rules:
+    get:
+      operationId: v1_bigha_rules_retrieve
+      description: |-
+        Verified bigha-to-hectare conversion rules, optionally by state.
+
+        Only ``is_verified`` rows are exposed so unverified seed data never reaches
+        the client; the optional ``state`` filter is case-insensitive.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/chat/sessions:
+    post:
+      operationId: v1_chat_sessions_create
+      description: |-
+        Open a chat session, optionally scoped to one of the caller's farms.
+
+        The farm is resolved by ownership rather than trusted from the payload, and
+        an unknown farm id is reported as a 404 error envelope.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/chat/sessions/{session_id}/ask:
+    post:
+      operationId: v1_chat_sessions_ask_create
+      description: |-
+        Ask one question inside a session the caller owns.
+
+        Retrieval is keyword-based over the knowledge base and no LLM is called; the
+        question and the reply are both persisted as chat messages, and unmatched
+        questions come back flagged as fallbacks needing a human.
+      parameters:
+      - in: path
+        name: session_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/chat/sessions/{session_id}/messages:
+    get:
+      operationId: v1_chat_sessions_messages_retrieve
+      description: |-
+        The stored message transcript of a session, oldest first.
+
+        Sessions belonging to another user are indistinguishable from missing ones,
+        both returning a 404 error envelope.
+      parameters:
+      - in: path
+        name: session_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/crops:
+    get:
+      operationId: v1_crops_retrieve
+      description: |-
+        The reference crop catalog, searchable by name.
+
+        Only active crops are listed; ``search`` is a case-insensitive substring
+        match on the crop name.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/data-ingestion/artifacts:
+    get:
+      operationId: v1_data_ingestion_artifacts_list
+      description: |-
+        List recently collected artifacts across all sources, newest first.
+
+        Read-only, capped at 100 rows.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/data-ingestion/artifacts/{artifact_id}:
+    get:
+      operationId: v1_data_ingestion_artifacts_retrieve
+      description: |-
+        Retrieve one collected artifact together with its provenance chain.
+
+        Provenance is computed per request, not cached on the row.
+      parameters:
+      - in: path
+        name: artifact_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/data-ingestion/dataset-report:
+    get:
+      operationId: v1_data_ingestion_dataset_report_retrieve
+      description: |-
+        Report the dataset expansion plan alongside the eligible-record count.
+
+        Read-only and recomputed per request. The optional known_counts query param
+        is a JSON object of existing class counts; malformed JSON returns an error.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/data-ingestion/manual-import:
+    post:
+      operationId: v1_data_ingestion_manual_import_create
+      description: |-
+        Ingest image files from a server-side folder for a manual_import source.
+
+        Staff/admin only. Refuses non-manual_import or unapproved sources, rejects
+        paths that are missing/empty or hold more than 5000 files, and always runs
+        for real (no dry-run option). Results land in the review queue.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/data-ingestion/provenance-report:
+    get:
+      operationId: v1_data_ingestion_provenance_report_retrieve
+      description: |-
+        Report the provenance chain for a source, extracted record or artifact.
+
+        Read-only. Exactly one of source_id, record_id or artifact_id selects the
+        subject, checked in that order; supplying none returns an error.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/data-ingestion/records:
+    get:
+      operationId: v1_data_ingestion_records_list
+      description: |-
+        List extracted records, optionally filtered by record_type and status.
+
+        Read-only, capped at 100 rows.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/data-ingestion/records/{record_id}:
+    get:
+      operationId: v1_data_ingestion_records_retrieve
+      description: |-
+        Retrieve one extracted record together with its provenance chain.
+
+        Provenance is recomputed on every request, not cached.
+      parameters:
+      - in: path
+        name: record_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/data-ingestion/review-queue:
+    get:
+      operationId: v1_data_ingestion_review_queue_retrieve
+      description: |-
+        List human-review queue items, optionally filtered by decision and risk.
+
+        Read-only, capped at 100 rows.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/data-ingestion/review-queue/{queue_id}/approve:
+    post:
+      operationId: v1_data_ingestion_review_queue_approve_create
+      description: |-
+        Record an APPROVED decision on a queue item.
+
+        Overwrites any earlier decision; the linked record's status is left alone
+        since only REJECTED propagates to it.
+      parameters:
+      - in: path
+        name: queue_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/data-ingestion/review-queue/{queue_id}/publish:
+    post:
+      operationId: v1_data_ingestion_review_queue_publish_create
+      description: |-
+        Publish an already-approved queue item into its target live model.
+
+        Second half of the two-step human gate: it never self-approves, so an item
+        without a human APPROVED decision, or one that failed validation, is
+        rejected with a response error instead of a 500.
+      parameters:
+      - in: path
+        name: queue_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/data-ingestion/review-queue/{queue_id}/reject:
+    post:
+      operationId: v1_data_ingestion_review_queue_reject_create
+      description: |-
+        Record a REJECTED decision on a queue item.
+
+        Unlike approval, this also flips the linked extracted record to REJECTED
+        and stamps the reviewing user, notes and timestamp on it.
+      parameters:
+      - in: path
+        name: queue_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/data-ingestion/runs:
+    get:
+      operationId: v1_data_ingestion_runs_list
+      description: |-
+        List recent ingestion runs across all sources, newest first.
+
+        Read-only, capped at 100 rows.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/data-ingestion/runs/{run_id}:
+    get:
+      operationId: v1_data_ingestion_runs_retrieve
+      description: |-
+        Retrieve a single ingestion run by id.
+
+        Read-only; an unknown id returns 404 rather than raising.
+      parameters:
+      - in: path
+        name: run_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/data-ingestion/sources:
+    get:
+      operationId: v1_data_ingestion_sources_list
+      description: |-
+        List registered data sources, or register a new one.
+
+        GET filters by name/category/approval_status and is open to any
+        authenticated user. POST is staff/admin only and always creates the source in
+        the pending state, so collection stays disabled until it is approved.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_data_ingestion_sources_create
+      description: |-
+        List registered data sources, or register a new one.
+
+        GET filters by name/category/approval_status and is open to any
+        authenticated user. POST is staff/admin only and always creates the source in
+        the pending state, so collection stays disabled until it is approved.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/data-ingestion/sources/{source_id}:
+    get:
+      operationId: v1_data_ingestion_sources_retrieve
+      description: |-
+        Retrieve or partially update a single registered source.
+
+        Reads are open to any authenticated user; PATCH is staff/admin only and
+        silently ignores fields outside a fixed editable set. An unknown id returns
+        404 rather than raising.
+      parameters:
+      - in: path
+        name: source_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    patch:
+      operationId: v1_data_ingestion_sources_partial_update
+      description: |-
+        Retrieve or partially update a single registered source.
+
+        Reads are open to any authenticated user; PATCH is staff/admin only and
+        silently ignores fields outside a fixed editable set. An unknown id returns
+        404 rather than raising.
+      parameters:
+      - in: path
+        name: source_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/data-ingestion/sources/{source_id}/collect:
+    post:
+      operationId: v1_data_ingestion_sources_collect_create
+      description: |-
+        Collect images for a source from an explicit list of URLs.
+
+        Staff/admin only. Defaults to a dry run; execute=true is required for real
+        collection and is rejected unless the source is approved and collection
+        enabled. Creates an IngestionRun and returns the collector report.
+      parameters:
+      - in: path
+        name: source_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/data-ingestion/sources/{source_id}/compliance-check:
+    post:
+      operationId: v1_data_ingestion_sources_compliance_check_create
+      description: |-
+        Run a robots/terms compliance decision against a source.
+
+        Staff/admin only. Recomputed on every call and not persisted as a decision
+        state on the source; an optional run_id links the check to an ingestion run.
+      parameters:
+      - in: path
+        name: source_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/data-ingestion/sources/{source_id}/runs:
+    get:
+      operationId: v1_data_ingestion_sources_runs_retrieve
+      description: |-
+        List the most recent ingestion runs for one source, newest first.
+
+        Capped at 50 rows and read-only for any authenticated user.
+      parameters:
+      - in: path
+        name: source_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/energy/diesel-price-benchmarks:
+    get:
+      operationId: v1_energy_diesel_price_benchmarks_retrieve
+      description: |-
+        Verified diesel price benchmarks.
+
+        Filtered to is_verified rows and capped at 50, so this is a sample rather
+        than the full table; it takes no farm_id and reads no farm data.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/energy/tariff-benchmarks:
+    get:
+      operationId: v1_energy_tariff_benchmarks_retrieve
+      description: |-
+        Published electricity tariff benchmarks, optionally filtered by state.
+
+        Only rows flagged is_verified are returned. The state filter is
+        case-insensitive and omitted entirely when absent, so the whole verified
+        table is returned uncapped.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/equipment/catalog:
+    get:
+      operationId: v1_equipment_catalog_retrieve
+      description: |-
+        Browse verified catalog models, optionally filtered by brand or category.
+
+        Unverified entries are never exposed. ``brand`` matches case-insensitively
+        anywhere in the name, ``category`` matches the category code exactly, and
+        the result is hard-capped at 200 rows since there is no pagination.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/equipment/categories:
+    get:
+      operationId: v1_equipment_categories_retrieve
+      description: |-
+        List every equipment category, unfiltered.
+
+        The category set is small and shared reference data, so no farm scoping or
+        query parameters apply despite the ``farm_id`` URL segment.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/:
+    get:
+      operationId: v1_farms_list
+      description: |-
+        List the farms owned by the caller, or register a new one.
+
+        Reads are scoped by ``request.user.farms``, so no farm filter is accepted;
+        creation delegates validation to ``FarmCreateSerializer``.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_farms_create
+      description: |-
+        List the farms owned by the caller, or register a new one.
+
+        Reads are scoped by ``request.user.farms``, so no farm filter is accepted;
+        creation delegates validation to ``FarmCreateSerializer``.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}:
+    get:
+      operationId: v1_farms_retrieve
+      description: |-
+        Read, patch or soft-delete a single farm the caller owns.
+
+        ``delete`` is a soft delete: the row is removed from the default manager
+        and only ``updated_by`` is stamped afterwards via ``all_objects``.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    patch:
+      operationId: v1_farms_partial_update
+      description: |-
+        Read, patch or soft-delete a single farm the caller owns.
+
+        ``delete`` is a soft delete: the row is removed from the default manager
+        and only ``updated_by`` is stamped afterwards via ``all_objects``.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: v1_farms_destroy
+      description: |-
+        Read, patch or soft-delete a single farm the caller owns.
+
+        ``delete`` is a soft delete: the row is removed from the default manager
+        and only ``updated_by`` is stamped afterwards via ``all_objects``.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/farms/{farm_id}/crops:
+    get:
+      operationId: v1_farms_crops_retrieve
+      description: |-
+        Crops sown on one farm, and adding a crop to it.
+
+        The farm comes from the URL, so a posted crop can never be attached to a
+        farm the caller does not own.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_farms_crops_create
+      description: |-
+        Crops sown on one farm, and adding a crop to it.
+
+        The farm comes from the URL, so a posted crop can never be attached to a
+        farm the caller does not own.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/crops/{crop_id}/estimate:
+    post:
+      operationId: v1_farms_crops_estimate_create
+      description: |-
+        Cost estimate for a single farm crop, broken down by input type.
+
+        Estimating replaces that crop's stored ``CropInputEstimate`` rows, so
+        calling it is a write rather than a pure read. A crop id outside this farm
+        returns a 404 error envelope.
+      parameters:
+      - in: path
+        name: crop_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/crops/estimates:
+    get:
+      operationId: v1_farms_crops_estimates_retrieve
+      description: |-
+        Cultivation cost estimates for every crop on a farm, optionally by year.
+
+        Aggregates per-input benchmark ranges across the farm's crops and rewrites
+        the stored ``CropInputEstimate`` rows as it goes; the optional ``year``
+        query param narrows which crops are estimated.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/energy/analyze:
+    post:
+      operationId: v1_farms_energy_analyze_create
+      description: |-
+        Compute the grid, diesel and solar comparison for a farm.
+
+        Derives its inputs from the saved pump and solar configuration rows and
+        recomputes the 10-year projections on every call. persist=True stores the
+        result as a new SolarAnalysis plus its per-year projection rows, so each
+        invocation adds a record and returns its analysis_id.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/energy/projection:
+    get:
+      operationId: v1_farms_energy_projection_retrieve
+      description: |-
+        Return the year-by-year projection from the farm's last saved analysis.
+
+        Read-only: it serves the newest SolarAnalysis and its projection rows
+        rather than recomputing, and returns an empty projection instead of a 404
+        when no analysis has been stored yet.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/energy/solar-comparison:
+    get:
+      operationId: v1_farms_energy_solar_comparison_retrieve
+      description: |-
+        Preview the solar comparison without storing it.
+
+        Identical inputs and calculations to the analyze view but persist=False,
+        so a client can show the result before committing a SolarAnalysis row.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/equipment:
+    get:
+      operationId: v1_farms_equipment_list
+      description: |-
+        List or add the equipment owned by one of the caller's farms.
+
+        Every query is scoped through ``FarmAccessMixin``, so a farm the caller does
+        not own yields a 404 rather than an empty list. On create, the farm and the
+        caller are set by the view and cannot be spoofed in the payload.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_farms_equipment_create
+      description: |-
+        List or add the equipment owned by one of the caller's farms.
+
+        Every query is scoped through ``FarmAccessMixin``, so a farm the caller does
+        not own yields a 404 rather than an empty list. On create, the farm and the
+        caller are set by the view and cannot be spoofed in the payload.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/equipment/{equipment_id}:
+    get:
+      operationId: v1_farms_equipment_retrieve
+      description: |-
+        Retrieve, partially update or hard-delete one equipment record.
+
+        Rows are looked up by farm plus id, so an id from another farm reads as 404.
+        Delete is a real row deletion, not a soft delete, and is therefore not
+        reversible.
+      parameters:
+      - in: path
+        name: equipment_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    patch:
+      operationId: v1_farms_equipment_partial_update
+      description: |-
+        Retrieve, partially update or hard-delete one equipment record.
+
+        Rows are looked up by farm plus id, so an id from another farm reads as 404.
+        Delete is a real row deletion, not a soft delete, and is therefore not
+        reversible.
+      parameters:
+      - in: path
+        name: equipment_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: v1_farms_equipment_destroy
+      description: |-
+        Retrieve, partially update or hard-delete one equipment record.
+
+        Rows are looked up by farm plus id, so an id from another farm reads as 404.
+        Delete is a real row deletion, not a soft delete, and is therefore not
+        reversible.
+      parameters:
+      - in: path
+        name: equipment_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/farms/{farm_id}/equipment/{equipment_id}/images:
+    post:
+      operationId: v1_farms_equipment_images_create
+      description: |-
+        Upload a photo for one equipment item after re-encoding it as a safe image.
+
+        The upload is validated by size and extension, sniffed by content rather
+        than trusting the declared MIME type, then re-encoded to strip metadata and
+        embedded payloads before storage. The row records a SHA-256 of the sanitized
+        bytes plus probed dimensions and MIME; failures are reported as 400 field
+        errors, and a missing equipment id as 404.
+      parameters:
+      - in: path
+        name: equipment_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/equipment/{equipment_id}/images/{image_id}/analyze:
+    post:
+      operationId: v1_farms_equipment_images_analyze_create
+      description: Run classification + OCR + condition over an uploaded image.
+      parameters:
+      - in: path
+        name: equipment_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: image_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/equipment/{equipment_id}/operating-cost:
+    post:
+      operationId: v1_farms_equipment_operating_cost_create
+      description: |-
+        Compute the running-cost pack for one equipment item.
+
+        Read-only arithmetic over the stored purchase and usage fields; nothing is
+        persisted. A missing equipment id returns 404.
+      parameters:
+      - in: path
+        name: equipment_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/expenses:
+    get:
+      operationId: v1_farms_expenses_retrieve
+      description: |-
+        List and create plain FarmExpense rows for a farm.
+
+        GET returns every row in creation order with no filtering or pagination;
+        POST stamps farm and created_by from the resolved farm, so a client cannot
+        file an expense against a farm it does not own.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FarmExpense'
+          description: ''
+    post:
+      operationId: v1_farms_expenses_create
+      description: |-
+        List and create plain FarmExpense rows for a farm.
+
+        GET returns every row in creation order with no filtering or pagination;
+        POST stamps farm and created_by from the resolved farm, so a client cannot
+        file an expense against a farm it does not own.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FarmExpenseRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FarmExpenseRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FarmExpenseRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FarmExpense'
+          description: ''
+  /api/v1/farms/{farm_id}/expenses/analysis:
+    post:
+      operationId: v1_farms_expenses_analysis_create
+      description: |-
+        Per-category spending anomaly detection for a farm.
+
+        Runs the anomaly detector on every call, using isolation forest when
+        scikit-learn is available and an IQR baseline otherwise; models_used
+        reports which one ran. The result is returned for review only, nothing is
+        flagged as an error or corrected.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/expenses/categories:
+    get:
+      operationId: v1_farms_expenses_categories_retrieve
+      description: |-
+        The filing options offered by the receipt-upload picker.
+
+        ``ExpenseDocument.category`` is a UUID FK, but the picker is driven by the
+        stable ``code`` so the stored labels can be re-worded freely. Handing the
+        client both keeps the upload POST readable and lets a future custom
+        category appear without a frontend release.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/expenses/documents:
+    post:
+      operationId: v1_farms_expenses_documents_create
+      description: |-
+        Upload a receipt or bill image/PDF against a farm.
+
+        The file is read fully into memory to compute a sha256 content hash and
+        size, then rewound for storage. Size and extension are validated, and the
+        optional category accepts a primary key or a stable code; an unknown value
+        is rejected rather than silently dropped. Write-only, no read endpoint.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/expenses/electricity:
+    get:
+      operationId: v1_farms_expenses_electricity_retrieve
+      description: |-
+        List and create electricity bill entries.
+
+        Same generic list/create behaviour, but the serializer exposes the
+        provider-specific fields (provider, units_kwh, bill_month) and leaves
+        tariff_effective_per_kwh read-only so it stays derived.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ElectricityBill'
+          description: ''
+    post:
+      operationId: v1_farms_expenses_electricity_create
+      description: |-
+        List and create electricity bill entries.
+
+        Same generic list/create behaviour, but the serializer exposes the
+        provider-specific fields (provider, units_kwh, bill_month) and leaves
+        tariff_effective_per_kwh read-only so it stays derived.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ElectricityBillRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ElectricityBillRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ElectricityBillRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ElectricityBill'
+          description: ''
+  /api/v1/farms/{farm_id}/expenses/fuel:
+    get:
+      operationId: v1_farms_expenses_fuel_retrieve
+      description: |-
+        List and create fuel entries.
+
+        Adds litre_volume, price_per_litre and fuel_type to the generic behaviour;
+        rows are returned unfiltered and unpaginated.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FuelExpense'
+          description: ''
+    post:
+      operationId: v1_farms_expenses_fuel_create
+      description: |-
+        List and create fuel entries.
+
+        Adds litre_volume, price_per_litre and fuel_type to the generic behaviour;
+        rows are returned unfiltered and unpaginated.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FuelExpenseRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FuelExpenseRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FuelExpenseRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FuelExpense'
+          description: ''
+  /api/v1/farms/{farm_id}/expenses/inputs:
+    get:
+      operationId: v1_farms_expenses_inputs_retrieve
+      description: |-
+        List and create input purchases (seed, fertilizer, chemicals).
+
+        Records input_type and product_name with quantity and unit; GET returns
+        every row for the farm with no date or type filtering.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InputExpense'
+          description: ''
+    post:
+      operationId: v1_farms_expenses_inputs_create
+      description: |-
+        List and create input purchases (seed, fertilizer, chemicals).
+
+        Records input_type and product_name with quantity and unit; GET returns
+        every row for the farm with no date or type filtering.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InputExpenseRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InputExpenseRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InputExpenseRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InputExpense'
+          description: ''
+  /api/v1/farms/{farm_id}/expenses/labour:
+    get:
+      operationId: v1_farms_expenses_labour_retrieve
+      description: |-
+        List and create labour cost entries.
+
+        Captures person_days and wage_per_day alongside the amount; GET returns
+        all labour rows for the farm unfiltered.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabourExpense'
+          description: ''
+    post:
+      operationId: v1_farms_expenses_labour_create
+      description: |-
+        List and create labour cost entries.
+
+        Captures person_days and wage_per_day alongside the amount; GET returns
+        all labour rows for the farm unfiltered.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabourExpenseRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LabourExpenseRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LabourExpenseRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabourExpense'
+          description: ''
+  /api/v1/farms/{farm_id}/expenses/rental:
+    get:
+      operationId: v1_farms_expenses_rental_retrieve
+      description: |-
+        List and create equipment rental entries.
+
+        rental_hours and rental_days are both optional, so the same endpoint
+        covers hourly and daily hire; GET returns every row unpaginated.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RentalExpense'
+          description: ''
+    post:
+      operationId: v1_farms_expenses_rental_create
+      description: |-
+        List and create equipment rental entries.
+
+        rental_hours and rental_days are both optional, so the same endpoint
+        covers hourly and daily hire; GET returns every row unpaginated.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RentalExpenseRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RentalExpenseRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RentalExpenseRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RentalExpense'
+          description: ''
+  /api/v1/farms/{farm_id}/expenses/summary:
+    get:
+      operationId: v1_farms_expenses_summary_retrieve
+      description: |-
+        Totals and per-category breakdown for a farm's expenses.
+
+        Recomputed on every request by ExpenseAggregationService from the base
+        expense rows plus their typed subclasses; nothing is cached or persisted
+        here. An optional year query param narrows the window, otherwise all
+        recorded years are summarised.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/expenses/transport:
+    get:
+      operationId: v1_farms_expenses_transport_retrieve
+      description: |-
+        List and create transport entries.
+
+        Stores vehicle_type and distance_km with the amount; no aggregation or
+        per-vehicle grouping is applied on read.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransportExpense'
+          description: ''
+    post:
+      operationId: v1_farms_expenses_transport_create
+      description: |-
+        List and create transport entries.
+
+        Stores vehicle_type and distance_km with the amount; no aggregation or
+        per-vehicle grouping is applied on read.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransportExpenseRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransportExpenseRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransportExpenseRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransportExpense'
+          description: ''
+  /api/v1/farms/{farm_id}/finance/affordability:
+    post:
+      operationId: v1_farms_finance_affordability_create
+      description: |-
+        Scores proposed and existing EMIs as a percentage of annual farm income.
+
+        Write-only POST. Burden above the safe percentage raises the risk level;
+        the assessment is saved as an AffordabilityAssessment row. This is an
+        estimate, not a lending decision.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/finance/buy-vs-rent:
+    post:
+      operationId: v1_farms_finance_buy_vs_rent_create
+      description: |-
+        Compares annual ownership cost against rental cost for a machine.
+
+        Write-only POST. The result, including the loan EMI worked out from the
+        supplied subsidy, tenure and interest rate, is persisted as a
+        BuyRentAnalysis row and returned with its new analysis_id.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/finance/machinery-decision:
+    post:
+      operationId: v1_farms_finance_machinery_decision_create
+      description: |-
+        Runs the rule-first machinery decision engine over farmer-supplied inputs.
+
+        Write-only POST. Unlike the other calculators this view has no input
+        serializer: every field is read loosely and falls back to a default, so
+        missing usage hours or purchase price yield 'gather_more_information'.
+        The scenario is saved as a MachineryPurchaseScenario row.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/finance/repair-vs-replace:
+    post:
+      operationId: v1_farms_finance_repair_vs_replace_create
+      description: |-
+        Decides whether repairing an existing machine beats replacing it.
+
+        Write-only POST. Remaining life is inferred from usage hours and repair
+        frequency; the outcome is stored as a RepairReplaceAnalysis row and
+        returned with its analysis_id.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/finance/scenarios:
+    get:
+      operationId: v1_farms_finance_scenarios_retrieve
+      description: |-
+        Read-only list of stored machinery scenarios, newest first.
+
+        Capped at the 20 most recent scenarios for the farm; nothing is written
+        and no filtering or pagination is exposed.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/income-profile:
+    get:
+      operationId: v1_farms_income_profile_retrieve
+      description: |-
+        Reads or records the farm's income profile used for affordability checks.
+
+        GET returns only the most recent year's profile (null data when none saved);
+        POST always inserts a new row, so repeated posts build a per-year history.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_farms_income_profile_create
+      description: |-
+        Reads or records the farm's income profile used for affordability checks.
+
+        GET returns only the most recent year's profile (null data when none saved);
+        POST always inserts a new row, so repeated posts build a per-year history.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/land-parcels:
+    get:
+      operationId: v1_farms_land_parcels_retrieve
+      description: |-
+        The land parcels belonging to one farm, and parcel creation.
+
+        Parcels are always created against the farm resolved from the URL rather
+        than a farm id in the payload, so a farm cannot be written across.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_farms_land_parcels_create
+      description: |-
+        The land parcels belonging to one farm, and parcel creation.
+
+        Parcels are always created against the farm resolved from the URL rather
+        than a farm id in the payload, so a farm cannot be written across.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/opportunities:
+    get:
+      operationId: v1_farms_opportunities_retrieve
+      description: |-
+        Read-only list of cost-saving opportunities recorded for the farm.
+
+        Unpaginated and unordered beyond the model's default newest-first
+        ordering; rows are written elsewhere, not here.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/pump-profile:
+    get:
+      operationId: v1_farms_pump_profile_retrieve
+      description: |-
+        Read and save the farm's pump profile.
+
+        GET returns the most recently created profile, the same row
+        EnergyAnalysisService resolves as current, or a null data payload when
+        none is saved yet. POST appends a new profile rather than updating in
+        place, so history is kept.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_farms_pump_profile_create
+      description: |-
+        Read and save the farm's pump profile.
+
+        GET returns the most recently created profile, the same row
+        EnergyAnalysisService resolves as current, or a null data payload when
+        none is saved yet. POST appends a new profile rather than updating in
+        place, so history is kept.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/recommendation-runs:
+    get:
+      operationId: v1_farms_recommendation_runs_retrieve
+      description: |-
+        Read-only list of recommendation runs for the farm.
+
+        Serialized with .values() rather than a model serializer, so it returns raw
+        model columns including audit fields; no cap or pagination is applied.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/recommendations:
+    get:
+      operationId: v1_farms_recommendations_retrieve
+      description: |-
+        Read-only list of every stored recommendation for the farm.
+
+        Returns every row regardless of run, priority or category, so successive
+        generate calls accumulate history rather than replacing it.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/recommendations/{recommendation_id}/explain:
+    get:
+      operationId: v1_farms_recommendations_explain_retrieve
+      description: |-
+        Builds the explanation object for one recommendation (evidence, assumptions, uncertainty).
+
+        Read-only and scoped to the farm, so another farm's id returns a 404 error
+        envelope rather than an exception. Nothing is persisted.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: recommendation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/recommendations/{recommendation_id}/feedback:
+    post:
+      operationId: v1_farms_recommendations_feedback_create
+      description: |-
+        Records a farmer's helpful/accurate flags, rating and comment on a recommendation.
+
+        POST only, and appends rather than updating: each call creates a new
+        feedback row. Request data is read without a serializer, so missing fields
+        fall back to defaults and rating is stored unchecked. An unknown or
+        foreign recommendation returns a 404 error envelope.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: recommendation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/recommendations/run:
+    post:
+      operationId: v1_farms_recommendations_run_create
+      description: |-
+        Runs the recommendation engine synchronously and persists the results.
+
+        POST only. Each call writes a RecommendationRun plus one Recommendation
+        with its evidence and assumption rows; prior runs are left intact.
+        Set use_ml_ranker false to skip ML ranking and use the deterministic
+        priority score. Evidence gathering is best-effort, so missing source
+        data yields fewer recommendations rather than an error.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/solar-configuration:
+    get:
+      operationId: v1_farms_solar_configuration_retrieve
+      description: |-
+        Read and save the farm's solar system configuration.
+
+        GET returns the newest configuration, matching the row the analysis
+        service uses, and returns a null payload when none exists. POST inserts a
+        new row each time, so the latest save is the effective one.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_farms_solar_configuration_create
+      description: |-
+        Read and save the farm's solar system configuration.
+
+        GET returns the newest configuration, matching the row the analysis
+        service uses, and returns a null payload when none exists. POST inserts a
+        new row each time, so the latest save is the effective one.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/subsidies/checklists:
+    get:
+      operationId: v1_farms_subsidies_checklists_retrieve
+      description: |-
+        Flattened document checklists for every matched scheme on a farm.
+
+        Each row is prefixed with its ``match_id`` and scheme name so the client
+        can group documents without a second request.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/subsidies/match:
+    post:
+      operationId: v1_farms_subsidies_match_create
+      description: |-
+        Run the eligibility engine against one farm and persist the matches.
+
+        This is a write: ``run_match`` upserts ``FarmerSchemeMatch`` rows, which
+        the recommendations and checklist views then read back.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/subsidies/recommendations:
+    get:
+      operationId: v1_farms_subsidies_recommendations_retrieve
+      description: |-
+        Schemes previously matched to this farm, with match reasons.
+
+        Reads the stored matches instead of re-running the engine, so it is empty
+        until ``SubsidyMatchView`` has been called for the farm.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/farms/{farm_id}/summary:
+    get:
+      operationId: v1_farms_summary_retrieve
+      description: |-
+        Rolled-up view of one farm: parcel count, totals and location.
+
+        Hectares are summed from the parcels and echoed in acres, and parcels still
+        flagged ``area_requires_confirmation`` are listed by id.
+      parameters:
+      - in: path
+        name: farm_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/land-units/convert:
+    post:
+      operationId: v1_land_units_convert_create
+      description: 'Convert land area: POST /api/v1/land-units/convert/'
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/subsidies:
+    get:
+      operationId: v1_subsidies_list
+      description: |-
+        Browse active subsidy schemes, filterable by category and state.
+
+        Only ``is_active`` schemes are listed; eligibility is not evaluated here.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/subsidies/{scheme_id}:
+    get:
+      operationId: v1_subsidies_retrieve
+      description: |-
+        Full record for a single scheme, including inactive ones.
+
+        A missing id is reported as a 404 error envelope rather than raised.
+      parameters:
+      - in: path
+        name: scheme_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/system/capabilities:
+    get:
+      operationId: v1_system_capabilities_retrieve
+      description: |-
+        Stable, public descriptor of what the platform can do.
+
+        Contains no secrets, paths, hostnames or per-farmer data. Reported model
+        information is derived from settings defaults (the classifier only runs
+        when an artifact is present) and is deliberately conservative.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/system/data-source-status:
+    get:
+      operationId: v1_system_data_source_status_retrieve
+      description: Safe aggregate of ingestion-source approval state (no URLs or notes).
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/system/model-status:
+    get:
+      operationId: v1_system_model_status_retrieve
+      description: Safe aggregate over the ML model registry (no artifact paths/weights).
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+components:
+  schemas:
+    ApiErrorEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Always false.
+        message:
+          type: string
+          description: Human readable summary of the failure.
+        data:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        errors:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - message
+      - success
+    ConsentRequestRequest:
+      type: object
+      properties:
+        purpose:
+          type: string
+          minLength: 1
+          description: One of the entries in ConsentRecord.PURPOSES.
+        granted:
+          type: boolean
+          default: true
+        version:
+          type: string
+      required:
+      - purpose
+    ElectricityBill:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        occurred_on:
+          type: string
+          format: date
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        provider:
+          type: string
+          maxLength: 80
+        units_kwh:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+        bill_month:
+          type: string
+          format: date
+          nullable: true
+        tariff_effective_per_kwh:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,3})?$
+          readOnly: true
+          nullable: true
+        note:
+          type: string
+      required:
+      - amount
+      - id
+      - occurred_on
+      - tariff_effective_per_kwh
+    ElectricityBillRequest:
+      type: object
+      properties:
+        occurred_on:
+          type: string
+          format: date
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        provider:
+          type: string
+          maxLength: 80
+        units_kwh:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+        bill_month:
+          type: string
+          format: date
+          nullable: true
+        note:
+          type: string
+      required:
+      - amount
+      - occurred_on
+    FarmExpense:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        occurred_on:
+          type: string
+          format: date
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        category:
+          type: string
+          format: uuid
+          nullable: true
+        expense_type:
+          type: string
+          maxLength: 30
+        note:
+          type: string
+        year:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - amount
+      - created_at
+      - id
+      - occurred_on
+      - year
+    FarmExpenseRequest:
+      type: object
+      properties:
+        occurred_on:
+          type: string
+          format: date
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        category:
+          type: string
+          format: uuid
+          nullable: true
+        expense_type:
+          type: string
+          minLength: 1
+          maxLength: 30
+        note:
+          type: string
+      required:
+      - amount
+      - occurred_on
+    FarmerProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        full_name:
+          type: string
+          maxLength: 120
+        phone:
+          oneOf:
+          - type: string
+            pattern: ^[0-9]{10}$
+            maxLength: 15
+          - type: string
+            maxLength: 0
+        gender:
+          $ref: '#/components/schemas/GenderEnum'
+        state:
+          type: string
+          maxLength: 60
+        district:
+          type: string
+          maxLength: 60
+        village:
+          type: string
+          maxLength: 80
+        pincode:
+          type: string
+          maxLength: 6
+        land_size:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,7}(?:\.\d{0,3})?$
+          nullable: true
+        land_unit:
+          $ref: '#/components/schemas/LandUnitEnum'
+        normalized_land_hectares:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,4})?$
+          readOnly: true
+          nullable: true
+        area_in_hectares:
+          type: number
+          format: double
+          readOnly: true
+        land_ownership:
+          $ref: '#/components/schemas/LandOwnershipEnum'
+        irrigated:
+          $ref: '#/components/schemas/IrrigatedEnum'
+        irrigation_source:
+          $ref: '#/components/schemas/IrrigationSourceEnum'
+        yearly_farm_income_min:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        yearly_farm_income_max:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        household_income_min:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        household_income_max:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        consent_accepted:
+          type: boolean
+          readOnly: true
+        onboard_complete:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - area_in_hectares
+      - consent_accepted
+      - created_at
+      - full_name
+      - id
+      - normalized_land_hectares
+      - updated_at
+      - user
+    FuelExpense:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        occurred_on:
+          type: string
+          format: date
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        litre_volume:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        price_per_litre:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          nullable: true
+        fuel_type:
+          $ref: '#/components/schemas/FuelTypeEnum'
+        purpose:
+          type: string
+          maxLength: 60
+        note:
+          type: string
+      required:
+      - amount
+      - id
+      - occurred_on
+    FuelExpenseRequest:
+      type: object
+      properties:
+        occurred_on:
+          type: string
+          format: date
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        litre_volume:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        price_per_litre:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          nullable: true
+        fuel_type:
+          $ref: '#/components/schemas/FuelTypeEnum'
+        purpose:
+          type: string
+          maxLength: 60
+        note:
+          type: string
+      required:
+      - amount
+      - occurred_on
+    FuelTypeEnum:
+      enum:
+      - diesel
+      - petrol
+      - cng
+      - lpg
+      - electric
+      type: string
+      description: |-
+        * `diesel` - Diesel
+        * `petrol` - Petrol
+        * `cng` - CNG
+        * `lpg` - LPG
+        * `electric` - Electric
+    GenderEnum:
+      enum:
+      - male
+      - female
+      - other
+      - undisclosed
+      type: string
+      description: |-
+        * `male` - Male
+        * `female` - Female
+        * `other` - Other
+        * `undisclosed` - Prefer not to say
+    InputExpense:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        occurred_on:
+          type: string
+          format: date
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        input_type:
+          $ref: '#/components/schemas/InputTypeEnum'
+        product_name:
+          type: string
+          maxLength: 120
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        quantity_unit:
+          type: string
+          maxLength: 20
+        note:
+          type: string
+      required:
+      - amount
+      - id
+      - occurred_on
+    InputExpenseRequest:
+      type: object
+      properties:
+        occurred_on:
+          type: string
+          format: date
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        input_type:
+          $ref: '#/components/schemas/InputTypeEnum'
+        product_name:
+          type: string
+          maxLength: 120
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        quantity_unit:
+          type: string
+          maxLength: 20
+        note:
+          type: string
+      required:
+      - amount
+      - occurred_on
+    InputTypeEnum:
+      enum:
+      - general
+      - seed
+      - fertilizer
+      - pesticide
+      - manure
+      - other
+      type: string
+      description: |-
+        * `general` - General
+        * `seed` - Seed
+        * `fertilizer` - Fertilizer
+        * `pesticide` - Pesticide
+        * `manure` - Manure / organic
+        * `other` - Other
+    IrrigatedEnum:
+      enum:
+      - irrigated
+      - rainfed
+      - partially_irrigated
+      type: string
+      description: |-
+        * `irrigated` - Irrigated
+        * `rainfed` - Rain-fed
+        * `partially_irrigated` - Partially irrigated
+    IrrigationSourceEnum:
+      enum:
+      - canal
+      - well
+      - borewell
+      - pond
+      - river
+      - tank
+      - drip
+      - sprinkler
+      - other
+      type: string
+      description: |-
+        * `canal` - Canal
+        * `well` - Well
+        * `borewell` - Bore well
+        * `pond` - Pond
+        * `river` - River
+        * `tank` - Tank
+        * `drip` - Drip
+        * `sprinkler` - Sprinkler
+        * `other` - Other
+    LabourExpense:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        occurred_on:
+          type: string
+          format: date
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        labour_type:
+          $ref: '#/components/schemas/LabourTypeEnum'
+        person_days:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,7}(?:\.\d{0,1})?$
+          nullable: true
+        wage_per_day:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        note:
+          type: string
+      required:
+      - amount
+      - id
+      - occurred_on
+    LabourExpenseRequest:
+      type: object
+      properties:
+        occurred_on:
+          type: string
+          format: date
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        labour_type:
+          $ref: '#/components/schemas/LabourTypeEnum'
+        person_days:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,7}(?:\.\d{0,1})?$
+          nullable: true
+        wage_per_day:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        note:
+          type: string
+      required:
+      - amount
+      - occurred_on
+    LabourTypeEnum:
+      enum:
+      - daily
+      - seasonal
+      - contract
+      - family
+      type: string
+      description: |-
+        * `daily` - Daily
+        * `seasonal` - Seasonal
+        * `contract` - Contract
+        * `family` - Family
+    LandOwnershipEnum:
+      enum:
+      - owned
+      - leased
+      - shared
+      - government
+      type: string
+      description: |-
+        * `owned` - Owned
+        * `leased` - Leased
+        * `shared` - Shared
+        * `government` - Government lease
+    LandUnitEnum:
+      enum:
+      - acre
+      - hectare
+      - bigha
+      - guntha
+      - sqm
+      - sqft
+      - kaththa
+      - cent
+      type: string
+      description: |-
+        * `acre` - Acre
+        * `hectare` - Hectare
+        * `bigha` - Bigha
+        * `guntha` - Guntha
+        * `sqm` - Square meter
+        * `sqft` - Square foot
+        * `kaththa` - Kaththa (local)
+        * `cent` - Cent
+    LanguagePreferenceRequestRequest:
+      type: object
+      properties:
+        language_code:
+          type: string
+          minLength: 1
+          default: en
+          description: '''en'' or ''hi''.'
+    PatchedFarmerProfileRequest:
+      type: object
+      properties:
+        full_name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        phone:
+          oneOf:
+          - type: string
+            pattern: ^[0-9]{10}$
+            maxLength: 15
+          - type: string
+            maxLength: 0
+        gender:
+          $ref: '#/components/schemas/GenderEnum'
+        state:
+          type: string
+          maxLength: 60
+        district:
+          type: string
+          maxLength: 60
+        village:
+          type: string
+          maxLength: 80
+        pincode:
+          type: string
+          maxLength: 6
+        land_size:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,7}(?:\.\d{0,3})?$
+          nullable: true
+        land_unit:
+          $ref: '#/components/schemas/LandUnitEnum'
+        land_ownership:
+          $ref: '#/components/schemas/LandOwnershipEnum'
+        irrigated:
+          $ref: '#/components/schemas/IrrigatedEnum'
+        irrigation_source:
+          $ref: '#/components/schemas/IrrigationSourceEnum'
+        yearly_farm_income_min:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        yearly_farm_income_max:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        household_income_min:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        household_income_max:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        onboard_complete:
+          type: boolean
+    PreferredLanguageEnum:
+      enum:
+      - en
+      - hi
+      type: string
+      description: |-
+        * `en` - English
+        * `hi` - Hindi
+    RegisterRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 8
+        phone:
+          type: string
+          maxLength: 15
+        full_name:
+          type: string
+          maxLength: 120
+        state:
+          type: string
+          maxLength: 60
+        district:
+          type: string
+          maxLength: 60
+        village:
+          type: string
+          maxLength: 80
+        pincode:
+          type: string
+          maxLength: 6
+        land_size:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,7}(?:\.\d{0,3})?$
+          nullable: true
+        land_unit:
+          allOf:
+          - $ref: '#/components/schemas/LandUnitEnum'
+          default: acre
+      required:
+      - email
+      - password
+      - username
+    RegistrationResult:
+      type: object
+      properties:
+        tokens:
+          $ref: '#/components/schemas/TokenPair'
+        user:
+          $ref: '#/components/schemas/User'
+        profile:
+          $ref: '#/components/schemas/FarmerProfile'
+      required:
+      - profile
+      - tokens
+      - user
+    RentalExpense:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        occurred_on:
+          type: string
+          format: date
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        equipment_class:
+          type: string
+          maxLength: 30
+        rental_hours:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          nullable: true
+        rental_days:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          nullable: true
+        note:
+          type: string
+      required:
+      - amount
+      - id
+      - occurred_on
+    RentalExpenseRequest:
+      type: object
+      properties:
+        occurred_on:
+          type: string
+          format: date
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        equipment_class:
+          type: string
+          maxLength: 30
+        rental_hours:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          nullable: true
+        rental_days:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          nullable: true
+        note:
+          type: string
+      required:
+      - amount
+      - occurred_on
+    TokenObtainPairRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - password
+      - username
+    TokenPair:
+      type: object
+      properties:
+        access:
+          type: string
+        refresh:
+          type: string
+      required:
+      - access
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+      required:
+      - refresh
+    TransportExpense:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        occurred_on:
+          type: string
+          format: date
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        vehicle_type:
+          $ref: '#/components/schemas/VehicleTypeEnum'
+        distance_km:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          nullable: true
+        note:
+          type: string
+      required:
+      - amount
+      - id
+      - occurred_on
+    TransportExpenseRequest:
+      type: object
+      properties:
+        occurred_on:
+          type: string
+          format: date
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        vehicle_type:
+          $ref: '#/components/schemas/VehicleTypeEnum'
+        distance_km:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          nullable: true
+        note:
+          type: string
+      required:
+      - amount
+      - occurred_on
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          title: Email address
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
+        phone:
+          oneOf:
+          - type: string
+            pattern: ^[0-9]{10}$
+            maxLength: 15
+          - type: string
+            maxLength: 0
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        preferred_language:
+          $ref: '#/components/schemas/PreferredLanguageEnum'
+        is_farmer:
+          type: boolean
+          readOnly: true
+      required:
+      - id
+      - is_farmer
+      - username
+    UserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          title: Email address
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
+        phone:
+          oneOf:
+          - type: string
+            pattern: ^[0-9]{10}$
+            maxLength: 15
+          - type: string
+            maxLength: 0
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        preferred_language:
+          $ref: '#/components/schemas/PreferredLanguageEnum'
+      required:
+      - username
+    VehicleTypeEnum:
+      enum:
+      - tractor
+      - truck
+      - trolley
+      - tempo
+      - auto
+      - van
+      - other
+      type: string
+      description: |-
+        * `tractor` - Tractor
+        * `truck` - Truck
+        * `trolley` - Trolley
+        * `tempo` - Tempo
+        * `auto` - Auto / jeep
+        * `van` - Van
+        * `other` - Other
+    api_envelope:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RegistrationResult'
+        success:
+          type: boolean
+          description: Always true on a successful call.
+        message:
+          type: string
+          description: Human readable summary of the outcome.
+        meta:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: Pagination and request metadata.
+        errors:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - data
+      - message
+      - success
+    consent_record_item_envelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Always true on a successful call.
+        message:
+          type: string
+          description: Human readable summary of the outcome.
+        meta:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: Pagination and request metadata.
+        errors:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - message
+      - success
+    farmer_profile_item_envelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Always true on a successful call.
+        message:
+          type: string
+          description: Human readable summary of the outcome.
+        meta:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: Pagination and request metadata.
+        errors:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - message
+      - success
+    logout_envelope:
+      type: object
+      properties:
+        data:
+          type: object
+          additionalProperties: {}
+        success:
+          type: boolean
+          description: Always true on a successful call.
+        message:
+          type: string
+          description: Human readable summary of the outcome.
+        meta:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: Pagination and request metadata.
+        errors:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - data
+      - message
+      - success
+    token_pair_envelope:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/TokenPair'
+        success:
+          type: boolean
+          description: Always true on a successful call.
+        message:
+          type: string
+          description: Human readable summary of the outcome.
+        meta:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: Pagination and request metadata.
+        errors:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - data
+      - message
+      - success
+    user_language_preference_item_envelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Always true on a successful call.
+        message:
+          type: string
+          description: Human readable summary of the outcome.
+        meta:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: Pagination and request metadata.
+        errors:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - message
+      - success
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: farmgrid_sessionid
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

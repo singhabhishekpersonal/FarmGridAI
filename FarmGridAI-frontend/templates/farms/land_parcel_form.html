@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% load text_tags %}
+
+{% block title %}{% t "Add a land parcel" %} - {% t "FarmGrid AI" %}{% endblock %}
+
+{% block content %}
+<section class="ks-container ks-container--narrow">
+  <nav class="ks-breadcrumb" aria-label="{% t "Breadcrumb" %}">
+    <a href="{% url 'web:dashboard' %}">{% t "Dashboard" %}</a>
+    <span aria-hidden="true">/</span>
+    <a href="{% url 'web:farm_detail' farm_id %}">{% t "My farm" %}</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{% t "Add parcel" %}</span>
+  </nav>
+
+  <h1 class="ks-page-title">{% t "Add a land parcel" %}</h1>
+  <p class="ks-small ks-muted">
+    {% t "Parcels often differ in area, ownership and irrigation. Recording them separately makes the per-hectare estimates far more accurate." %}
+  </p>
+
+  <div class="ks-card">
+    <form class="ks-form" data-ks-parcel-form novalidate>
+      {% csrf_token %}
+      <div data-ks-error-summary></div>
+
+      <div class="ks-field">
+        <label class="ks-label" for="parcel-name">{% t "Parcel name" %}</label>
+        <input class="ks-input" type="text" id="parcel-name" name="name" maxlength="80"
+               placeholder="{% t "e.g. North plot, River side land" %}">
+        <p class="ks-help">{% t "Optional, but useful when a farm has several plots." %}</p>
+      </div>
+
+      <div class="ks-grid ks-grid-2">
+        <div class="ks-field">
+          <label class="ks-label" for="parcel-area">{% t "Area" %} <span class="ks-req">*</span></label>
+          <input class="ks-input" type="number" id="parcel-area" name="area" required
+                 step="0.001" min="0" inputmode="decimal" data-validate="positive">
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="parcel-unit">{% t "Unit" %} <span class="ks-req">*</span></label>
+          <select class="ks-select" id="parcel-unit" name="unit" required>
+            <option value="acre">{% t "Acre" %}</option>
+            <option value="hectare">{% t "Hectare" %}</option>
+            <option value="bigha">{% t "Bigha" %}</option>
+            <option value="guntha">{% t "Guntha" %}</option>
+            <option value="kaththa">{% t "Kaththa (local)" %}</option>
+            <option value="cent">{% t "Cent" %}</option>
+            <option value="sqm">{% t "Square meter" %}</option>
+            <option value="sqft">{% t "Square foot" %}</option>
+          </select>
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="parcel-ownership">{% t "Ownership" %}</label>
+          <select class="ks-select" id="parcel-ownership" name="ownership">
+            <option value="owned">{% t "Owned" %}</option>
+            <option value="leased">{% t "Leased" %}</option>
+            <option value="shared">{% t "Shared" %}</option>
+            <option value="government">{% t "Government lease" %}</option>
+          </select>
+          <p class="ks-help">{% t "Leased land is excluded from most subsidy schemes." %}</p>
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="parcel-irrigated">{% t "Irrigation" %}</label>
+          <select class="ks-select" id="parcel-irrigated" name="irrigated">
+            <option value="rainfed">{% t "Rainfed" %}</option>
+            <option value="irrigated">{% t "Irrigated" %}</option>
+            <option value="partially_irrigated">{% t "Partially irrigated" %}</option>
+          </select>
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="parcel-irrigation-source">{% t "Irrigation source" %}</label>
+          <select class="ks-select" id="parcel-irrigation-source" name="irrigation_source">
+            <option value="other">{% t "Other" %}</option>
+            <option value="canal">{% t "Canal" %}</option>
+            <option value="well">{% t "Well" %}</option>
+            <option value="borewell">{% t "Bore well" %}</option>
+            <option value="pond">{% t "Pond" %}</option>
+            <option value="river">{% t "River" %}</option>
+            <option value="tank">{% t "Tank" %}</option>
+            <option value="drip">{% t "Drip" %}</option>
+            <option value="sprinkler">{% t "Sprinkler" %}</option>
+          </select>
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="parcel-soil">{% t "Soil type" %}</label>
+          <input class="ks-input" type="text" id="parcel-soil" name="soil_type" maxlength="40"
+                 list="ks-soil-options" placeholder="{% t "e.g. black, alluvial, red" %}">
+          <datalist id="ks-soil-options">
+            <option value="black"></option>
+            <option value="red"></option>
+            <option value="alluvial"></option>
+            <option value="sandy"></option>
+            <option value="clayey"></option>
+            <option value="loamy"></option>
+          </datalist>
+        </div>
+      </div>
+
+      <div class="ks-consent">
+        <label class="ks-check">
+          <input type="checkbox" name="is_primary" value="true">
+          <span>{% t "Use this parcel as the main one for this farm" %}</span>
+        </label>
+      </div>
+
+      <div class="ks-form-actions">
+        <button class="ks-btn ks-btn-block" type="submit">{% t "Save parcel" %}</button>
+        <a class="ks-btn ks-btn-secondary" href="{% url 'web:farm_detail' farm_id %}">{% t "Cancel" %}</a>
+      </div>
+    </form>
+  </div>
+
+  <div class="ks-card ks-mt-4" data-ks-bigha-rules hidden>
+    <div class="ks-card-head">
+      <h2 class="ks-card-title">{% t "How we convert bigha" %}</h2>
+    </div>
+    <p class="ks-muted ks-small">
+      {% t "A bigha is not one fixed size - it changes by region. These are the verified rules this app uses. If your area is in bigha and no rule matches your state, we will ask you to confirm rather than guess." %}
+    </p>
+    <div data-ks-bigha-rules-list></div>
+  </div>
+
+  <div class="ks-card ks-mt-4" data-ks-land-convert hidden>
+    <div class="ks-card-head">
+      <h2 class="ks-card-title">{% t "Convert an area before saving" %}</h2>
+    </div>
+    <p class="ks-muted ks-small">
+      {% t "Not sure how your land size translates? Convert it here; the app uses the same verified factors it will use when you save the parcel." %}
+    </p>
+    <form class="ks-form" data-ks-convert-form novalidate>
+      <div data-ks-error-summary></div>
+      <div class="ks-grid ks-grid-2">
+        <div class="ks-field">
+          <label class="ks-label" for="convert-value">{% t "Area" %}</label>
+          <input class="ks-input" type="number" id="convert-value" name="value"
+                 step="0.001" min="0" inputmode="decimal" data-validate="positive">
+        </div>
+        <div class="ks-field">
+          <label class="ks-label" for="convert-unit">{% t "Unit" %}</label>
+          <select class="ks-select" id="convert-unit" name="unit">
+            <option value="acre">{% t "Acre" %}</option>
+            <option value="hectare">{% t "Hectare" %}</option>
+            <option value="bigha">{% t "Bigha" %}</option>
+            <option value="guntha">{% t "Guntha" %}</option>
+            <option value="kaththa">{% t "Kaththa (local)" %}</option>
+            <option value="cent">{% t "Cent" %}</option>
+            <option value="sqm">{% t "Square meter" %}</option>
+            <option value="sqft">{% t "Square foot" %}</option>
+          </select>
+        </div>
+      </div>
+      <div class="ks-form-actions">
+        <button class="ks-btn ks-btn-secondary" type="submit">{% t "Convert" %}</button>
+      </div>
+    </form>
+    <div data-ks-convert-out aria-live="polite"></div>
+  </div>
+</section>
+{% endblock %}
+
+

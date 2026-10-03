@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load text_tags %}
+
+{% block title %}{% t "Sign in" %} - {% t "FarmGrid AI" %}{% endblock %}
+{% block body_class %}ks-body--auth{% endblock %}
+
+{% block content %}
+<section class="ks-auth">
+  <div class="ks-auth-card">
+    <header class="ks-page-head ks-mb-6">
+      <p class="ks-eyebrow">{% t "FarmGrid AI — your farm, in numbers you can check" %}</p>
+      <h1 class="ks-page-title">{% t "Sign in" %}</h1>
+      <p class="ks-lede ks-muted">
+        {% t "Welcome back. Access your farm data, saved estimates, and recommendations." %}
+      </p>
+    </header>
+
+    <form class="ks-form" data-ks-login-form novalidate>
+      {% csrf_token %}
+      <div data-ks-error-summary></div>
+
+      <div class="ks-field">
+        <label class="ks-label" for="login-username">{% t "Username" %}</label>
+        <input class="ks-input" type="text" id="login-username" name="username"
+               autocomplete="username" required data-validate="required"
+               inputmode="text" autocapitalize="none" spellcheck="false">
+        <p class="ks-help">{% t "The username you chose when you registered." %}</p>
+      </div>
+
+      <div class="ks-field">
+        <label class="ks-label" for="login-password">{% t "Password" %}</label>
+        <div class="ks-input-group">
+          <input class="ks-input" type="password" id="login-password" name="password"
+                 autocomplete="current-password" required data-validate="required">
+          <button class="ks-btn ks-btn-quiet" type="button" data-ks-reveal="login-password"
+                  aria-label="{% t "Show password" %}">{% t "Show" %}</button>
+        </div>
+      </div>
+
+      <div class="ks-form-actions ks-mt-4">
+        <button class="ks-btn ks-btn-block" type="submit">{% t "Sign in" %}</button>
+      </div>
+    </form>
+
+    <p class="ks-auth-alt ks-mt-4">
+      {% t "New to FarmGrid AI?" %} <a href="{% url 'web:register' %}">{% t "Create a free account" %}</a>
+    </p>
+
+    <details class="ks-note ks-mt-4">
+      <summary>{% t "I forgot my password" %}</summary>
+      <p class="ks-tiny">
+        {% t "Password recovery is not yet available in this version. Please contact your local Krishi Vigyan Kendra (KVK) or the FarmGrid support desk listed on your state agriculture department's website." %}
+      </p>
+    </details>
+  </div>
+</section>
+{% endblock %}
+
+

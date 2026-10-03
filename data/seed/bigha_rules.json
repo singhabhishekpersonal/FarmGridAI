@@ -1,0 +1,8 @@
+[
+  {"state": "Uttar Pradesh", "district": "", "label": "Uttar Pradesh bigha (customary)", "sq_meters_per_bigha": 2508.0, "source": "benchmark", "is_verified": false, "notes": "Common value ~27000 sq ft/bigha. Confirm with local patwari/khatuni before use."},
+  {"state": "Bihar", "district": "", "label": "Bihar bigha (customary)", "sq_meters_per_bigha": 2529.0, "source": "benchmark", "is_verified": false, "notes": "Common value ~27225 sq ft/bigha. Confirm locally before use."},
+  {"state": "Uttarakhand", "district": "", "label": "Uttarakhand bigha (customary)", "sq_meters_per_bigha": 2508.0, "source": "benchmark", "is_verified": false, "notes": "Similar to UP customary bigha. Confirm locally before use."},
+  {"state": "Rajasthan", "district": "", "label": "Rajasthan bigha (customary)", "sq_meters_per_bigha": 2529.0, "source": "benchmark", "is_verified": false, "notes": "Regional variations exist (pucca/kachcha bigha). Confirm locally before use."},
+  {"state": "Madhya Pradesh", "district": "", "label": "Madhya Pradesh bigha (customary)", "sq_meters_per_bigha": 2023.0, "source": "benchmark", "is_verified": false, "notes": "Common value ~1/2 acre/bigha in many districts. Confirm locally before use."},
+  {"state": "Assam", "district": "", "label": "Assam bigha (customary)", "sq_meters_per_bigha": 1338.0, "source": "benchmark", "is_verified": false, "notes": "Common value ~14400 sq ft/bigha. Confirm locally before use."}
+]

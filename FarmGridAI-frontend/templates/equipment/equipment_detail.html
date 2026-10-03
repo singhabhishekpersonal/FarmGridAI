@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load text_tags %}
+
+{# equipment.display_name is a farmer's own text, so only the fallback is
+   translated. The assignment must live inside the block: content outside a
+   block is not rendered when a template extends another. #}
+{% block title %}{% t "Equipment" as equipment_label %}{{ equipment.display_name|default:equipment_label }} - {% t "FarmGrid AI" %}{% endblock %}
+
+{% block content %}
+<section class="ks-container">
+  <nav class="ks-breadcrumb" aria-label="{% t "Breadcrumb" %}">
+    <a href="{% url 'web:dashboard' %}">{% t "Dashboard" %}</a>
+    <span aria-hidden="true">/</span>
+    <a href="{% url 'web:equipment_list' farm_id %}">{% t "Equipment" %}</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{{ equipment.display_name|default:"Details" }}</span>
+  </nav>
+
+  <div class="ks-page-head">
+    <div>
+      <h1 class="ks-page-title">
+        {{ equipment.display_name|default:"Equipment details" }}
+      </h1>
+      <p class="ks-small ks-muted">
+        {% t "Operating cost, recorded condition and the photos you have uploaded." %}
+      </p>
+    </div>
+    <div class="ks-page-actions">
+      <a class="ks-btn ks-btn-secondary"
+         href="{% url 'web:equipment_upload' farm_id equipment.id %}">
+        {% t "+ Add photos" %}
+      </a>
+      <button class="ks-btn ks-btn-quiet ks-btn-danger" type="button" data-ks-delete-equip>
+        {% t "Remove equipment" %}
+      </button>
+    </div>
+  </div>
+
+  <div class="ks-alert ks-alert-warn ks-mb-4">
+    <span aria-hidden="true">🔧</span>
+    <div>
+      <strong class="ks-alert-title">{% t "A photo cannot diagnose a machine" %}</strong>
+      {% t "Brand identification and visible-condition bands are estimates from images. Engine condition, hours, service history and real faults need a mechanic's inspection." %}
+    </div>
+  </div>
+
+  <div data-ks-equip-detail>
+    <div class="ks-skeleton ks-skeleton--title"></div>
+    <div class="ks-skeleton ks-skeleton--text"></div>
+  </div>
+
+  <div class="ks-card ks-mt-4">
+    <div class="ks-card-head">
+      <h2 class="ks-card-title">{% t "Operating cost estimate" %}</h2>
+      <span class="ks-badge">{% t "Estimate, not a bill" %}</span>
+    </div>
+    <p class="ks-small ks-muted ks-mb-3">
+      {% t "Fuel, servicing and depreciation per year, based on the hours and area you recorded." %}
+    </p>
+    <div class="ks-form-actions ks-mb-3">
+      <button class="ks-btn" type="button" data-ks-opcost>{% t "Work out my operating cost" %}</button>
+    </div>
+    <div data-ks-opcost-out></div>
+  </div>
+</section>
+{% endblock %}
+
+

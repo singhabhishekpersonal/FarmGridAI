@@ -1,0 +1,1297 @@
+/* ==========================================================================
+   FarmGrid AI - Dashboard stylesheet
+   Hero/stat tiles, land summary, money blocks, comparison bars, projection
+   timelines, recommendation cards, subsidy match cards, ML prediction panels,
+   chat transcript, upload gallery and pagination.
+
+   All charts are pure CSS/inline SVG - no charting library is loaded so the
+   pages stay usable on very slow rural connections.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Hero
+   -------------------------------------------------------------------------- */
+.ks-hero {
+  position: relative;
+  overflow: hidden;
+  padding: var(--ks-sp-6) 0;
+  background:
+    radial-gradient(1200px 400px at 12% -10%, rgba(56, 151, 93, 0.35), transparent 60%),
+    linear-gradient(160deg, var(--ks-green-800), var(--ks-green-900));
+  color: #fff;
+}
+
+.ks-hero h1 { color: #fff; font-size: var(--ks-fs-3xl); }
+.ks-hero p { color: rgba(255, 255, 255, 0.82); max-width: 58ch; }
+
+.ks-hero .ks-eyebrow { color: var(--ks-green-300); }
+
+.ks-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ks-sp-3);
+  margin-top: var(--ks-sp-4);
+}
+
+.ks-hero .ks-btn-secondary {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #fff;
+}
+
+.ks-hero .ks-btn-secondary:hover { background: rgba(255, 255, 255, 0.2); color: #fff; }
+
+/* Public landing hero uses the light surface instead. */
+.ks-hero--light {
+  background: linear-gradient(180deg, var(--ks-green-50), var(--ks-surface-2));
+  color: var(--ks-ink);
+  border-bottom: 1px solid var(--ks-line);
+}
+
+.ks-hero--light h1 { color: var(--ks-green-900); }
+.ks-hero--light p { color: var(--ks-ink-2); }
+
+.ks-hero-stats {
+  display: grid;
+  gap: var(--ks-sp-4);
+  grid-template-columns: repeat(2, 1fr);
+  margin-top: var(--ks-sp-5);
+}
+
+@media (min-width: 780px) {
+  .ks-hero-stats { grid-template-columns: repeat(4, 1fr); }
+}
+
+.ks-hero-stat {
+  padding: var(--ks-sp-3);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--ks-r-md);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.ks-hero--light .ks-hero-stat {
+  border-color: var(--ks-line);
+  background: var(--ks-surface);
+}
+
+.ks-hero-stat dt {
+  font-size: var(--ks-fs-xs);
+  color: rgba(255, 255, 255, 0.75);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 var(--ks-sp-1);
+}
+
+.ks-hero--light .ks-hero-stat dt { color: var(--ks-ink-3); }
+
+.ks-hero-stat dd {
+  margin: 0;
+  font-size: var(--ks-fs-xl);
+  font-weight: 700;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.ks-hero--light .ks-hero-stat dd { color: var(--ks-green-800); }
+
+/* --------------------------------------------------------------------------
+   2. Section headings
+   -------------------------------------------------------------------------- */
+.ks-eyebrow {
+  display: inline-block;
+  font-size: var(--ks-fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ks-green-600);
+}
+
+.ks-section { padding: var(--ks-sp-6) 0; }
+.ks-section--tint { background: var(--ks-surface); border-block: 1px solid var(--ks-line); }
+.ks-section-head { max-width: 60ch; margin-bottom: var(--ks-sp-5); }
+
+/* Feature tile used on the public landing page. */
+.ks-feature {
+  height: 100%;
+  padding: var(--ks-sp-4);
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-r-lg);
+  background: var(--ks-surface);
+  transition: box-shadow var(--ks-transition), transform var(--ks-transition);
+}
+
+.ks-feature:hover { box-shadow: var(--ks-shadow-md); transform: translateY(-2px); }
+
+.ks-feature-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: var(--ks-sp-3);
+  border-radius: var(--ks-r-md);
+  background: var(--ks-green-100);
+  color: var(--ks-green-700);
+  font-size: 1.25rem;
+}
+
+.ks-feature h3 { font-size: var(--ks-fs-base); margin-bottom: var(--ks-sp-2); }
+.ks-feature p { font-size: var(--ks-fs-sm); color: var(--ks-ink-2); margin-bottom: 0; }
+
+/* --------------------------------------------------------------------------
+   3. Stat tiles
+   -------------------------------------------------------------------------- */
+.ks-stat {
+  height: 100%;
+  padding: var(--ks-sp-4);
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-r-lg);
+  background: var(--ks-surface);
+  box-shadow: var(--ks-shadow-sm);
+}
+
+.ks-stat-label {
+  display: flex;
+  gap: var(--ks-sp-2);
+  align-items: center;
+  font-size: var(--ks-fs-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ks-ink-3);
+  margin-bottom: var(--ks-sp-2);
+}
+
+.ks-stat-value {
+  font-size: var(--ks-fs-2xl);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--ks-green-900);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.ks-stat-value--sm { font-size: var(--ks-fs-xl); }
+
+.ks-stat-sub {
+  margin-top: var(--ks-sp-1);
+  font-size: var(--ks-fs-xs);
+  color: var(--ks-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.ks-stat-foot {
+  margin-top: var(--ks-sp-3);
+  padding-top: var(--ks-sp-2);
+  border-top: 1px solid var(--ks-line);
+  font-size: var(--ks-fs-xs);
+  color: var(--ks-ink-3);
+}
+
+/* Compact stat row used inside cards. */
+.ks-stat-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ks-sp-4);
+}
+
+.ks-stat-inline > div { min-width: 96px; }
+.ks-stat-inline dt { font-size: var(--ks-fs-xs); color: var(--ks-ink-3); margin: 0; }
+.ks-stat-inline dd {
+  margin: 0;
+  font-size: var(--ks-fs-lg);
+  font-weight: 700;
+  color: var(--ks-green-800);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------------------
+   4. Money block - the primary currency display
+   -------------------------------------------------------------------------- */
+.ks-money {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--ks-green-900);
+}
+
+.ks-money--ok { color: var(--ks-ok); }
+.ks-money--danger { color: var(--ks-danger); }
+.ks-money--warn { color: var(--ks-warn); }
+.ks-money--muted { color: var(--ks-ink-3); font-weight: 500; }
+
+.ks-money-lg { font-size: var(--ks-fs-2xl); line-height: 1.15; }
+.ks-money-md { font-size: var(--ks-fs-lg); }
+.ks-money-sm { font-size: var(--ks-fs-sm); font-weight: 600; }
+
+.ks-money-range {
+  display: block;
+  font-size: var(--ks-fs-xs);
+  font-weight: 500;
+  color: var(--ks-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Sign prefix for deltas. */
+.ks-delta-up { color: var(--ks-danger); }
+.ks-delta-down { color: var(--ks-ok); }
+.ks-delta-flat { color: var(--ks-ink-3); }
+
+/* --------------------------------------------------------------------------
+   5. Category breakdown bars
+   -------------------------------------------------------------------------- */
+.ks-bars { display: flex; flex-direction: column; gap: var(--ks-sp-3); }
+
+.ks-bar-row { display: flex; flex-direction: column; gap: var(--ks-sp-1); }
+
+.ks-bar-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ks-sp-2);
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: var(--ks-fs-sm);
+}
+
+.ks-bar-name { font-weight: 600; color: var(--ks-ink); }
+.ks-bar-value { color: var(--ks-ink-2); font-variant-numeric: tabular-nums; font-weight: 600; }
+
+.ks-bar-track {
+  height: 10px;
+  border-radius: var(--ks-r-pill);
+  background: var(--ks-surface-3);
+  overflow: hidden;
+}
+
+.ks-bar-fill {
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: var(--ks-green-500);
+  transition: width 400ms ease;
+}
+
+.ks-bar-fill--earth { background: var(--ks-earth-500); }
+.ks-bar-fill--info { background: var(--ks-info); }
+.ks-bar-fill--warn { background: var(--ks-warn); }
+.ks-bar-fill--danger { background: var(--ks-danger); }
+.ks-bar-fill--muted { background: var(--ks-line-strong); }
+
+/* Slimmer variant for inline breakdowns. */
+.ks-bars--slim .ks-bar-track { height: 6px; }
+
+/* --------------------------------------------------------------------------
+   6. Comparison columns (solar vs grid vs diesel, buy vs rent)
+   -------------------------------------------------------------------------- */
+.ks-compare {
+  display: grid;
+  gap: var(--ks-sp-3);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 680px) {
+  .ks-compare--2 { grid-template-columns: repeat(2, 1fr); }
+  .ks-compare--3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+.ks-compare-col {
+  padding: var(--ks-sp-4);
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-r-lg);
+  background: var(--ks-surface);
+  text-align: center;
+}
+
+.ks-compare-col[data-recommended="true"] {
+  border-color: var(--ks-green-600);
+  background: var(--ks-green-50);
+  box-shadow: 0 0 0 1px var(--ks-green-600);
+}
+
+.ks-compare-name {
+  font-size: var(--ks-fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ks-ink-3);
+  margin-bottom: var(--ks-sp-2);
+}
+
+.ks-compare-col[data-recommended="true"] .ks-compare-name { color: var(--ks-green-700); }
+
+.ks-compare-value {
+  font-size: var(--ks-fs-xl);
+  font-weight: 700;
+  color: var(--ks-green-900);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.ks-compare-meta { margin-top: var(--ks-sp-2); font-size: var(--ks-fs-xs); color: var(--ks-ink-3); }
+
+.ks-compare-flag {
+  display: block;
+  margin-top: var(--ks-sp-2);
+  font-size: var(--ks-fs-xs);
+  font-weight: 600;
+  color: var(--ks-green-700);
+}
+
+/* --------------------------------------------------------------------------
+   7. Projection timeline (solar year-by-year)
+   -------------------------------------------------------------------------- */
+.ks-timeline { display: flex; flex-direction: column; gap: 0; }
+
+.ks-timeline-row {
+  display: grid;
+  grid-template-columns: 78px 1fr auto;
+  gap: var(--ks-sp-3);
+  align-items: center;
+  padding: var(--ks-sp-2) 0;
+  border-bottom: 1px solid var(--ks-line);
+  font-size: var(--ks-fs-sm);
+}
+
+.ks-timeline-row:last-child { border-bottom: 0; }
+
+.ks-timeline-year {
+  font-weight: 650;
+  color: var(--ks-ink-2);
+  font-size: var(--ks-fs-xs);
+  white-space: nowrap;
+}
+
+/* Savings bar: positive grows right, negative grows left. */
+.ks-timeline-track {
+  position: relative;
+  height: 14px;
+  border-radius: var(--ks-r-sm);
+  background: var(--ks-surface-3);
+  overflow: hidden;
+}
+
+.ks-timeline-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: var(--ks-green-500);
+}
+
+.ks-timeline-fill--neg { background: var(--ks-danger); }
+.ks-timeline-fill--break { background: var(--ks-earth-500); }
+
+.ks-timeline-value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+  white-space: nowrap;
+  font-size: var(--ks-fs-xs);
+}
+
+.ks-timeline-row[data-breakeven="true"] {
+  background: var(--ks-earth-100);
+  border-radius: var(--ks-r-sm);
+  padding-inline: var(--ks-sp-2);
+  margin-inline: calc(-1 * var(--ks-sp-2));
+}
+
+/* --------------------------------------------------------------------------
+   8. Recommendations
+   -------------------------------------------------------------------------- */
+.ks-rec {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: var(--ks-sp-4);
+  border: 1px solid var(--ks-line);
+  border-left: 4px solid var(--ks-line-strong);
+  border-radius: var(--ks-r-lg);
+  background: var(--ks-surface);
+}
+
+.ks-rec[data-priority="high"] { border-left-color: var(--ks-danger); }
+.ks-rec[data-priority="medium"] { border-left-color: var(--ks-warn); }
+.ks-rec[data-priority="low"] { border-left-color: var(--ks-green-500); }
+
+.ks-rec-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ks-sp-2);
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--ks-sp-2);
+}
+
+.ks-rec h3 { font-size: var(--ks-fs-base); margin: 0; }
+.ks-rec-text { font-size: var(--ks-fs-sm); color: var(--ks-ink-2); flex: 1; }
+
+.ks-rec-benefit {
+  margin: var(--ks-sp-3) 0;
+  padding: var(--ks-sp-2) var(--ks-sp-3);
+  border-radius: var(--ks-r-sm);
+  background: var(--ks-ok-bg);
+}
+
+.ks-rec-nextsteps {
+  margin-top: var(--ks-sp-3);
+  padding-top: var(--ks-sp-3);
+  border-top: 1px dashed var(--ks-line-strong);
+  font-size: var(--ks-fs-xs);
+  color: var(--ks-ink-2);
+}
+
+.ks-rec-nextsteps ol { margin: var(--ks-sp-2) 0 0; padding-left: 1.2rem; }
+.ks-rec-nextsteps li { margin-bottom: var(--ks-sp-1); }
+
+/* Evidence + assumptions block. */
+.ks-evidence { display: grid; gap: var(--ks-sp-3); }
+
+@media (min-width: 720px) {
+  .ks-evidence--2 { grid-template-columns: 1fr 1fr; }
+}
+
+.ks-evidence-col {
+  padding: var(--ks-sp-3);
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-r-md);
+  background: var(--ks-surface-2);
+}
+
+.ks-evidence-title {
+  display: block;
+  margin-bottom: var(--ks-sp-2);
+  font-size: var(--ks-fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ks-ink-3);
+}
+
+.ks-evidence-col ul { margin: 0; padding-left: 1.1rem; font-size: var(--ks-fs-xs); color: var(--ks-ink-2); }
+.ks-evidence-col li { margin-bottom: var(--ks-sp-1); }
+
+.ks-evidence-ref {
+  display: inline-block;
+  margin-top: var(--ks-sp-1);
+  font-family: var(--ks-font-mono);
+  font-size: 0.85em;
+  color: var(--ks-ink-3);
+  overflow-wrap: anywhere;
+}
+
+/* --------------------------------------------------------------------------
+   9. Subsidy match cards
+   -------------------------------------------------------------------------- */
+.ks-scheme {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: var(--ks-sp-4);
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-r-lg);
+  background: var(--ks-surface);
+}
+
+.ks-scheme[data-matched="true"] { border-color: #bfe3cf; background: var(--ks-green-50); }
+
+.ks-scheme-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ks-sp-2);
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--ks-sp-2);
+}
+
+.ks-scheme h3 { font-size: var(--ks-fs-base); margin: 0; }
+
+.ks-scheme-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ks-sp-2);
+  font-size: var(--ks-fs-xs);
+  color: var(--ks-ink-3);
+  margin-bottom: var(--ks-sp-3);
+}
+
+.ks-scheme-benefit {
+  margin-bottom: var(--ks-sp-3);
+  padding: var(--ks-sp-3);
+  border-radius: var(--ks-r-sm);
+  background: var(--ks-surface-3);
+}
+
+.ks-scheme-reasons { list-style: none; padding: 0; margin: 0 0 var(--ks-sp-3); }
+.ks-scheme-reasons li {
+  display: flex;
+  gap: var(--ks-sp-2);
+  padding: var(--ks-sp-1) 0;
+  font-size: var(--ks-fs-xs);
+  color: var(--ks-ink-2);
+}
+
+.ks-scheme-reasons li::before { content: "\2192"; color: var(--ks-green-600); flex: none; }
+
+/* Full scheme record, revealed by the "Scheme details" button. Sits inside the
+   card so the shortlist summary stays readable when it is collapsed. */
+.ks-scheme-detail {
+  margin-top: var(--ks-sp-3);
+  padding-top: var(--ks-sp-3);
+  border-top: 1px dashed var(--ks-line-strong);
+}
+
+.ks-scheme-detail h4 {
+  margin: var(--ks-sp-3) 0 var(--ks-sp-1);
+  font-size: var(--ks-fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ks-ink-3);
+}
+
+.ks-scheme-detail h4:first-child { margin-top: 0; }
+
+/* Document checklist with tick boxes. */
+.ks-checklist { list-style: none; padding: 0; margin: 0; }
+
+.ks-checklist li {
+  display: flex;
+  gap: var(--ks-sp-2);
+  align-items: flex-start;
+  padding: var(--ks-sp-2) 0;
+  border-bottom: 1px dashed var(--ks-line);
+  font-size: var(--ks-fs-sm);
+}
+
+.ks-checklist li:last-child { border-bottom: 0; }
+
+.ks-checklist-box {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  border: 2px solid var(--ks-line-strong);
+  border-radius: 4px;
+  background: var(--ks-surface);
+}
+
+.ks-checklist-box[data-required="false"] { border-style: dashed; }
+.ks-checklist-box[data-required="false"] + .ks-checklist-text::after {
+  content: " (optional)";
+  font-size: var(--ks-fs-xs);
+  color: var(--ks-ink-3);
+}
+
+/* Rule table shown on scheme detail. */
+.ks-rules td { font-family: var(--ks-font-mono); font-size: var(--ks-fs-xs); }
+
+/* --------------------------------------------------------------------------
+   10. ML prediction panel
+   -------------------------------------------------------------------------- */
+.ks-ml-panel {
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-r-lg);
+  background: var(--ks-surface);
+  overflow: hidden;
+}
+
+.ks-ml-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ks-sp-2);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ks-sp-3) var(--ks-sp-4);
+  border-bottom: 1px solid var(--ks-line);
+  background: var(--ks-surface-2);
+}
+
+.ks-ml-title { font-size: var(--ks-fs-sm); font-weight: 700; color: var(--ks-green-800); }
+.ks-ml-body { padding: var(--ks-sp-4); }
+
+.ks-ml-prediction {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ks-sp-4);
+  align-items: center;
+  margin-bottom: var(--ks-sp-4);
+}
+
+.ks-ml-brand {
+  font-size: var(--ks-fs-2xl);
+  font-weight: 700;
+  color: var(--ks-green-900);
+  line-height: 1.1;
+}
+
+.ks-ml-confidence { min-width: 160px; flex: 1; }
+
+/* Horizontal confidence meter. */
+.ks-meter {
+  height: 10px;
+  border-radius: var(--ks-r-pill);
+  background: var(--ks-surface-3);
+  overflow: hidden;
+}
+
+.ks-meter-fill {
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: var(--ks-green-600);
+  transition: width 400ms ease;
+}
+
+.ks-meter-fill--warn { background: var(--ks-warn); }
+.ks-meter-fill--danger { background: var(--ks-danger); }
+
+/* Class probability list (top-k softmax output). */
+.ks-probs { display: flex; flex-direction: column; gap: var(--ks-sp-2); }
+
+.ks-prob-row {
+  display: grid;
+  grid-template-columns: 1fr 58px;
+  gap: var(--ks-sp-3);
+  align-items: center;
+  font-size: var(--ks-fs-sm);
+}
+
+.ks-prob-name { display: flex; align-items: center; gap: var(--ks-sp-2); }
+.ks-prob-value { text-align: right; font-variant-numeric: tabular-nums; font-weight: 650; }
+.ks-prob-row[data-top="true"] .ks-prob-name { font-weight: 700; color: var(--ks-green-800); }
+
+.ks-prob-track {
+  grid-column: 1 / -1;
+  height: 6px;
+  border-radius: var(--ks-r-pill);
+  background: var(--ks-surface-3);
+  overflow: hidden;
+}
+
+.ks-prob-fill {
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: var(--ks-green-300);
+  transition: width 400ms ease;
+}
+
+.ks-prob-row[data-top="true"] .ks-prob-fill { background: var(--ks-green-600); }
+
+/* Model metadata footer - provenance for the audit trail. */
+.ks-ml-foot {
+  padding: var(--ks-sp-3) var(--ks-sp-4);
+  border-top: 1px solid var(--ks-line);
+  background: var(--ks-surface-2);
+  font-size: var(--ks-fs-xs);
+  color: var(--ks-ink-3);
+}
+
+.ks-ml-foot dl { display: grid; gap: 2px; margin: 0; }
+.ks-ml-foot dt { display: none; }
+
+.ks-ml-foot-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ks-sp-2);
+  justify-content: space-between;
+  padding: 2px 0;
+}
+
+.ks-ml-foot-row > span:first-child { color: var(--ks-ink-3); }
+.ks-ml-foot-row > span:last-child { font-family: var(--ks-font-mono); overflow-wrap: anywhere; text-align: right; }
+
+/* Explicit "model not available" fallback notice. */
+.ks-ml-fallback {
+  padding: var(--ks-sp-3);
+  border: 1px dashed var(--ks-line-strong);
+  border-radius: var(--ks-r-md);
+  background: var(--ks-surface-2);
+  font-size: var(--ks-fs-sm);
+  color: var(--ks-ink-2);
+}
+
+/* --------------------------------------------------------------------------
+   11. Expense dashboard
+   -------------------------------------------------------------------------- */
+.ks-expense-total {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ks-sp-4);
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: var(--ks-sp-4);
+  border-radius: var(--ks-r-lg);
+  background: linear-gradient(135deg, var(--ks-green-800), var(--ks-green-700));
+  color: #fff;
+}
+
+.ks-expense-total dt { font-size: var(--ks-fs-xs); color: rgba(255, 255, 255, 0.78); margin: 0 0 var(--ks-sp-1); }
+.ks-expense-total dd {
+  margin: 0;
+  font-size: var(--ks-fs-3xl);
+  font-weight: 700;
+  line-height: 1.1;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.ks-expense-total .ks-expense-range { color: rgba(255, 255, 255, 0.82); font-size: var(--ks-fs-sm); font-weight: 500; }
+
+.ks-expense-total .ks-stat-inline { color: #fff; }
+.ks-expense-total .ks-stat-inline dt { color: rgba(255, 255, 255, 0.78); }
+.ks-expense-total .ks-stat-inline dd { color: #fff; }
+
+/* Expense type cards in the entry form. */
+.ks-type-grid {
+  display: grid;
+  gap: var(--ks-sp-2);
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 720px) {
+  .ks-type-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.ks-type-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ks-sp-1);
+  align-items: center;
+  justify-content: center;
+  padding: var(--ks-sp-3);
+  border: 1px solid var(--ks-line-strong);
+  border-radius: var(--ks-r-md);
+  background: var(--ks-surface);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color var(--ks-transition), background var(--ks-transition);
+}
+
+.ks-type-card:hover { border-color: var(--ks-green-500); }
+
+.ks-type-card[aria-pressed="true"] {
+  border-color: var(--ks-green-600);
+  background: var(--ks-green-50);
+  box-shadow: inset 0 0 0 1px var(--ks-green-600);
+}
+
+.ks-type-icon { font-size: 1.4rem; line-height: 1; }
+.ks-type-name { font-size: var(--ks-fs-sm); font-weight: 650; }
+.ks-type-hint { font-size: var(--ks-fs-xs); color: var(--ks-ink-3); }
+
+/* Anomaly marker in the expense table. */
+.ks-anomaly-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.1rem 0.4rem;
+  border-radius: var(--ks-r-sm);
+  background: var(--ks-warn-bg);
+  color: var(--ks-warn);
+  font-size: var(--ks-fs-xs);
+  font-weight: 700;
+}
+
+.ks-row-flagged { background: var(--ks-warn-bg); }
+.ks-row-flagged:hover { background: #fbeccb; }
+
+/* --------------------------------------------------------------------------
+   12. Equipment
+   -------------------------------------------------------------------------- */
+.ks-equip-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-r-lg);
+  background: var(--ks-surface);
+  overflow: hidden;
+}
+
+.ks-equip-thumb {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  background: var(--ks-surface-3);
+  border-bottom: 1px solid var(--ks-line);
+}
+
+.ks-equip-thumb--placeholder {
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  color: var(--ks-ink-3);
+}
+
+.ks-equip-body { padding: var(--ks-sp-3); flex: 1; display: flex; flex-direction: column; }
+.ks-equip-body h3 { font-size: var(--ks-fs-base); margin: 0 0 var(--ks-sp-1); }
+.ks-equip-foot {
+  margin-top: auto;
+  padding-top: var(--ks-sp-3);
+  display: flex;
+  gap: var(--ks-sp-2);
+}
+
+.ks-equip-specs {
+  display: grid;
+  gap: var(--ks-sp-1) var(--ks-sp-3);
+  grid-template-columns: 1fr 1fr;
+  font-size: var(--ks-fs-xs);
+  color: var(--ks-ink-2);
+}
+
+.ks-equip-specs > div { display: flex; gap: var(--ks-sp-1); }
+.ks-equip-specs dt { color: var(--ks-ink-3); margin: 0; }
+
+/* Catalog row state (verified vs unverified). */
+.ks-catalog-unverified { opacity: 0.75; }
+
+/* --------------------------------------------------------------------------
+   13. Chatbot transcript
+   -------------------------------------------------------------------------- */
+.ks-chat {
+  display: flex;
+  flex-direction: column;
+  height: min(70vh, 640px);
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-r-lg);
+  background: var(--ks-surface);
+  overflow: hidden;
+}
+
+.ks-chat-log {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--ks-sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ks-sp-3);
+  background: var(--ks-surface-2);
+  overscroll-behavior: contain;
+}
+
+.ks-msg { display: flex; gap: var(--ks-sp-2); max-width: 88%; }
+.ks-msg--user { align-self: flex-end; flex-direction: row-reverse; }
+
+.ks-msg-avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--ks-green-100);
+  color: var(--ks-green-800);
+  font-size: var(--ks-fs-xs);
+  font-weight: 700;
+}
+
+.ks-msg--user .ks-msg-avatar { background: var(--ks-earth-100); color: var(--ks-earth-700); }
+
+.ks-msg-bubble {
+  padding: var(--ks-sp-3);
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-r-md);
+  background: var(--ks-surface);
+  font-size: var(--ks-fs-sm);
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.ks-msg--user .ks-msg-bubble {
+  background: var(--ks-green-700);
+  border-color: var(--ks-green-700);
+  color: #fff;
+}
+
+.ks-msg--user .ks-msg-bubble a { color: #fff; text-decoration: underline; }
+
+.ks-msg-sources {
+  margin-top: var(--ks-sp-2);
+  padding-top: var(--ks-sp-2);
+  border-top: 1px dashed var(--ks-line-strong);
+  font-size: var(--ks-fs-xs);
+}
+
+.ks-msg-sources summary { cursor: pointer; color: var(--ks-ink-3); font-weight: 600; }
+.ks-msg-sources ul { list-style: none; padding: var(--ks-sp-2) 0 0; margin: 0; }
+.ks-msg-sources li { padding: 2px 0; color: var(--ks-ink-2); }
+
+.ks-msg-fallback {
+  margin-top: var(--ks-sp-2);
+  padding: var(--ks-sp-2);
+  border-radius: var(--ks-r-sm);
+  background: var(--ks-warn-bg);
+  color: var(--ks-warn);
+  font-size: var(--ks-fs-xs);
+  font-weight: 600;
+}
+
+/* Typing indicator. */
+.ks-typing { display: inline-flex; gap: 4px; padding: var(--ks-sp-2) 0; }
+.ks-typing span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ks-line-strong);
+  animation: ks-bounce 1.2s infinite;
+}
+.ks-typing span:nth-child(2) { animation-delay: 0.15s; }
+.ks-typing span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes ks-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+  30% { transform: translateY(-5px); opacity: 1; }
+}
+
+/* Composer. */
+.ks-chat-input {
+  display: flex;
+  gap: var(--ks-sp-2);
+  padding: var(--ks-sp-3);
+  border-top: 1px solid var(--ks-line);
+  background: var(--ks-surface);
+}
+
+.ks-chat-input .ks-input { flex: 1; min-width: 0; }
+
+.ks-chat-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ks-sp-2);
+  padding: 0 var(--ks-sp-3) var(--ks-sp-3);
+  background: var(--ks-surface);
+}
+
+/* --------------------------------------------------------------------------
+   14. Farm detail
+   -------------------------------------------------------------------------- */
+.ks-farm-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ks-sp-4);
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--ks-sp-4);
+  margin-bottom: var(--ks-sp-5);
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-r-lg);
+  background:
+    linear-gradient(135deg, var(--ks-green-50), var(--ks-surface));
+}
+
+.ks-farm-title { display: flex; flex-wrap: wrap; gap: var(--ks-sp-2); align-items: center; }
+.ks-farm-loc { font-size: var(--ks-fs-sm); color: var(--ks-ink-2); margin: var(--ks-sp-1) 0 0; }
+
+/* Land parcel cards. */
+.ks-parcel {
+  padding: var(--ks-sp-3);
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-r-md);
+  background: var(--ks-surface);
+}
+
+.ks-parcel--primary { border-color: var(--ks-green-500); background: var(--ks-green-50); }
+
+.ks-parcel-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ks-sp-2);
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--ks-sp-2);
+}
+
+.ks-parcel-name { font-weight: 650; color: var(--ks-green-900); }
+.ks-parcel-area { font-size: var(--ks-fs-lg); font-weight: 700; color: var(--ks-green-800); font-variant-numeric: tabular-nums; }
+
+.ks-parcel-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ks-sp-2);
+  font-size: var(--ks-fs-xs);
+  color: var(--ks-ink-3);
+}
+
+/* Bigha rule warning: unit cannot be converted without a regional rule. */
+.ks-bigha-warn {
+  display: flex;
+  gap: var(--ks-sp-2);
+  align-items: flex-start;
+  margin-top: var(--ks-sp-2);
+  padding: var(--ks-sp-2);
+  border-radius: var(--ks-r-sm);
+  background: var(--ks-warn-bg);
+  color: var(--ks-warn);
+  font-size: var(--ks-fs-xs);
+}
+
+/* Farm switcher pill row. */
+.ks-farm-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ks-sp-2);
+  margin-bottom: var(--ks-sp-4);
+}
+
+/* --------------------------------------------------------------------------
+   15. Pagination
+   -------------------------------------------------------------------------- */
+.ks-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ks-sp-2);
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--ks-sp-5);
+}
+
+.ks-pagination button,
+.ks-pagination span {
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0 var(--ks-sp-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ks-line-strong);
+  border-radius: var(--ks-r-sm);
+  background: var(--ks-surface);
+  color: var(--ks-ink-2);
+  font-size: var(--ks-fs-sm);
+  font-weight: 600;
+}
+
+.ks-pagination button { cursor: pointer; }
+.ks-pagination button:hover:not([disabled]) { border-color: var(--ks-green-600); color: var(--ks-green-800); }
+.ks-pagination button[disabled] { opacity: 0.4; cursor: not-allowed; }
+
+.ks-pagination [aria-current="page"] {
+  background: var(--ks-green-700);
+  border-color: var(--ks-green-700);
+  color: #fff;
+}
+
+.ks-pagination-info { font-size: var(--ks-fs-xs); color: var(--ks-ink-3); width: 100%; text-align: center; }
+
+/* --------------------------------------------------------------------------
+   16. Profile completeness meter
+   -------------------------------------------------------------------------- */
+.ks-progress-large {
+  display: flex;
+  gap: var(--ks-sp-4);
+  align-items: center;
+  padding: var(--ks-sp-4);
+  border-radius: var(--ks-r-lg);
+  background: var(--ks-green-50);
+  border: 1px solid var(--ks-green-100);
+}
+
+.ks-progress-ring {
+  --ks-ring-value: 0;
+  position: relative;
+  flex: none;
+  width: 84px;
+  height: 84px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--ks-green-600) calc(var(--ks-ring-value) * 1%),
+    var(--ks-green-100) 0
+  );
+}
+
+.ks-progress-ring::before {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  border-radius: 50%;
+  background: var(--ks-surface);
+}
+
+.ks-progress-ring span {
+  position: relative;
+  font-size: var(--ks-fs-lg);
+  font-weight: 700;
+  color: var(--ks-green-800);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Checklist of what still needs to be filled in. */
+.ks-todo { list-style: none; padding: 0; margin: var(--ks-sp-3) 0 0; }
+
+.ks-todo li {
+  display: flex;
+  gap: var(--ks-sp-2);
+  align-items: center;
+  padding: var(--ks-sp-2) 0;
+  border-bottom: 1px solid var(--ks-line);
+  font-size: var(--ks-fs-sm);
+}
+
+.ks-todo li:last-child { border-bottom: 0; }
+.ks-todo[data-done="true"] { color: var(--ks-ink-3); text-decoration: line-through; }
+
+.ks-todo-box {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--ks-line-strong);
+  border-radius: 4px;
+}
+
+.ks-todo[data-done="true"] .ks-todo-box {
+  background: var(--ks-ok);
+  border-color: var(--ks-ok);
+}
+
+/* --------------------------------------------------------------------------
+   17. System status strip
+   -------------------------------------------------------------------------- */
+.ks-status-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ks-sp-4);
+  padding: var(--ks-sp-3) var(--ks-sp-4);
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-r-md);
+  background: var(--ks-surface-2);
+  font-size: var(--ks-fs-xs);
+}
+
+.ks-status-item { display: flex; gap: var(--ks-sp-2); align-items: center; }
+.ks-status-item dt { color: var(--ks-ink-3); margin: 0; }
+.ks-status-item dd { margin: 0; font-weight: 650; }
+
+/* Health indicator dot. */
+.ks-health-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--ks-ink-3);
+  flex: none;
+}
+
+.ks-health-dot--ok { background: var(--ks-ok); }
+.ks-health-dot--warn { background: var(--ks-warn); }
+.ks-health-dot--down { background: var(--ks-danger); }
+
+/* --------------------------------------------------------------------------
+   18. Compare selector (side-by-side option picker)
+   -------------------------------------------------------------------------- */
+.ks-option-list { display: flex; flex-direction: column; gap: var(--ks-sp-2); }
+
+.ks-option {
+  display: flex;
+  gap: var(--ks-sp-3);
+  align-items: center;
+  padding: var(--ks-sp-3);
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-r-md);
+  background: var(--ks-surface);
+  cursor: pointer;
+}
+
+.ks-option:hover { border-color: var(--ks-green-500); }
+.ks-option[data-selected="true"] { border-color: var(--ks-green-600); background: var(--ks-green-50); }
+.ks-option input { flex: none; }
+.ks-option-body { min-width: 0; flex: 1; }
+.ks-option-title { display: block; font-weight: 650; }
+.ks-option-desc { display: block; font-size: var(--ks-fs-xs); color: var(--ks-ink-3); }
+
+/* --------------------------------------------------------------------------
+   19. Print-friendly analytics
+   -------------------------------------------------------------------------- */
+.ks-print-head {
+  display: none;
+  margin-bottom: var(--ks-sp-4);
+  padding-bottom: var(--ks-sp-2);
+  border-bottom: 2px solid var(--ks-ink);
+  font-size: var(--ks-fs-xs);
+}
+
+@media print {
+  .ks-print-head { display: block; }
+}
+
+
+
+/* ==========================================================================
+   Chat assistant bubble + upload preview grid
+
+   dashboard.js builds "ks-msg ks-msg--assistant" / "ks-msg--user"; the
+   assistant side had no rule, so replies fell back to unstyled layout.
+
+   ========================================================================== */
+
+.ks-msg--assistant {
+  align-self: flex-start;
+  flex-direction: row;
+}
+.ks-msg--assistant .ks-msg-avatar { background: var(--ks-green-100); color: var(--ks-green-800); }
+
+/* Grid of uploaded image previews with a remove control. */
+.ks-upload-gallery {
+  display: grid;
+  gap: var(--ks-sp-3);
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+}
+.ks-upload-gallery:empty { display: none; }
+.ks-upload-gallery figure {
+  position: relative;
+  margin: 0;
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-r-md);
+  overflow: hidden;
+  background: var(--ks-surface-2);
+}
+.ks-upload-gallery img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+.ks-upload-gallery figcaption {
+  padding: var(--ks-sp-2);
+  font-size: var(--ks-fs-xs);
+  color: var(--ks-ink-3);
+}
+
+/* ---------------------------------------------------------------------------
+   Content photographs.
+
+   A figure is a real content block, not decoration: it sits inside the normal
+   flow with an opaque caption, so it can never overlap or hide anything. The
+   image is capped by max-height with object-fit so a tall photo cannot push
+   the rest of the page off screen.
+   --------------------------------------------------------------------------- */
+.ks-figure {
+  margin: 0 0 var(--ks-sp-4, 1rem);
+  border-radius: var(--ks-r-md, 10px);
+  overflow: hidden;
+  background: var(--ks-surface, #fff);
+  border: 1px solid var(--ks-line, #dfe5e0);
+  box-shadow: 0 1px 3px rgba(16, 32, 24, 0.08);
+}
+
+.ks-figure img {
+  display: block;
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+}
+
+.ks-figure--wide img { height: 340px; }
+
+.ks-figcaption {
+  padding: var(--ks-sp-3, 0.75rem) var(--ks-sp-4, 1rem);
+  font-size: var(--ks-fs-sm, 0.9rem);
+  line-height: 1.5;
+  color: var(--ks-ink-2, #3c4a41);
+  background: var(--ks-surface, #fff);
+}
+
+@media (max-width: 720px) {
+  .ks-figure img,
+  .ks-figure--wide img { height: 190px; }
+}

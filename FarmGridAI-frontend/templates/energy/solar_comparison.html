@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load text_tags %}
+{% load static %}
+
+{% block title %}{% t "Solar vs grid vs diesel" %} - {% t "FarmGrid AI" %}{% endblock %}
+
+{% block content %}
+<section class="ks-container"{% if farm_state %} data-ks-farm-state="{{ farm_state }}"{% endif %}>
+  <nav class="ks-breadcrumb" aria-label="{% t "Breadcrumb" %}">
+    <a href="{% url 'web:dashboard' %}">{% t "Dashboard" %}</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{% t "Solar" %}</span>
+  </nav>
+
+  <header class="ks-page-head">
+    <p class="ks-eyebrow">{% t "FarmGrid AI — your farm, in numbers you can check" %}</p>
+    <h1 class="ks-page-title">{% t "Solar, grid or diesel?" %}</h1>
+    <p class="ks-lede ks-muted">
+      {% t "A side-by-side over 5, 10 and 15 years, using your recorded usage where available. Payback figures are estimates and depend on subsidy, tariffs and sun hours at your site." %}
+    </p>
+  </header>
+
+  <div class="ks-alert ks-alert-info ks-mb-4">
+    <span aria-hidden="true">💡</span>
+    <div>
+      <strong class="ks-alert-title">{% t "The numbers depend on what we know" %}</strong>
+      {% t "Add your pump hours, electricity units and diesel litres on the" %}
+      <a href="{% url 'web:expense_entry' farm_id %}">{% t "expense page" %}</a> {% t "to narrow this comparison substantially." %}
+    </div>
+  </div>
+
+  <div class="ks-mb-4" data-ks-solar-config></div>
+
+  <figure class="ks-figure ks-figure--wide">
+    <img
+      src="{% static 'images/field/solar-2.jpg' %}"
+      alt="{% t "A solar installation serving an irrigated field." %}"
+      width="1200" height="675" loading="lazy" decoding="async">
+    <figcaption class="ks-figcaption">
+      {% t "Solar costs are benchmark estimates. Confirm the quotation, panel warranty and subsidy eligibility with an empanelled supplier before you buy." %}
+    </figcaption>
+  </figure>
+
+  <div data-ks-solar>
+    <div class="ks-card">
+      <div class="ks-card-head">
+        <h2 class="ks-card-title">{% t "Working out your comparison" %}</h2>
+      </div>
+      <div class="ks-skeleton ks-skeleton--title"></div>
+      <div class="ks-skeleton ks-skeleton--text"></div>
+      <div class="ks-skeleton ks-skeleton--text"></div>
+    </div>
+  </div>
+
+  <div class="ks-card ks-mt-4">
+    <h2 class="ks-card-title">{% t "Before you decide" %}</h2>
+    <ul class="ks-checklist">
+      <li>{% t "Get a written quotation from at least two solar pump suppliers." %}</li>
+      <li>{% t "Check whether the supplier is a registered dealer and what warranty applies to the panel and pump." %}</li>
+      <li>{% t "Confirm the subsidy amount and whether it is credited to the supplier or refunded to you — this changes the effective price." %}</li>
+      <li>{% t "Ask what happens in low-sun or cloudy weeks. A grid connection or backup may still be needed." %}</li>
+      <li>{% t "Ask the DISCOM about solar feeder and slot charges; some states change these regularly." %}</li>
+    </ul>
+  </div>
+
+  <div class="ks-card ks-mt-4" data-ks-rates hidden>
+    <div class="ks-card-head">
+      <h2 class="ks-card-title">{% t "Where these rates come from" %}</h2>
+    </div>
+    <p class="ks-muted ks-small">
+      {% t "The comparison above uses benchmark electricity tariffs and diesel prices. We only publish rates that have been checked against an official source, so some states may show nothing until their rates are verified." %}
+    </p>
+    <div data-ks-rates-body></div>
+  </div>
+</section>
+{% endblock %}
+

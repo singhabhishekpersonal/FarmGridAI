@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load text_tags %}
+
+{% block title %}{% t "Add a crop" %} - {% t "FarmGrid AI" %}{% endblock %}
+
+{% block content %}
+<section class="ks-container ks-container--narrow">
+  <nav class="ks-breadcrumb" aria-label="{% t "Breadcrumb" %}">
+    <a href="{% url 'web:dashboard' %}">{% t "Dashboard" %}</a>
+    <span aria-hidden="true">/</span>
+    <a href="{% url 'web:farm_detail' farm_id %}">{% t "Farm" %}</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{% t "Add a crop" %}</span>
+  </nav>
+
+  <h1 class="ks-page-title">{% t "Add a crop" %}</h1>
+  <p class="ks-small ks-muted">
+    {% t "Recording which crop goes on which piece of land is what lets us estimate seed, fertiliser and labour costs. You can add the same crop for different seasons." %}
+  </p>
+
+  <div class="ks-alert ks-alert-info ks-mb-4">
+    <span aria-hidden="true">{% t "ℹ" %}</span>
+    <div>
+      <strong class="ks-alert-title">{% t "Areas are converted for you" %}</strong>
+      {% t "Give the area in whichever unit you normally use. We convert to hectares and acres internally, so the totals stay consistent." %}
+    </div>
+  </div>
+
+  <div class="ks-card">
+    <form class="ks-form" data-ks-crop-form novalidate>
+      {% csrf_token %}
+      <div data-ks-error-summary></div>
+
+      <div class="ks-field">
+        <label class="ks-label" for="crop-search">{% t "Find your crop" %}</label>
+        <input class="ks-input" type="search" id="crop-search" data-ks-crop-search
+               placeholder="{% t "Type to search, e.g. wheat" %}" autocomplete="off"
+               role="combobox" aria-expanded="false" aria-controls="crop-options">
+        {# Options come from GET /crops - the catalogue is server-owned. #}
+        <div class="ks-field">
+          <label class="ks-label" for="crop-pick">{% t "Crop" %} <span class="ks-req">*</span></label>
+          <select class="ks-select" id="crop-pick" name="crop" required data-validate="required"
+                  data-ks-crop-pick>
+            <option value="">{% t "Loading the crop list…" %}</option>
+          </select>
+          <p class="ks-help" data-ks-crop-count></p>
+        </div>
+      </div>
+
+      <div class="ks-grid ks-grid-2">
+        <div class="ks-field">
+          <label class="ks-label" for="crop-season">{% t "Season" %} <span class="ks-req">*</span></label>
+          <select class="ks-select" id="crop-season" name="season" required data-validate="required">
+            <option value="kharif">{% t "Kharif (monsoon)" %}</option>
+            <option value="rabi">{% t "Rabi (winter)" %}</option>
+            <option value="zaid">{% t "Zaid (summer)" %}</option>
+            <option value="annual">{% t "Annual / year-round" %}</option>
+          </select>
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="crop-year">{% t "Year" %} <span class="ks-req">*</span></label>
+          <input class="ks-input" type="number" id="crop-year" name="year"
+                 inputmode="numeric" min="2000" max="2100" required
+                 data-validate="required" value="{% now 'Y' %}">
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="crop-area">{% t "Area" %} <span class="ks-req">*</span></label>
+          <input class="ks-input" type="number" id="crop-area" name="area"
+                 step="0.001" min="0" inputmode="decimal" required
+                 data-validate="required,positive" placeholder="{% t "e.g. 2.5" %}">
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="crop-unit">{% t "Unit" %}</label>
+          <select class="ks-select" id="crop-unit" name="area_unit">
+            <option value="acre">{% t "Acre" %}</option>
+            <option value="hectare">{% t "Hectare" %}</option>
+            <option value="bigha">{% t "Bigha" %}</option>
+          </select>
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="crop-yield">{% t "Expected yield (quintal per acre)" %}</label>
+          <input class="ks-input" type="number" id="crop-yield" name="expected_yield_qtl_per_acre"
+                 step="0.01" min="0" inputmode="decimal" data-validate="nonnegative">
+          <p class="ks-help">{% t "Leave blank if you do not know. We will use a range instead." %}</p>
+        </div>
+      </div>
+
+      <div class="ks-consent">
+        <label class="ks-check">
+          <input type="checkbox" name="is_planned" value="true" checked>
+          <span>{% t "This is a plan, not something already sown" %}</span>
+        </label>
+      </div>
+
+      <div class="ks-form-actions">
+        <button class="ks-btn ks-btn-block" type="submit">{% t "Save crop" %}</button>
+        <a class="ks-btn ks-btn-secondary ks-btn-block" href="{% url 'web:farm_detail' farm_id %}">
+          {% t "Cancel" %}
+        </a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}
+
+

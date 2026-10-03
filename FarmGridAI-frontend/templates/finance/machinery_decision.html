@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+{% load text_tags %}
+
+{% block title %}{% t "Buy, rent, repair or replace" %} - {% t "FarmGrid AI" %}{% endblock %}
+
+{% block content %}
+<section class="ks-container">
+  <nav class="ks-breadcrumb" aria-label="{% t "Breadcrumb" %}">
+    <a href="{% url 'web:dashboard' %}">{% t "Dashboard" %}</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{% t "Decisions" %}</span>
+  </nav>
+
+  <h1 class="ks-page-title">{% t "Buy, rent, repair or replace?" %}</h1>
+  <p class="ks-small ks-muted">
+    {% t "Work out which is cheapest for your land size, hours of use and cash on hand. All four calculators show a range, not a single answer, and state the assumptions behind them." %}
+  </p>
+
+  <div class="ks-alert ks-alert-info ks-mb-4">
+    <span aria-hidden="true">📌</span>
+    <div>
+      <strong class="ks-alert-title">{% t "Estimates, not quotes" %}</strong>
+      {% t "These calculators use typical rates. Your actual dealer price, finance cost and resale value will differ. Treat the break-even figures as a guide for negotiation." %}
+    </div>
+  </div>
+
+  <div class="ks-tabs" role="tablist" data-ks-tabs>
+    <button class="ks-tab" role="tab" id="tab-buyrent" aria-controls="panel-buyrent"
+            aria-selected="true" data-tab="buyrent">{% t "Buy vs rent" %}</button>
+    <button class="ks-tab" role="tab" id="tab-repair" aria-controls="panel-repair"
+            aria-selected="false" data-tab="repair">{% t "Repair vs replace" %}</button>
+    <button class="ks-tab" role="tab" id="tab-afford" aria-controls="panel-afford"
+            aria-selected="false" data-tab="afford">{% t "What I can afford" %}</button>
+    <button class="ks-tab" role="tab" id="tab-machinery" aria-controls="panel-machinery"
+            aria-selected="false" data-tab="machinery">{% t "Shared machinery" %}</button>
+  </div>
+
+  <div class="ks-tabpanel" id="panel-buyrent" role="tabpanel" aria-labelledby="tab-buyrent">
+    <div class="ks-card">
+      <div class="ks-card-head">
+        <h2 class="ks-card-title">{% t "Buy or rent a machine?" %}</h2>
+      </div>
+      <p class="ks-small ks-muted">
+        {% t "Renting wins when your usage hours are low. Buying wins when you will use it often enough to absorb the fixed cost." %}
+      </p>
+      <form class="ks-form" id="form-buy-rent" data-ks-calc-form="buy-vs-rent" novalidate>
+        <div data-ks-error-summary></div>
+        <div class="ks-grid ks-grid-2">
+          <div class="ks-field">
+            <label class="ks-label" for="br-purchase">{% t "Purchase price (Rs)" %} <span class="ks-req">*</span></label>
+            <input class="ks-input" type="number" id="br-purchase" name="purchase_price_inr" required
+                   step="1" min="1" inputmode="numeric" data-validate="positive">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="br-hours">{% t "Hours of use per year" %} <span class="ks-req">*</span></label>
+            <input class="ks-input" type="number" id="br-hours" name="usage_hours_per_year" required
+                   step="1" min="1" inputmode="numeric" data-validate="positive">
+            <p class="ks-help">{% t "Count both your own work and hired-out use." %}</p>
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="br-rental">{% t "Rental rate per hour (Rs)" %} <span class="ks-req">*</span></label>
+            <input class="ks-input" type="number" id="br-rental" name="rental_rate_per_hour_inr" required
+                   step="1" min="1" inputmode="numeric" data-validate="positive">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="br-subsidy">{% t "Subsidy you expect (Rs)" %}</label>
+            <input class="ks-input" type="number" id="br-subsidy" name="subsidy_inr"
+                   step="1" min="0" inputmode="numeric">
+            <p class="ks-help">{% t "Leave blank if you have not applied. Verify it with the scheme office." %}</p>
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="br-loan-years">{% t "Loan tenure (years)" %}</label>
+            <input class="ks-input" type="number" id="br-loan-years" name="loan_years"
+                   value="5" step="1" min="0" inputmode="numeric">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="br-interest">{% t "Loan interest (% per year)" %}</label>
+            <input class="ks-input" type="number" id="br-interest" name="interest_rate_pct"
+                   value="12" step="0.01" min="0" inputmode="decimal">
+          </div>
+        </div>
+        <div class="ks-form-actions">
+          <button class="ks-btn ks-btn-block" type="submit">{% t "Compare buying and renting" %}</button>
+        </div>
+      </form>
+      <div class="ks-mt-4" data-ks-out-buy-rent></div>
+    </div>
+  </div>
+
+  <div class="ks-tabpanel" id="panel-repair" role="tabpanel" aria-labelledby="tab-repair" hidden>
+    <div class="ks-card">
+      <div class="ks-card-head">
+        <h2 class="ks-card-title">{% t "Repair or replace?" %}</h2>
+      </div>
+      <p class="ks-small ks-muted">
+        {% t "Based on the condition and age you record. A mechanic's inspection is always more reliable than any estimate — repair figures here are a budgeting aid." %}
+      </p>
+      <form class="ks-form" id="form-repair-replace" data-ks-calc-form="repair-vs-replace" novalidate>
+        <div data-ks-error-summary></div>
+        <div class="ks-grid ks-grid-2">
+          <div class="ks-field">
+            <label class="ks-label" for="rr-repair">{% t "Expected repair cost (Rs)" %} <span class="ks-req">*</span></label>
+            <input class="ks-input" type="number" id="rr-repair" name="estimated_repair_cost_inr" required
+                   step="1" min="0" inputmode="numeric" data-validate="nonnegative">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="rr-replacement">{% t "Price of a new machine (Rs)" %} <span class="ks-req">*</span></label>
+            <input class="ks-input" type="number" id="rr-replacement" name="replacement_price_inr" required
+                   step="1" min="1" inputmode="numeric" data-validate="positive">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="rr-residual">{% t "Resale value of the old machine (Rs)" %}</label>
+            <input class="ks-input" type="number" id="rr-residual" name="residual_value_inr"
+                   step="1" min="0" inputmode="numeric">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="rr-hours">{% t "Hours of use per year" %}</label>
+            <input class="ks-input" type="number" id="rr-hours" name="annual_usage_hours"
+                   value="700" step="1" min="0" inputmode="numeric">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="rr-frequency">{% t "Repairs needed per year" %}</label>
+            <input class="ks-input" type="number" id="rr-frequency" name="repair_frequency_per_year"
+                   value="1" step="0.1" min="0" inputmode="decimal">
+          </div>
+        </div>
+        <div class="ks-form-actions">
+          <button class="ks-btn ks-btn-block" type="submit">{% t "Compare repair and replacement" %}</button>
+        </div>
+      </form>
+      <div class="ks-mt-4" data-ks-out-repair-replace></div>
+    </div>
+  </div>
+
+  <div class="ks-tabpanel" id="panel-afford" role="tabpanel" aria-labelledby="tab-afford" hidden>
+    <div class="ks-card">
+      <div class="ks-card-head">
+        <h2 class="ks-card-title">{% t "What can I afford right now?" %}</h2>
+      </div>
+      <p class="ks-small ks-muted">
+        {% t "An estimate of a realistic budget from your recorded income and costs, including a safety margin. Banks and lenders apply their own rules on top of this." %}
+      </p>
+      <div class="ks-card ks-mb-4" data-ks-income-profile></div>
+      <form class="ks-form" id="form-affordability" data-ks-calc-form="affordability" novalidate>
+        <div data-ks-error-summary></div>
+        <div class="ks-grid ks-grid-2">
+          <div class="ks-field">
+            <label class="ks-label" for="af-income">{% t "Annual farm income (Rs)" %} <span class="ks-req">*</span></label>
+            <input class="ks-input" type="number" id="af-income" name="annual_income_inr" required
+                   step="1" min="1" inputmode="numeric" data-validate="positive">
+            <p class="ks-help">{% t "Filled in from your income record above when you have one." %}</p>
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="af-emi">{% t "Proposed EMI per month (Rs)" %} <span class="ks-req">*</span></label>
+            <input class="ks-input" type="number" id="af-emi" name="proposed_emi_inr" required
+                   step="1" min="0" inputmode="numeric" data-validate="nonnegative">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="af-existing">{% t "Other EMI you already pay (Rs/month)" %}</label>
+            <input class="ks-input" type="number" id="af-existing" name="existing_emi_total_inr"
+                   step="1" min="0" inputmode="numeric">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="af-safe">{% t "Comfortable debt load (% of income)" %}</label>
+            <input class="ks-input" type="number" id="af-safe" name="safe_burden_pct"
+                   value="25" step="1" min="1" inputmode="decimal">
+            <p class="ks-help">{% t "A common lender guideline is 25-30%." %}</p>
+          </div>
+        </div>
+        <div class="ks-form-actions">
+          <button class="ks-btn ks-btn-block" type="submit">{% t "Check affordability" %}</button>
+        </div>
+      </form>
+      <div class="ks-mt-4" data-ks-out-affordability></div>
+    </div>
+  </div>
+
+  <div class="ks-tabpanel" id="panel-machinery" role="tabpanel" aria-labelledby="tab-machinery" hidden>
+    <div class="ks-card">
+      <div class="ks-card-head">
+        <h2 class="ks-card-title">{% t "Should we share machinery?" %}</h2>
+      </div>
+      <p class="ks-small ks-muted">
+        {% t "Custom hire centres and farmer groups can cut fixed costs, but availability at the right moment matters more than the headline rate." %}
+      </p>
+      <form class="ks-form" id="form-machinery" data-ks-calc-form="machinery-decision" novalidate>
+        <div data-ks-error-summary></div>
+        <div class="ks-grid ks-grid-2">
+          <div class="ks-field">
+            <label class="ks-label" for="mc-hours">{% t "Hours of use per year" %}</label>
+            <input class="ks-input" type="number" id="mc-hours" name="usage_hours_per_year"
+                   step="1" min="0" inputmode="numeric">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="mc-price">{% t "Purchase price of a new machine (Rs)" %}</label>
+            <input class="ks-input" type="number" id="mc-price" name="purchase_price"
+                   step="1" min="0" inputmode="numeric">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="mc-repair">{% t "Repair spend per year (Rs)" %}</label>
+            <input class="ks-input" type="number" id="mc-repair" name="annual_repair_spend"
+                   value="10000" step="1" min="0" inputmode="numeric">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="mc-residual">{% t "Resale value after a few years (Rs)" %}</label>
+            <input class="ks-input" type="number" id="mc-residual" name="residual_value"
+                   value="100000" step="1" min="0" inputmode="numeric">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="mc-emi">{% t "Proposed EMI per month (Rs)" %}</label>
+            <input class="ks-input" type="number" id="mc-emi" name="proposed_emi"
+                   step="1" min="0" inputmode="numeric">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="mc-income">{% t "Annual farm income (Rs)" %}</label>
+            <input class="ks-input" type="number" id="mc-income" name="annual_income"
+                   step="1" min="0" inputmode="numeric">
+            <p class="ks-help">{% t "Filled in from your income record on the affordability tab." %}</p>
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="mc-existing">{% t "Other EMI you already pay (Rs/month)" %}</label>
+            <input class="ks-input" type="number" id="mc-existing" name="existing_emi"
+                   step="1" min="0" inputmode="numeric">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="mc-subsidy">{% t "Subsidy you expect (Rs)" %}</label>
+            <input class="ks-input" type="number" id="mc-subsidy" name="subsidy"
+                   step="1" min="0" inputmode="numeric">
+          </div>
+        </div>
+        <div class="ks-consent">
+          <label class="ks-check">
+            <input type="checkbox" name="rental_available" value="true" checked>
+            <span>{% t "A hire centre or neighbour is available when I need a machine" %}</span>
+          </label>
+        </div>
+        <div class="ks-form-actions">
+          <button class="ks-btn ks-btn-block" type="submit">{% t "Get a recommendation" %}</button>
+        </div>
+      </form>
+      <div class="ks-mt-4" data-ks-out-machinery></div>
+    </div>
+  </div>
+
+  <div class="ks-card ks-mt-4">
+    <div class="ks-card-head">
+      <h2 class="ks-card-title">{% t "Decisions you have run before" %}</h2>
+    </div>
+    <div data-ks-finance>
+      <div class="ks-skeleton ks-skeleton--title"></div>
+      <div class="ks-skeleton ks-skeleton--text"></div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+

@@ -1,0 +1,235 @@
+{
+  "model_architecture": "mobilenet_v3_large",
+  "model_version": "v1",
+  "model_family": "top6",
+  "training_date_utc": "2026-09-25T04:22:30.878739+00:00",
+  "git_revision": "not-a-git-repo",
+  "pytorch_version": "2.11.0+cu128",
+  "torchvision_version": "0.26.0+cu128",
+  "python_version": "3.13.0",
+  "device": "cuda",
+  "class_labels": [
+    "Farmtrac",
+    "John Deere",
+    "Mahindra",
+    "New Holland",
+    "Powertrac",
+    "Sonalika",
+    "other"
+  ],
+  "image_counts": {
+    "train": 1444,
+    "val": 180,
+    "test": 179,
+    "per_class": {
+      "Farmtrac": {
+        "train": 66,
+        "val": 8,
+        "test": 8,
+        "total": 82
+      },
+      "John Deere": {
+        "train": 59,
+        "val": 7,
+        "test": 7,
+        "total": 73
+      },
+      "Mahindra": {
+        "train": 124,
+        "val": 15,
+        "test": 15,
+        "total": 154
+      },
+      "New Holland": {
+        "train": 57,
+        "val": 7,
+        "test": 7,
+        "total": 71
+      },
+      "Powertrac": {
+        "train": 54,
+        "val": 7,
+        "test": 6,
+        "total": 67
+      },
+      "Sonalika": {
+        "train": 118,
+        "val": 15,
+        "test": 15,
+        "total": 148
+      },
+      "other": {
+        "train": 966,
+        "val": 121,
+        "test": 121,
+        "total": 1208
+      }
+    }
+  },
+  "preprocessing": {
+    "resize": 256,
+    "center_crop": 224,
+    "normalize": [
+      0.485,
+      0.456,
+      0.406
+    ],
+    "eval_augmentation": "none"
+  },
+  "augmentation": {
+    "random_resized_crop": {
+      "size": 224,
+      "scale": [
+        0.6,
+        1.0
+      ],
+      "ratio": [
+        0.75,
+        1.333
+      ]
+    },
+    "horizontal_flip": 0.5,
+    "rotation": 10,
+    "color_jitter": [
+      0.25,
+      0.25,
+      0.25,
+      0.05
+    ],
+    "random_affine_translate": 0.05,
+    "training_only": true
+  },
+  "optimizer": {
+    "name": "AdamW",
+    "learning_rate": 0.0003,
+    "weight_decay": 0.0001
+  },
+  "learning_rate": 0.0003,
+  "batch_size": 16,
+  "num_epochs_requested": 25,
+  "epochs_run": 19,
+  "early_stopping": {
+    "patience": 5,
+    "metric": "val_macro_f1",
+    "best_epoch": 14
+  },
+  "class_imbalance_method": "weighted_cross_entropy",
+  "seed": 42,
+  "dataset_manifest_sha256": "f0001afae866dd8c22de9b1d2db77285c0af72a3ef1de19ccb1ebd753a2534a3",
+  "artifact_sha256": "741b94b839a6c11b07be9300a48d4ae975edb234b9fbee3c8b3f0887933d79d3",
+  "validation_macro_f1": 0.74584,
+  "test_macro_f1": 0.7316,
+  "activation_threshold_macro_f1": 0.7,
+  "activation_gate_passed": true,
+  "unknown_threshold": 0.55,
+  "limitations": [
+    "Predicts tractor brand only; never exact model, year, fuel mileage, engine health, repair history.",
+    "Trained on ~1.8k locally prepared tractor web images; class imbalance exists (other >> named brands).",
+    "A low max-softmax (< unknown_threshold) maps to the unknown class.",
+    "Every prediction requires farmer confirmation."
+  ],
+  "required_farmer_confirmation_policy": "true",
+  "data_source_note": "Existing locally prepared TractorGyan-derived dataset. No new sites scraped during dataset preparation.",
+  "test_metrics_reported": {
+    "test_accuracy": 0.81006,
+    "test_balanced_accuracy": 0.69348,
+    "test_macro_precision": 0.83628,
+    "test_macro_recall": 0.69348,
+    "test_macro_f1": 0.7316,
+    "test_weighted_f1": 0.80017,
+    "test_top3_accuracy": 0.98324,
+    "test_samples": 179,
+    "per_class": {
+      "Farmtrac": {
+        "precision": 1.0,
+        "recall": 0.75,
+        "f1": 0.8571,
+        "support": 8
+      },
+      "John Deere": {
+        "precision": 1.0,
+        "recall": 0.8571,
+        "f1": 0.9231,
+        "support": 7
+      },
+      "Mahindra": {
+        "precision": 0.5,
+        "recall": 0.6667,
+        "f1": 0.5714,
+        "support": 15
+      },
+      "New Holland": {
+        "precision": 1.0,
+        "recall": 0.5714,
+        "f1": 0.7273,
+        "support": 7
+      },
+      "Powertrac": {
+        "precision": 0.7143,
+        "recall": 0.8333,
+        "f1": 0.7692,
+        "support": 6
+      },
+      "Sonalika": {
+        "precision": 0.8,
+        "recall": 0.2667,
+        "f1": 0.4,
+        "support": 15
+      },
+      "other": {
+        "precision": 0.8397,
+        "recall": 0.9091,
+        "f1": 0.873,
+        "support": 121
+      }
+    },
+    "confidence_calibration": [
+      {
+        "bin": "0.4-0.5",
+        "count": 1,
+        "mean_confidence": 0.4446,
+        "accuracy": 0.0
+      },
+      {
+        "bin": "0.5-0.6",
+        "count": 6,
+        "mean_confidence": 0.5547,
+        "accuracy": 0.3333
+      },
+      {
+        "bin": "0.6-0.7",
+        "count": 5,
+        "mean_confidence": 0.6266,
+        "accuracy": 0.4
+      },
+      {
+        "bin": "0.7-0.8",
+        "count": 14,
+        "mean_confidence": 0.7547,
+        "accuracy": 0.5714
+      },
+      {
+        "bin": "0.8-0.9",
+        "count": 16,
+        "mean_confidence": 0.8711,
+        "accuracy": 0.8125
+      },
+      {
+        "bin": "0.9-1.0",
+        "count": 132,
+        "mean_confidence": 0.9861,
+        "accuracy": 0.8712
+      }
+    ],
+    "best_epoch": 14,
+    "val_macro_f1_at_best": 0.74584,
+    "actual_epochs_run": 19
+  },
+  "trained_output_files": {
+    "weights": "equipment_classifier_mobilenetv3_top6_v1.pt",
+    "labels": "equipment_classifier_mobilenetv3_top6_v1_metadata.json",
+    "metrics": "equipment_classifier_mobilenetv3_top6_v1_metrics.json",
+    "confusion_matrix": "equipment_classifier_mobilenetv3_top6_v1_confusion_matrix.json.csv",
+    "confusion_matrix_normalized": "equipment_classifier_mobilenetv3_top6_v1_confusion_matrix_normalized.json.csv"
+  }
+}

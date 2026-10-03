@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load text_tags %}
+
+{% block title %}{% t "Your profile" %} - {% t "FarmGrid AI" %}{% endblock %}
+
+{% block content %}
+<section class="ks-container">
+  <nav class="ks-breadcrumb" aria-label="{% t "Breadcrumb" %}">
+    <a href="{% url 'web:dashboard' %}">{% t "Dashboard" %}</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{% t "Profile" %}</span>
+  </nav>
+
+  <header class="ks-page-head ks-mb-6">
+    <p class="ks-eyebrow">{% t "FarmGrid AI — your farm, in numbers you can check" %}</p>
+    <h1 class="ks-page-title">{% t "Your profile" %}</h1>
+    <p class="ks-lede ks-muted">
+      {% t "The more you fill in, the narrower the range on your estimates. Everything here is editable and only visible to you." %}
+    </p>
+  </header>
+
+  {% include "partials/privacy_notice.html" %}
+
+  <div data-ks-profile></div>
+</section>
+{% endblock %}
+
+

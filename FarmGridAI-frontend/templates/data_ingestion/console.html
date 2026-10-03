@@ -1,0 +1,381 @@
+{% extends "base.html" %}
+{% load text_tags %}
+
+{% block title %}{% t "Data ingestion console" %} - {% t "FarmGrid AI" %}{% endblock %}
+
+{% block content %}
+<section class="ks-container">
+  <nav class="ks-breadcrumb" aria-label="{% t "Breadcrumb" %}">
+    <a href="{% url 'web:dashboard' %}">{% t "Dashboard" %}</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{% t "Data ingestion" %}</span>
+  </nav>
+
+  <h1 class="ks-page-title">{% t "Data ingestion console" %}</h1>
+  <p class="ks-small ks-muted">
+    {% t "Staff-only. Register and review the external data sources that feed the benchmark tables, then check every extracted record before it is published." %}
+  </p>
+
+  <div class="ks-alert ks-alert-warn ks-mb-4">
+    <span aria-hidden="true">⚠</span>
+    <div>
+      <strong class="ks-alert-title">{% t "Publishing affects every farmer's numbers" %}</strong>
+      {% t "A record published here becomes visible in tariffs, bigha rules, machine catalogues and subsidy results. Only publish what you have checked against the original source." %}
+    </div>
+  </div>
+
+  <div class="ks-tabs" role="tablist" data-ks-tabs>
+    <button class="ks-tab" role="tab" id="tab-sources" aria-controls="panel-sources"
+            aria-selected="true" data-tab="sources">{% t "Sources" %}</button>
+    <button class="ks-tab" role="tab" id="tab-queue" aria-controls="panel-queue"
+            aria-selected="false" data-tab="queue">{% t "Review queue" %}</button>
+    <button class="ks-tab" role="tab" id="tab-runs" aria-controls="panel-runs"
+            aria-selected="false" data-tab="runs">{% t "Runs" %}</button>
+    <button class="ks-tab" role="tab" id="tab-artifacts" aria-controls="panel-artifacts"
+            aria-selected="false" data-tab="artifacts">{% t "Artifacts" %}</button>
+    <button class="ks-tab" role="tab" id="tab-records" aria-controls="panel-records"
+            aria-selected="false" data-tab="records">{% t "Records" %}</button>
+    <button class="ks-tab" role="tab" id="tab-reports" aria-controls="panel-reports"
+            aria-selected="false" data-tab="reports">{% t "Reports" %}</button>
+  </div>
+
+  {# ------------------------------------------------------------------ #}
+  {# Sources: register, edit, compliance-check, collect, manual import  #}
+  {# ------------------------------------------------------------------ #}
+  <div class="ks-tabpanel" id="panel-sources" role="tabpanel" aria-labelledby="tab-sources">
+    <div class="ks-card ks-mb-4">
+      <div class="ks-card-head">
+        <h2 class="ks-card-title">{% t "Register a data source" %}</h2>
+        <button class="ks-btn ks-btn-sm ks-btn-secondary" type="button" data-ks-src-toggle>
+          {% t "Show / hide" %}
+        </button>
+      </div>
+      <p class="ks-muted ks-small">
+        {% t "A new source is always created as" %} <strong>{% t "pending" %}</strong>{% t ". There is no HTTP way to approve one - that is a deliberate hold, and it must be done in the Django admin. Until then, collection and manual import will refuse to run." %}
+      </p>
+      <div data-ks-src-panel hidden>
+        <form class="ks-form" data-ks-source-form novalidate>
+          {% csrf_token %}
+          <div data-ks-error-summary></div>
+          <div class="ks-grid ks-grid-2">
+            <div class="ks-field">
+              <label class="ks-label" for="src-name">{% t "Name" %} <span class="ks-req">*</span></label>
+              <input class="ks-input" type="text" id="src-name" name="name" required
+                     maxlength="120" placeholder="{% t "e.g. Maharashtra DISCOM tariffs" %}">
+            </div>
+            <div class="ks-field">
+              <label class="ks-label" for="src-base">{% t "Base URL" %} <span class="ks-req">*</span></label>
+              <input class="ks-input" type="text" id="src-base" name="base_url" required
+                     maxlength="200" placeholder="{% t "https://example.in or manual://corpus" %}">
+            </div>
+            <div class="ks-field">
+              <label class="ks-label" for="src-type">{% t "Source type" %}</label>
+              <select class="ks-select" id="src-type" name="source_type">
+                <option value="public_dataset">{% t "Public dataset" %}</option>
+                <option value="government">{% t "Government" %}</option>
+                <option value="government_api">{% t "Government API" %}</option>
+                <option value="official_manufacturer">{% t "Official manufacturer" %}</option>
+                <option value="approved_third_party">{% t "Approved third party" %}</option>
+                <option value="manual_import">{% t "Manual import" %}</option>
+              </select>
+            </div>
+            <div class="ks-field">
+              <label class="ks-label" for="src-category">{% t "Category" %}</label>
+              <select class="ks-select" id="src-category" name="category">
+                <option value="equipment_images">{% t "Equipment images" %}</option>
+                <option value="subsidy">{% t "Subsidy" %}</option>
+                <option value="crop_benchmark">{% t "Crop benchmark" %}</option>
+                <option value="machinery_benchmark">{% t "Machinery benchmark" %}</option>
+                <option value="solar_benchmark">{% t "Solar benchmark" %}</option>
+                <option value="electricity_benchmark">{% t "Electricity benchmark" %}</option>
+                <option value="diesel_benchmark">{% t "Diesel benchmark" %}</option>
+                <option value="equipment_catalog">{% t "Equipment catalogue" %}</option>
+                <option value="weather">{% t "Weather" %}</option>
+                <option value="market_price">{% t "Market price" %}</option>
+                <option value="faq">{% t "FAQ" %}</option>
+              </select>
+            </div>
+            <div class="ks-field">
+              <label class="ks-label" for="src-org">{% t "Organisation" %}</label>
+              <input class="ks-input" type="text" id="src-org" name="organization"
+                     maxlength="120">
+            </div>
+            <div class="ks-field">
+              <label class="ks-label" for="src-state">{% t "State" %}</label>
+              <input class="ks-input" type="text" id="src-state" name="state" maxlength="80">
+            </div>
+            <div class="ks-field">
+              <label class="ks-label" for="src-robots">{% t "robots.txt URL" %}</label>
+              <input class="ks-input" type="text" id="src-robots" name="robots_url" maxlength="200">
+            </div>
+            <div class="ks-field">
+              <label class="ks-label" for="src-terms">{% t "Terms URL" %}</label>
+              <input class="ks-input" type="text" id="src-terms" name="terms_url" maxlength="200">
+            </div>
+            <div class="ks-field">
+              <label class="ks-label" for="src-licence">{% t "Licence URL" %}</label>
+              <input class="ks-input" type="text" id="src-licence" name="license_url" maxlength="200">
+            </div>
+            <div class="ks-field">
+              <label class="ks-label" for="src-attrib">{% t "Attribution text" %}</label>
+              <input class="ks-input" type="text" id="src-attrib" name="attribution_text"
+                     maxlength="160" placeholder="{% t "e.g. (c) Maharashtra DISCOM" %}">
+            </div>
+            <div class="ks-field">
+              <label class="ks-label" for="src-rate">{% t "Rate limit (requests/minute)" %}</label>
+              <input class="ks-input" type="number" id="src-rate" name="rate_limit_per_minute"
+                     value="10" step="1" min="1" inputmode="numeric" data-validate="positive">
+            </div>
+            <div class="ks-field">
+              <label class="ks-label" for="src-delay">{% t "Delay between requests (seconds)" %}</label>
+              <input class="ks-input" type="number" id="src-delay" name="request_delay_seconds"
+                     value="1" step="0.1" min="0" inputmode="decimal" data-validate="nonnegative">
+            </div>
+          </div>
+          <div class="ks-consent">
+            <label class="ks-check">
+              <input type="checkbox" name="allows_images" value="true">
+              <span>{% t "Provides images" %}</span>
+            </label>
+            <label class="ks-check">
+              <input type="checkbox" name="allows_documents" value="true">
+              <span>{% t "Provides documents" %}</span>
+            </label>
+            <label class="ks-check">
+              <input type="checkbox" name="allows_structured_data" value="true">
+              <span>{% t "Provides structured data" %}</span>
+            </label>
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="src-notes">{% t "Notes" %}</label>
+            <textarea class="ks-textarea" id="src-notes" name="notes" rows="2"
+                      maxlength="500"></textarea>
+          </div>
+          <div class="ks-form-actions">
+            <button class="ks-btn" type="submit">{% t "Register source" %}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="ks-card ks-mb-4">
+      <div class="ks-card-head">
+        <h2 class="ks-card-title">{% t "Registered sources" %}</h2>
+      </div>
+      <div class="ks-grid ks-grid-3 ks-mb-4">
+        <div class="ks-field">
+          <label class="ks-label" for="src-filter-name">{% t "Filter by name" %}</label>
+          <input class="ks-input" type="search" id="src-filter-name"
+                 data-ks-src-filter="name" maxlength="80" placeholder="{% t "e.g. discom" %}">
+        </div>
+        <div class="ks-field">
+          <label class="ks-label" for="src-filter-cat">{% t "Category" %}</label>
+          <select class="ks-select" id="src-filter-cat" data-ks-src-filter="category">
+            <option value="">{% t "All categories" %}</option>
+          </select>
+        </div>
+        <div class="ks-field">
+          <label class="ks-label" for="src-filter-status">{% t "Approval status" %}</label>
+          <select class="ks-select" id="src-filter-status" data-ks-src-filter="approval_status">
+            <option value="">{% t "All statuses" %}</option>
+            <option value="pending">{% t "Pending" %}</option>
+            <option value="approved">{% t "Approved" %}</option>
+            <option value="rejected">{% t "Rejected" %}</option>
+            <option value="blocked">{% t "Blocked" %}</option>
+            <option value="manual_review">{% t "Manual review" %}</option>
+          </select>
+        </div>
+      </div>
+      <div data-ks-sources></div>
+    </div>
+
+    <div class="ks-card">
+      <h2 class="ks-card-title">{% t "Collect or import from a source" %}</h2>
+      <p class="ks-muted ks-small">
+        {% t "Collect downloads a list of image URLs you supply. Manual import scans a directory that already exists on this server - it is not a file upload. Both require an approved source." %}
+      </p>
+      <form class="ks-form" data-ks-collect-form novalidate>
+        <div data-ks-error-summary></div>
+        <div class="ks-grid ks-grid-2">
+          <div class="ks-field">
+            <label class="ks-label" for="col-source">{% t "Source" %} <span class="ks-req">*</span></label>
+            <select class="ks-select" id="col-source" name="source_id" required
+                    data-validate="required" data-ks-approved-sources></select>
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="col-mode">{% t "Operation" %}</label>
+            <select class="ks-select" id="col-mode" name="mode">
+              <option value="collect">{% t "Collect from image URLs" %}</option>
+              <option value="manual-import">{% t "Manual import from a server directory" %}</option>
+            </select>
+          </div>
+          <div class="ks-field" data-ks-when="collect">
+            <label class="ks-label" for="col-urls">{% t "Image URLs (one per line)" %} <span class="ks-req">*</span></label>
+            <textarea class="ks-textarea" id="col-urls" name="image_urls" rows="4"
+                      placeholder="https://example.in/1.jpg"></textarea>
+          </div>
+          <div class="ks-field" data-ks-when="manual-import" hidden>
+            <label class="ks-label" for="col-path">{% t "Server directory" %} <span class="ks-req">*</span></label>
+            <input class="ks-input" type="text" id="col-path" name="path"
+                   placeholder="{% t "/srv/data/mahindra" %}">
+            <p class="ks-help">{% t "Recursive scan, maximum 5000 files." %}</p>
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="col-max">{% t "Maximum images" %}</label>
+            <input class="ks-input" type="number" id="col-max" name="max_images"
+                   step="1" min="1" inputmode="numeric">
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="col-run">{% t "Correlation id / label hint (optional)" %}</label>
+            <input class="ks-input" type="text" id="col-run" name="run_id" maxlength="60">
+          </div>
+        </div>
+        <div class="ks-consent">
+          <label class="ks-check">
+            <input type="checkbox" name="execute" value="true">
+            <span>{% t "Actually download (leave off for a dry run)" %}</span>
+          </label>
+        </div>
+        <div class="ks-form-actions">
+          <button class="ks-btn" type="submit">{% t "Run" %}</button>
+        </div>
+      </form>
+      <div class="ks-mt-4" data-ks-collect-out></div>
+    </div>
+
+    <div class="ks-mt-4" data-ks-src-detail></div>
+  </div>
+
+  {# ------------------------------------------------------------------ #}
+  {# Review queue: approve / reject / publish                          #}
+  {# ------------------------------------------------------------------ #}
+  <div class="ks-tabpanel" id="panel-queue" role="tabpanel" aria-labelledby="tab-queue" hidden>
+    <div class="ks-card">
+      <div class="ks-card-head">
+        <h2 class="ks-card-title">{% t "Review queue" %}</h2>
+      </div>
+      <div class="ks-grid ks-grid-2 ks-mb-4">
+        <div class="ks-field">
+          <label class="ks-label" for="q-filter-decision">{% t "Decision" %}</label>
+          <select class="ks-select" id="q-filter-decision" data-ks-queue-filter="decision">
+            <option value="">{% t "All" %}</option>
+            <option value="pending">{% t "Pending" %}</option>
+            <option value="approved">{% t "Approved" %}</option>
+            <option value="rejected">{% t "Rejected" %}</option>
+            <option value="needs_changes">{% t "Needs changes" %}</option>
+          </select>
+        </div>
+        <div class="ks-field">
+          <label class="ks-label" for="q-filter-risk">{% t "Risk level" %}</label>
+          <select class="ks-select" id="q-filter-risk" data-ks-queue-filter="risk_level">
+            <option value="">{% t "All" %}</option>
+            <option value="low">{% t "Low" %}</option>
+            <option value="medium">{% t "Medium" %}</option>
+            <option value="high">{% t "High" %}</option>
+          </select>
+        </div>
+      </div>
+      <div data-ks-queue></div>
+    </div>
+  </div>
+
+  {# ------------------------------------------------------------------ #}
+  {# Runs / artifacts / records: read-only listings                    #}
+  {# ------------------------------------------------------------------ #}
+  <div class="ks-tabpanel" id="panel-runs" role="tabpanel" aria-labelledby="tab-runs" hidden>
+    <div class="ks-card">
+      <div class="ks-card-head">
+        <h2 class="ks-card-title">{% t "Ingestion runs" %}</h2>
+      </div>
+      <p class="ks-muted ks-small">{% t "Newest first, capped at 100 by the API." %}</p>
+      <div data-ks-runs></div>
+      <div class="ks-mt-4" data-ks-run-detail></div>
+    </div>
+  </div>
+
+  <div class="ks-tabpanel" id="panel-artifacts" role="tabpanel" aria-labelledby="tab-artifacts" hidden>
+    <div class="ks-card">
+      <div class="ks-card-head">
+        <h2 class="ks-card-title">{% t "Collected artifacts" %}</h2>
+      </div>
+      <p class="ks-muted ks-small">{% t "Newest first, capped at 100 by the API." %}</p>
+      <div data-ks-artifacts></div>
+      <div class="ks-mt-4" data-ks-artifact-detail></div>
+    </div>
+  </div>
+
+  <div class="ks-tabpanel" id="panel-records" role="tabpanel" aria-labelledby="tab-records" hidden>
+    <div class="ks-card">
+      <div class="ks-card-head">
+        <h2 class="ks-card-title">{% t "Extracted records" %}</h2>
+      </div>
+      <div class="ks-grid ks-grid-2 ks-mb-4">
+        <div class="ks-field">
+          <label class="ks-label" for="rec-filter-type">{% t "Record type" %}</label>
+          <select class="ks-select" id="rec-filter-type" data-ks-record-filter="record_type">
+            <option value="">{% t "All types" %}</option>
+          </select>
+        </div>
+        <div class="ks-field">
+          <label class="ks-label" for="rec-filter-status">{% t "Status" %}</label>
+          <select class="ks-select" id="rec-filter-status" data-ks-record-filter="status">
+            <option value="">{% t "All statuses" %}</option>
+            <option value="raw">{% t "Raw" %}</option>
+            <option value="parsed">{% t "Parsed" %}</option>
+            <option value="validated">{% t "Validated" %}</option>
+            <option value="reviewed">{% t "Reviewed" %}</option>
+            <option value="published">{% t "Published" %}</option>
+            <option value="rejected">{% t "Rejected" %}</option>
+          </select>
+        </div>
+      </div>
+      <div data-ks-records></div>
+      <div class="ks-mt-4" data-ks-record-detail></div>
+    </div>
+  </div>
+
+  {# ------------------------------------------------------------------ #}
+  {# Reports: dataset coverage + provenance lookup                    #}
+  {# ------------------------------------------------------------------ #}
+  <div class="ks-tabpanel" id="panel-reports" role="tabpanel" aria-labelledby="tab-reports" hidden>
+    <div class="ks-card ks-mb-4">
+      <h2 class="ks-card-title">{% t "Dataset coverage" %}</h2>
+      <p class="ks-muted ks-small">
+        {% t "How far each class is from its collection target, and how many approved sources could still close the gap. No automatic download or retraining is performed." %}
+      </p>
+      <div data-ks-dataset-report></div>
+    </div>
+
+    <div class="ks-card">
+      <h2 class="ks-card-title">{% t "Trace provenance" %}</h2>
+      <p class="ks-muted ks-small">
+        {% t "Paste a source, record or artifact id to see its full chain of custody." %}
+      </p>
+      <form class="ks-form" data-ks-provenance-form novalidate>
+        <div data-ks-error-summary></div>
+        <div class="ks-grid ks-grid-2">
+          <div class="ks-field">
+            <label class="ks-label" for="prov-kind">{% t "Look up by" %}</label>
+            <select class="ks-select" id="prov-kind" name="kind">
+              <option value="record_id">{% t "Record" %}</option>
+              <option value="source_id">{% t "Source" %}</option>
+              <option value="artifact_id">{% t "Artifact" %}</option>
+            </select>
+          </div>
+          <div class="ks-field">
+            <label class="ks-label" for="prov-id">{% t "Id" %} <span class="ks-req">*</span></label>
+            <input class="ks-input" type="text" id="prov-id" name="target_id" required
+                   maxlength="64" placeholder="{% t "UUID" %}">
+          </div>
+        </div>
+        <div class="ks-form-actions">
+          <button class="ks-btn" type="submit">{% t "Trace" %}</button>
+        </div>
+      </form>
+      <div class="ks-mt-4" data-ks-provenance-out></div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+

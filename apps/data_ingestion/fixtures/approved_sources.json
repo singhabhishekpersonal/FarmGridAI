@@ -1,0 +1,78 @@
+[
+  {
+    "model": "data_ingestion.datasource",
+    "pk": "11111111-1111-4111-8111-111111111101",
+    "fields": {
+      "name": "Example Official Portal (placeholder)",
+      "organization": "Example Department",
+      "base_url": "https://example.gov.in",
+      "source_type": "government",
+      "category": "subsidy",
+      "country": "IN",
+      "allowed_collection_methods": [
+        "api",
+        "downloadable_file"
+      ],
+      "approval_status": "manual_review",
+      "robots_status": "unknown",
+      "terms_status": "manual_review",
+      "collection_enabled": false,
+      "rate_limit_per_minute": 10,
+      "request_delay_seconds": 1.0,
+      "max_pages_per_run": 20,
+      "notes": "PLACEHOLDER - replace URLs/domains before use; never collect until human approval + allowed compliance check.",
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "data_ingestion.datasource",
+    "pk": "11111111-1111-4111-8111-111111111102",
+    "fields": {
+      "name": "Example Manufacturer Portal (placeholder)",
+      "organization": "Example Tractors Ltd",
+      "base_url": "https://supplier.example",
+      "source_type": "official_manufacturer",
+      "category": "equipment_catalog",
+      "country": "IN",
+      "allowed_collection_methods": [
+        "public_html"
+      ],
+      "approval_status": "pending",
+      "robots_status": "unknown",
+      "terms_status": "manual_review",
+      "collection_enabled": false,
+      "rate_limit_per_minute": 5,
+      "request_delay_seconds": 2.0,
+      "max_pages_per_run": 10,
+      "notes": "PLACEHOLDER - replace with a genuine, individually approved source before any collection.",
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "data_ingestion.datasource",
+    "pk": "11111111-1111-4111-8111-111111111103",
+    "fields": {
+      "name": "Manual local corpus (placeholder)",
+      "organization": "Internal",
+      "base_url": "manual://internal-corpus",
+      "source_type": "manual_import",
+      "category": "equipment_images",
+      "country": "IN",
+      "allowed_collection_methods": [
+        "manual_import_only"
+      ],
+      "approval_status": "pending",
+      "robots_status": "not_applicable",
+      "terms_status": "manual_review",
+      "collection_enabled": false,
+      "rate_limit_per_minute": 0,
+      "request_delay_seconds": 0.0,
+      "max_pages_per_run": 0,
+      "notes": "Safe placeholder for offline imports; needs human approval before import_manual_dataset will run.",
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  }
+]

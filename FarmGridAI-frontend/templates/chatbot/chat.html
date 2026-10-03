@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load text_tags %}
+
+{% block title %}{% t "Ask FarmGrid" %} - {% t "FarmGrid AI" %}{% endblock %}
+
+{% block content %}
+<section class="ks-container">
+  <nav class="ks-breadcrumb" aria-label="{% t "Breadcrumb" %}">
+    <a href="{% url 'web:dashboard' %}">{% t "Dashboard" %}</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{% t "Ask" %}</span>
+  </nav>
+
+  <h1 class="ks-page-title">{% t "Ask in your own words" %}</h1>
+  <p class="ks-small ks-muted">
+    {% t "Answers are built from your own farm data where possible, and always show where the numbers came from." %}
+  </p>
+
+  <div class="ks-alert ks-alert-warn ks-mb-4">
+    <span aria-hidden="true">⚠</span>
+    <div>
+      <strong class="ks-alert-title">{% t "An estimate, not an authority" %}</strong>
+      {% t "Do not use this for legal, banking or safety decisions. For subsidy eligibility, confirm at the Block or Gram Panchayat office; for machinery faults, use a mechanic." %}
+    </div>
+  </div>
+
+  <div class="ks-chat">
+    <div class="ks-chat-log" data-ks-chat-log
+         role="log" aria-live="polite" aria-label="{% t "Conversation" %}">
+      <div class="ks-msg ks-msg--assistant">
+        <p>
+          {% t "Namaste! I can help you work out your farm costs, compare solar against diesel, check which subsidies you may qualify for, or decide whether to buy or rent a machine. What would you like to know?" %}
+        </p>
+      </div>
+    </div>
+
+    {# Tapping a suggestion fills the box; the farmer still has to send it. #}
+    <div class="ks-chat-suggestions" data-ks-chat-suggestions>
+      <button class="ks-chip" type="button" data-ks-ask="What does my farming cost per hectare this year?">
+        {% t "Cost per hectare" %}
+      </button>
+      <button class="ks-chip" type="button" data-ks-ask="Would solar be cheaper than my diesel pump?">
+        {% t "Solar vs diesel" %}
+      </button>
+      <button class="ks-chip" type="button" data-ks-ask="Which subsidies can I apply for?">
+        {% t "My subsidies" %}
+      </button>
+      <button class="ks-chip" type="button" data-ks-ask="Should I buy a tractor or rent one?">
+        {% t "Buy or rent" %}
+      </button>
+    </div>
+
+    <form class="ks-chat-form" data-ks-chat-form novalidate>
+      <label class="ks-visually-hidden" for="chat-input">{% t "Your question" %}</label>
+      <textarea class="ks-textarea" id="chat-input" name="message" rows="2"
+                placeholder="e.g. pichle saal diesel ka kharcha kitna tha?"
+                data-ks-chat-input required></textarea>
+      <button class="ks-btn" type="submit" data-ks-chat-send>{% t "Send" %}</button>
+    </form>
+
+    <p class="ks-tiny ks-muted ks-mt-3">
+      {% t "You can write in English or हिंदी. Voice input is available through your phone's keyboard." %}
+    </p>
+  </div>
+</section>
+{% endblock %}
+
+

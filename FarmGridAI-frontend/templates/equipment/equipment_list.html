@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load text_tags %}
+
+{% block title %}{% t "Equipment" %} - {% t "FarmGrid AI" %}{% endblock %}
+
+{% block content %}
+<section class="ks-container">
+  <nav class="ks-breadcrumb" aria-label="{% t "Breadcrumb" %}">
+    <a href="{% url 'web:dashboard' %}">{% t "Dashboard" %}</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{% t "Equipment" %}</span>
+  </nav>
+
+  <header class="ks-page-head">
+    <p class="ks-eyebrow">{% t "FarmGrid AI — your farm, in numbers you can check" %}</p>
+    <h1 class="ks-page-title">{% t "Equipment" %}</h1>
+    <p class="ks-lede ks-muted">
+      {% t "Your tractors, pumps and implements. Adding the ones you own lets us work out whether buying or hiring one is cheaper." %}
+    </p>
+  </header>
+
+  <div class="ks-page-actions">
+    <a class="ks-btn" href="{% url 'web:equipment_create' farm_id %}">{% t "+ Add equipment" %}</a>
+  </div>
+
+  <div class="ks-alert ks-alert-info ks-mb-4">
+    <span aria-hidden="true">📷</span>
+    <div>
+      <strong class="ks-alert-title">{% t "Identify a machine from a photo" %}</strong>
+      {% t "When you add equipment you can upload a photo of its name plate. The model will suggest the brand and show how confident it is — you always confirm before it counts." %}
+    </div>
+  </div>
+
+  <div data-ks-equipment>
+    <div class="ks-skeleton ks-skeleton--title"></div>
+    <div class="ks-skeleton ks-skeleton--text"></div>
+  </div>
+</section>
+{% endblock %}
+

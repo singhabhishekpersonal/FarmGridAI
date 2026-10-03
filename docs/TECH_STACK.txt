@@ -1,0 +1,189 @@
+================================================================================
+ FARMGRID AI  -  TECH STACK
+ FarmGridAI_codebase
+================================================================================
+
+ Generated from the actual project (pip freeze, settings modules, URLconf,
+ model registry). Versions are the ones installed in .venv right now.
+
+ KEY FACT: there is no separate frontend application. One Django process serves
+ the HTML templates, the static assets and the REST API from the same origin.
+
+
+--------------------------------------------------------------------------------
+ 1. RUNTIME FLOW
+--------------------------------------------------------------------------------
+
+   BROWSER
+     |  HTML pages + hand-written vanilla JS (no bundler, no npm, no React)
+     v
+   http://127.0.0.1:8000
+     |
+     v
+ +---------------------------------------------------------------------------+
+ |  PRESENTATION   FarmGridAI-frontend/                                      |
+ |                                                                          |
+ |   templates/   24 Django templates                                        |
+ |                  base.html, partials/nav.html, dashboard.html, + 21 more  |
+ |   static/js/   app.js, dashboard.js, uploads.js                          |
+ |   static/css/  base.css, dashboard.css, forms.css                        |
+ |   static/images/  logo + 15 field/solar photos                            |
+ |   tests/       i18n_test.js  (node harness, 13 checks, run by verify.py) |
+ |                                                                          |
+ |   i18n  custom {% t %} template tag  +  KS.t() JS lookup                 |
+ |         822 keys, English + Hindi                                         |
+ |         generated into apps/core/i18n_hi_[a-c].py                         |
+ |         language switch -> /lang/<code>/  (server-authoritative cookie)  |
+ +---------------------------------------------------------------------------+
+     |
+     v
+ +---------------------------------------------------------------------------+
+ |  WEB FRAMEWORK   Django 6.1.1   /   Python 3.14.6                       |
+ |  settings/base.py -> .development (default) | .production                |
+ +---------------------------------------------------------------------------+
+     |
+     +-- API      Django REST Framework 3.18.1
+     |              ~85 endpoints under /api/v1/
+     |              filters: DjangoFilterBackend, SearchFilter, OrderingFilter
+     |              docs:   drf-spectacular 0.30.0 -> /api/schema/ (106 ops)
+     |              cors:   django-cors-headers 4.9.0
+     |
+     +-- AUTH     Two mechanisms, both active
+     |              SimpleJWT 5.5.1  (JWTAuthentication, rotating refresh)
+     |              Django Session      (server-rendered page auth)
+     |              throttle: LoginThrottle / RegisterThrottle
+     |              default permission: IsAuthenticated
+     |
+     +-- ASYNC    Celery 5.6.3 + Redis 8.1.0
+     |              broker redis://localhost:6379/0, results .../1
+     |              tasks: compute_farm_expense_summary, run_expense_analysis
+     |              NOTE: apps/api/tasks.py has a fallback shim - if the broker
+     |                    is absent the task runs inline, so nothing breaks.
+     |
+     +-- DATA     SQLite  db.sqlite3              (default, local dev)
+     |              PostgreSQL via psycopg 3.3.6  (set DB_ENGINE=postgres)
+     |              Pillow 12.3.0 for image handling
+     +-------------------------------------------------------------------------+
+
+
+--------------------------------------------------------------------------------
+ 2. THE 14 DJANGO APPS
+--------------------------------------------------------------------------------
+
+   DOMAIN       core, accounts, farms, crops, equipment, expenses,
+                energy, finance, subsidies, recommendations
+
+   PLATFORM     api            capabilities, model status, data-source status
+                data_ingestion sources -> runs -> artifacts -> records,
+                              plus provenance reports and a review queue
+
+   INTELLIGENCE ml_engine      classical / forecasting / vision / ocr
+                              + model registry and prediction audit log
+                chatbot        keyword intent matching, NO external LLM
+
+
+--------------------------------------------------------------------------------
+ 3. ML / AI  -  apps/ml_engine
+--------------------------------------------------------------------------------
+
+   Every prediction is recorded in a queryable audit trail naming the exact
+   model + version that produced it (MLModelRegistry / MLModelVersion /
+   PredictionAuditLog). If no artifact is active the engine falls back to
+   explicit rules and says so, rather than inventing a number.
+
+   3a. EQUIPMENT IMAGE CLASSIFIER  -  a real trained CNN
+       architecture : MobileNetV3-Large, fine-tuned, 6 tractor brands + "other"
+       classes      : Farmtrac, John Deere, Mahindra, New Holland,
+                      Powertrac, Sonalika, other
+       artifact     : data/models/equipment_classifier/
+                      equipment_classifier_mobilenetv3_top6_v1.pt   (17.1 MB)
+       loaded       : LAZILY, and DISCOVERED BY DEFAULT - settings point
+                      ML_EQUIPMENT_CLASSIFIER_ARTIFACT_DIR at that folder, so
+                      it works out of the box. The 'fallback' path only kicks in
+                      if the file is missing, unreadable or shape-incompatible.
+       unknown gate : confidence < 0.55 -> "other" (ML_EQUIPMENT_CLASSIFIER_
+                      UNKNOWN_THRESHOLD)
+       gating       : not promoted to active unless macro-F1 >= 0.70
+                      (ML_EQUIPMENT_CLASSIFIER_ACTIVATION_MACRO_F1)
+
+       measured on the held-out test set (179 samples, best epoch 14):
+         test accuracy           0.810
+         test balanced accuracy  0.693
+         test macro F1           0.732
+         test weighted F1        0.800
+         test top-3 accuracy     0.983
+         val macro F1 at best    0.746
+
+       Side artefacts checked in alongside it: confusion matrices, per-class
+       P/R/F1, a confidence-calibration table, training history, checksum.
+
+   3b. RECOMMENDATION RANKER  -  hand-tuned linear model, not trained
+       apps/ml_engine/classical/recommendation_ranker.py
+         score = 0.40 * benefit_score     (benefit / 500000, capped at 1.0)
+               + 0.40 * priority          (critical 1.0 / high 0.85 /
+                                           medium 0.6 / low 0.35)
+               + 0.20 * confidence_weight  (high 1.0 / medium 0.7 / low 0.4)
+       Output is a 0..1 ranking score. Cheap, deterministic, explainable - but
+       it is a scoring formula, so describe it as such rather than "trained ML".
+
+   3c. OCR  -  optional, degrades cleanly
+       apps/ml_engine/ocr  imports pytesseract inside a try/except and reports
+       provider = "pytesseract" when the Tesseract binary is present, else
+       provider = "heuristic". OCR output is treated as supporting evidence
+       only, never as a hard decision.
+
+   3d. CHATBOT  -  no external LLM
+       apps/chatbot/services.py:3 states it outright - "No external LLM is
+       required". Intents are matched with keyword patterns and knowledge
+       articles retrieved by token overlap, with sources attached. Anything
+       unmatched comes back with is_fallback=True and requires_human=True, so
+       the UI can label it honestly.
+
+   3e. LIBRARIES INSTALLED
+       torch 2.14.0        torchvision 0.29.0     scikit-learn 1.9.1
+       numpy 2.5.3         pandas 3.0.6            scikit-image 0.26.0
+
+
+--------------------------------------------------------------------------------
+ 4. RUNNING IT
+--------------------------------------------------------------------------------
+
+   Backend and frontend start together - one command, one process:
+
+     .\run.ps1                                 http://127.0.0.1:8000
+     .\run.ps1 -Port 9000                      different port
+     .\run.ps1 -Migrate -Seed -DemoUser        first-time setup
+       -Migrate    apply pending migrations
+       -Seed        run seed_platform (idempotent: benchmarks, schemes,
+                    knowledge base, equipment catalog)
+       -DemoUser    create farmer / FarmGrid@123 so sign-in can be tried
+       -NoBrowser   do not open a browser
+       -Reload      enable the autoreloader (forks a child that can outlive
+                    Ctrl+C and hold the port, so it is off by default)
+
+   Useful URLs once running:
+     /                      home
+     /login/  /register/    auth
+     /dashboard/            main UI (sign-out button lives in the header here
+                            and in the nav on every page)
+     /api/v1/health         liveness
+     /api/schema/           OpenAPI 3.0.3, 106 operations, 0 undocumented
+     /admin/                Django admin
+
+
+--------------------------------------------------------------------------------
+ 5. VERIFICATION
+--------------------------------------------------------------------------------
+
+   .\run.ps1 is for using the app. To check it is still correct:
+
+     .\.venv\Scripts\python.exe verify.py        288 passed, 0 failed
+     .\.venv\Scripts\python.exe -m pytest -q     270 tests, 0 failures,
+                                                  4 skipped
+     node FarmGridAI-frontend\tests\i18n_test.js  13 checks (also run inside
+                                                  verify.py as PASS 4i)
+
+   verify.py exercises the real HTTP surface, not mocks. It also asserts the
+   OpenAPI schema is fully described and free of duplicate operationIds.
+
+================================================================================

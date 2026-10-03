@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load text_tags %}
+
+{% block title %}{% t "Your farm" %} - {% t "FarmGrid AI" %}{% endblock %}
+
+{% block content %}
+<section class="ks-container">
+  <nav class="ks-breadcrumb" aria-label="{% t "Breadcrumb" %}">
+    <a href="{% url 'web:dashboard' %}">{% t "Dashboard" %}</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{% t "My farm" %}</span>
+  </nav>
+
+  <header class="ks-page-head">
+    <p class="ks-eyebrow">{% t "FarmGrid AI — your farm, in numbers you can check" %}</p>
+    <h1 class="ks-page-title">{% t "Your farm" %}</h1>
+    <p class="ks-lede ks-muted">
+      {% t "Land, crops and the season summary for this farm." %}
+    </p>
+  </header>
+
+  <div data-ks-farm></div>
+</section>
+{% endblock %}
+

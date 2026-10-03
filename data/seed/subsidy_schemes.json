@@ -1,0 +1,146 @@
+[
+  {
+    "name": "PM-KUSUM (Component B) Solar Pumps",
+    "slug": "pm-kusum-component-b-solar-pumps",
+    "category": "solar_pump",
+    "administrative_level": "central",
+    "state": "",
+    "is_active": true,
+    "benefit_type": "Capital subsidy on solar pump standalone systems",
+    "benefit_min_inr": 90000,
+    "benefit_max_inr": 300000,
+    "official_url": "https://pmkusum.mnre.gov.in/",
+    "application_steps": ["Register with the state DISCOM / implementing agency.", "Complete feasibility and technical sanction.", "Install with empanelled vendor and submit completion documents."],
+    "is_illustrative": true,
+    "notes": "Illustrative seed record. Scheme parameters change by state and round.",
+    "rules": [
+      {"field": "land_hectares", "operator": "gte", "value": 1.0, "reason": "Land requirement threshold (typical)", "sequence": 10},
+      {"field": "irrigation_source", "operator": "in", "value": ["well", "borewell", "pond", "tank"], "reason": "Solar pump suits an available water source", "sequence": 20}
+    ],
+    "documents": [
+      {"document_name": "Aadhaar card", "required": true},
+      {"document_name": "Land records / cultivation certificate", "required": true},
+      {"document_name": "Passport-size photograph", "required": true},
+      {"document_name": "Bank account details", "required": true}
+    ]
+  },
+  {
+    "name": "Sub-Mission on Agricultural Mechanization (SMAM)",
+    "slug": "smam-agricultural-mechanization",
+    "category": "farm_mechanization",
+    "administrative_level": "central",
+    "state": "",
+    "is_active": true,
+    "benefit_type": "Capital subsidy on farm machinery (tractor/implement purchase)",
+    "benefit_min_inr": 40000,
+    "benefit_max_inr": 300000,
+    "official_url": "https://agricoop.nic.in/",
+    "application_steps": ["Approach the District Agriculture Office.", "Submit application with quotations.", "Complete purchase from empanelled dealer and claim reimbursement."],
+    "is_illustrative": true,
+    "notes": "Illustrative seed record. Subsidy percentage differs for individuals vs groups and by machine.",
+    "rules": [
+      {"field": "land_hectares", "operator": "gte", "value": 0.5, "reason": "Small & marginal farmer land threshold (typical)", "sequence": 10},
+      {"field": "equipment_category", "operator": "always", "value": {}, "reason": "Applicable across machinery categories", "sequence": 20}
+    ],
+    "documents": [
+      {"document_name": "Aadhaar card", "required": true},
+      {"document_name": "Land ownership records", "required": true},
+      {"document_name": "Quotation from dealer", "required": true},
+      {"document_name": "Bank account details", "required": true}
+    ]
+  },
+  {
+    "name": "Kisan Credit Card (KCC)",
+    "slug": "kisan-credit-card",
+    "category": "credit_finance",
+    "administrative_level": "central",
+    "state": "",
+    "is_active": true,
+    "benefit_type": "Collateral-free short-term crop loan with interest subvention",
+    "benefit_min_inr": 50000,
+    "benefit_max_inr": 300000,
+    "official_url": "https://www.rbi.org.in/",
+    "application_steps": ["Apply at any bank branch with land documents.", "Bank sanctions a credit limit based on cropping pattern.", "Draw and repay as per crop cycle."],
+    "is_illustrative": true,
+    "notes": "Interest subvention window changes yearly with government budget.",
+    "rules": [
+      {"field": "farming_category", "operator": "always", "value": {}, "reason": "Open to all farmer categories", "sequence": 10}
+    ],
+    "documents": [
+      {"document_name": "Aadhaar card", "required": true},
+      {"document_name": "Land records (ownership/tenancy)", "required": true},
+      {"document_name": "Bank account details", "required": true},
+      {"document_name": "Crop cultivation details", "required": true}
+    ]
+  },
+  {
+    "name": "PMFBY Crop Insurance",
+    "slug": "pmfby-crop-insurance",
+    "category": "crop_insurance",
+    "administrative_level": "central",
+    "state": "",
+    "is_active": true,
+    "benefit_type": "Crop loss compensation with subsidised premium",
+    "benefit_min_inr": 5000,
+    "benefit_max_inr": 200000,
+    "official_url": "https://pmfby.gov.in/",
+    "application_steps": ["Enrol before the notified cut-off dates for each season.", "Pay the farmer share of premium.", "Filing/loss assessment handled by insurance company on crop damage."],
+    "is_illustrative": true,
+    "notes": "Enrolment dates, crops and premium shares notified each season by states.",
+    "rules": [
+      {"field": "land_hectares", "operator": "gte", "value": 0.04, "reason": "Typically open to all cultivable landholders", "sequence": 10}
+    ],
+    "documents": [
+      {"document_name": "Aadhaar card", "required": true},
+      {"document_name": "Land records", "required": true},
+      {"document_name": "Bank account details", "required": true}
+    ]
+  },
+  {
+    "name": "PM-KISAN Income Support",
+    "slug": "pm-kisan-income-support",
+    "category": "credit_finance",
+    "administrative_level": "central",
+    "state": "",
+    "is_active": true,
+    "benefit_type": "Direct income support",
+    "benefit_min_inr": 6000,
+    "benefit_max_inr": 6000,
+    "official_url": "https://pmkisan.gov.in/",
+    "application_steps": ["Apply/register on PM-KISAN portal.", "Aadhaar-seeded bank account verification.", "Installments credited directly to the account."],
+    "is_illustrative": true,
+    "notes": "Amount and eligibility subject to current scheme guidelines.",
+    "rules": [
+      {"field": "user_manual_match", "operator": "always", "value": {}, "reason": "Eligibility requires exclusion list check at application time", "sequence": 10}
+    ],
+    "documents": [
+      {"document_name": "Aadhaar card", "required": true},
+      {"document_name": "Land ownership records", "required": true},
+      {"document_name": "Bank account details", "required": true}
+    ]
+  },
+  {
+    "name": "Micro Irrigation Fund (Drip/Sprinkler)",
+    "slug": "micro-irrigation-fund-drip-sprinkler",
+    "category": "micro_irrigation",
+    "administrative_level": "central_state",
+    "state": "",
+    "is_active": true,
+    "benefit_type": "Capital subsidy on drip / sprinkler systems",
+    "benefit_min_inr": 30000,
+    "benefit_max_inr": 150000,
+    "official_url": "https://agricoop.nic.in/",
+    "application_steps": ["Survey the field and design the system with an approved vendor.", "Submit application through the state agriculture department.", "Install and claim the subsidy against invoices."],
+    "is_illustrative": true,
+    "notes": "Illustrative seed record; state-specific norms apply.",
+    "rules": [
+      {"field": "irrigated", "operator": "eq", "value": "irrigated", "reason": "Micro-irrigation benefits irrigated cultivation", "sequence": 10},
+      {"field": "land_hectares", "operator": "gte", "value": 0.4, "reason": "Minimum holding norms (typical)", "sequence": 20}
+    ],
+    "documents": [
+      {"document_name": "Aadhaar card", "required": true},
+      {"document_name": "Land records", "required": true},
+      {"document_name": "Vendor quotation / work order", "required": true}
+    ]
+  }
+]

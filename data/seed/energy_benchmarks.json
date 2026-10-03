@@ -1,0 +1,14 @@
+{
+  "tariffs": [
+    {"state": "Uttar Pradesh", "provider": "UPPCL", "slab_name": "pump – general reference", "per_kwh_inr": 5.5, "source": "benchmark", "is_verified": false, "notes": "Indicative agricultural tariff; varies by slab/sanction. Check bill before decisions."},
+    {"state": "Rajasthan", "provider": "JDVVNL", "slab_name": "pump – general reference", "per_kwh_inr": 6.0, "source": "benchmark", "is_verified": false, "notes": "Indicative reference only."},
+    {"state": "Punjab", "provider": "PSPCL", "slab_name": "pump – general reference", "per_kwh_inr": 3.75, "source": "benchmark", "is_verified": false, "notes": "Highly subsidised agritariff; verify current tariff order."},
+    {"state": "Maharashtra", "provider": "MSEDCL", "slab_name": "agri – general reference", "per_kwh_inr": 7.0, "source": "benchmark", "is_verified": false, "notes": "Indicative reference only."}
+  ],
+  "diesel": [
+    {"state": "", "district": "", "price_per_litre": 90.0, "source": "benchmark", "is_verified": false}
+  ],
+  "solar": [
+    {"state": "", "min_inr_per_kw": 45000, "max_inr_per_kw": 70000, "source": "benchmark", "is_verified": false}
+  ]
+}

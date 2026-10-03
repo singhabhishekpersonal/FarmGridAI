@@ -1,0 +1,1 @@
+741b94b839a6c11b07be9300a48d4ae975edb234b9fbee3c8b3f0887933d79d3  equipment_classifier_mobilenetv3_top6_v1.pt

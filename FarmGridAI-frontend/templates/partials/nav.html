@@ -1,0 +1,76 @@
+{% load text_tags %}
+{% load static %}
+<header class="ks-header">
+  <div class="ks-header-inner">
+    <a class="ks-brand" href="{% url 'web:home' %}">
+      <img class="ks-brand-mark" src="{% static 'images/logo.svg' %}" alt="" width="36" height="36">
+      <span class="ks-brand-text">
+        <strong>{% t "FarmGrid AI" %}</strong>
+        <span class="ks-brand-tag">{% t "Smart farming" %}</span>
+      </span>
+    </a>
+
+    <button class="ks-nav-toggle" type="button"
+            data-ks-nav-toggle
+            aria-expanded="false" aria-controls="ks-nav-drawer" aria-label="{% t 'Open menu' %}">
+      <span class="ks-nav-toggle-bar" aria-hidden="true"></span>
+      <span class="ks-nav-toggle-bar" aria-hidden="true"></span>
+      <span class="ks-nav-toggle-bar" aria-hidden="true"></span>
+    </button>
+
+    <nav class="ks-nav" id="ks-nav-drawer" data-ks-nav-drawer aria-label="{% t 'Main' %}">
+      <ul class="ks-nav-list">
+        <li><a class="ks-nav-link{% if ks_page == 'home' %} is-active{% endif %}" href="{% url 'web:home' %}">{% t "Home" %}</a></li>
+
+        <li data-ks-when-auth hidden>
+          <a class="ks-nav-link{% if ks_page == 'dashboard' %} is-active{% endif %}" href="{% url 'web:dashboard' %}">{% t "Dashboard" %}</a>
+        </li>
+        <li data-ks-when-auth hidden>
+          <a class="ks-nav-link{% if ks_page == 'farm' %} is-active{% endif %}"
+             href="{% if farm_id %}{% url 'web:farm_detail' farm_id %}{% else %}{% url 'web:farm_create' %}{% endif %}">{% t "My farm" %}</a>
+        </li>
+        <li data-ks-when-auth hidden>
+          <a class="ks-nav-link{% if ks_page == 'expenses' %} is-active{% endif %}"
+             href="{% if farm_id %}{% url 'web:expense_dashboard' farm_id %}{% else %}{% url 'web:dashboard' %}{% endif %}">{% t "Expenses" %}</a>
+        </li>
+        <li data-ks-when-auth hidden>
+          <a class="ks-nav-link{% if ks_page == 'solar' %} is-active{% endif %}"
+             href="{% if farm_id %}{% url 'web:solar_comparison' farm_id %}{% else %}{% url 'web:dashboard' %}{% endif %}">{% t "Solar" %}</a>
+        </li>
+        <li data-ks-when-auth hidden>
+          <a class="ks-nav-link{% if ks_page == 'finance' %} is-active{% endif %}"
+             href="{% if farm_id %}{% url 'web:machinery_decision' farm_id %}{% else %}{% url 'web:dashboard' %}{% endif %}">{% t "Decisions" %}</a>
+        </li>
+        <li data-ks-when-auth hidden>
+          <a class="ks-nav-link{% if ks_page == 'subsidies' %} is-active{% endif %}"
+             href="{% if farm_id %}{% url 'web:subsidy_recommendations' farm_id %}{% else %}{% url 'web:dashboard' %}{% endif %}">{% t "Subsidies" %}</a>
+        </li>
+        <li data-ks-when-auth hidden>
+          <a class="ks-nav-link{% if ks_page == 'chat' %} is-active{% endif %}" href="{% url 'web:chat' %}">{% t "Ask" %}</a>
+        </li>
+        {% if is_staff %}
+        <li data-ks-when-auth hidden>
+          <a class="ks-nav-link{% if ks_page == 'staffDataIngestion' %} is-active{% endif %}"
+             href="{% url 'web:staff_data_ingestion' %}">{% t "Data sources" %}</a>
+        </li>
+        {% endif %}
+      </ul>
+
+      <div class="ks-nav-actions">
+        <div class="ks-lang" role="group" aria-label="{% t 'Language' %}">
+          <button type="button" data-ks-lang="en" aria-pressed="true">{% t "EN" %}</button>
+          <button type="button" data-ks-lang="hi" aria-pressed="false">{% t "हिं" %}</button>
+        </div>
+
+        <span data-ks-when-anon hidden>
+          <a class="ks-btn ks-btn-sm ks-btn-secondary" href="{% url 'web:login' %}">{% t "Sign in" %}</a>
+        </span>
+
+        <span data-ks-when-auth hidden class="ks-nav-user">
+          <a class="ks-nav-username" data-ks-username href="{% url 'web:profile' %}">{% t "Account" %}</a>
+          <button class="ks-btn ks-btn-sm ks-btn-quiet" type="button" data-ks-logout>{% t "Sign out" %}</button>
+        </span>
+      </div>
+    </nav>
+  </div>
+</header>

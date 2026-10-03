@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load text_tags %}
+
+{% block title %}{% t "Create your account" %} - {% t "FarmGrid AI" %}{% endblock %}
+{% block body_class %}ks-body--auth{% endblock %}
+
+{% block content %}
+<section class="ks-auth">
+  <div class="ks-auth-card ks-auth-card--wide">
+    <header class="ks-page-head ks-mb-6">
+      <p class="ks-eyebrow">{% t "FarmGrid AI — your farm, in numbers you can check" %}</p>
+      <h1 class="ks-page-title">{% t "Create your free account" %}</h1>
+      <p class="ks-lede ks-muted">
+        {% t "Only the fields marked required are needed. Everything else improves the accuracy of your estimates, and you can fill it in later." %}
+      </p>
+    </header>
+
+    <form class="ks-form" data-ks-register-form novalidate>
+      {% csrf_token %}
+      <div data-ks-error-summary></div>
+
+      <div class="ks-grid ks-grid-2">
+        <div class="ks-field">
+          <label class="ks-label" for="reg-username">{% t "Username" %} <span class="ks-req">*</span></label>
+          <input class="ks-input" type="text" id="reg-username" name="username"
+                 autocomplete="username" required data-validate="required"
+                 autocapitalize="none" spellcheck="false">
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="reg-full-name">{% t "Full name" %}</label>
+          <input class="ks-input" type="text" id="reg-full-name" name="full_name"
+                 autocomplete="name">
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="reg-email">{% t "Email" %} <span class="ks-req">*</span></label>
+          <input class="ks-input" type="email" id="reg-email" name="email"
+                 autocomplete="email" required data-validate="email">
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="reg-phone">{% t "Mobile number" %}</label>
+          <input class="ks-input" type="tel" id="reg-phone" name="phone"
+                 autocomplete="tel" inputmode="numeric" maxlength="15"
+                 data-validate="phone" placeholder="{% t "10-digit mobile number" %}">
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="reg-password">{% t "Password" %} <span class="ks-req">*</span></label>
+          <div class="ks-input-group">
+            <input class="ks-input" type="password" id="reg-password" name="password"
+                   autocomplete="new-password" required minlength="8"
+                   data-validate="password" aria-describedby="reg-password-help">
+            <button class="ks-btn ks-btn-quiet" type="button" data-ks-reveal="reg-password"
+                    aria-label="{% t "Show password" %}">{% t "Show" %}</button>
+          </div>
+          <p class="ks-help" id="reg-password-help">{% t "At least 8 characters." %}</p>
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="reg-state">{% t "State" %}</label>
+          <input class="ks-input" type="text" id="reg-state" name="state"
+                 autocomplete="address-level1">
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="reg-district">{% t "District" %}</label>
+          <input class="ks-input" type="text" id="reg-district" name="district"
+                 autocomplete="address-level2">
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="reg-village">{% t "Village" %}</label>
+          <input class="ks-input" type="text" id="reg-village" name="village"
+                 autocomplete="address-level3">
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="reg-pincode">{% t "Pincode" %}</label>
+          <input class="ks-input" type="text" id="reg-pincode" name="pincode"
+                 inputmode="numeric" maxlength="6" data-validate="pincode">
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="reg-land-size">{% t "Land size" %}</label>
+          <input class="ks-input" type="number" id="reg-land-size" name="land_size"
+                 step="0.001" min="0" inputmode="decimal" placeholder="{% t "e.g. 2.5" %}">
+        </div>
+
+        <div class="ks-field">
+          <label class="ks-label" for="reg-land-unit">{% t "Land unit" %}</label>
+          <select class="ks-select" id="reg-land-unit" name="land_unit">
+            <option value="acre">{% t "Acre" %}</option>
+            <option value="hectare">{% t "Hectare" %}</option>
+            <option value="bigha">{% t "Bigha" %}</option>
+            <option value="guntha">{% t "Guntha" %}</option>
+            <option value="kaththa">{% t "Kaththa (local)" %}</option>
+            <option value="cent">{% t "Cent" %}</option>
+            <option value="sqm">{% t "Square meter" %}</option>
+            <option value="sqft">{% t "Square foot" %}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="ks-consent ks-mt-4">
+        <p class="ks-consent-heading">{% t "Before you continue" %}</p>
+        <ul class="ks-consent-list">
+          <li>
+            {% t "FarmGrid AI stores the farm, expense and equipment details you enter so it can produce estimates for you." %}
+          </li>
+          <li>
+            {% t "Estimates are" %} <strong>{% t "advisory" %}</strong>{% t ". FarmGrid AI is not a bank, insurer or government office, and its figures are not a guarantee." %}
+          </li>
+          <li>
+            {% t "You can change or withdraw consent at any time from your profile page. Withdrawing consent stops future processing; it does not erase data you have already saved." %}
+          </li>
+        </ul>
+        <label class="ks-check">
+          <input type="checkbox" name="consent" value="1" required data-validate="required">
+          <span>{% t "I understand and agree to the above." %}</span>
+        </label>
+      </div>
+
+      <div class="ks-form-actions ks-mt-4">
+        <button class="ks-btn ks-btn-block" type="submit">{% t "Create account" %}</button>
+      </div>
+    </form>
+
+    <p class="ks-auth-alt ks-mt-4">
+      {% t "Already registered?" %} <a href="{% url 'web:login' %}">{% t "Sign in instead" %}</a>
+    </p>
+  </div>
+</section>
+{% endblock %}

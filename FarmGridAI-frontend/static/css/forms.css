@@ -1,0 +1,837 @@
+/* ==========================================================================
+   FarmGrid AI - Form stylesheet
+   Form stacks, field groups, inputs, selects, checkboxes, radio groups,
+   validation states, segmented controls, file upload dropzones, filter bars
+   and multi-step form navigation.
+
+   Inputs target a 48px minimum height for reliable touch use in the field.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Form layout
+   -------------------------------------------------------------------------- */
+.ks-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ks-sp-4);
+}
+
+.ks-form-grid {
+  display: grid;
+  gap: var(--ks-sp-4);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 680px) {
+  .ks-form-grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .ks-form-grid .ks-field--full { grid-column: 1 / -1; }
+}
+
+.ks-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ks-sp-3);
+  align-items: center;
+  padding-top: var(--ks-sp-4);
+  border-top: 1px solid var(--ks-line);
+}
+
+.ks-form-actions .ks-spacer { flex: 1; }
+
+/* Narrow, centred card for auth screens. */
+.ks-form-card {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+/* Slightly wider variant for registration (many fields). */
+.ks-form-card--wide { max-width: 560px; }
+
+/* --------------------------------------------------------------------------
+   2. Fields
+   -------------------------------------------------------------------------- */
+.ks-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ks-sp-1);
+  min-width: 0;
+}
+
+.ks-label {
+  font-size: var(--ks-fs-sm);
+  font-weight: 600;
+  color: var(--ks-ink-2);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ks-sp-1);
+}
+
+/* Red asterisk marks a required field (supplementing native required attr). */
+.ks-label .ks-req { color: var(--ks-danger); font-weight: 700; }
+
+.ks-label .ks-optional {
+  font-weight: 500;
+  font-size: var(--ks-fs-xs);
+  color: var(--ks-ink-3);
+}
+
+.ks-hint {
+  font-size: var(--ks-fs-xs);
+  color: var(--ks-ink-3);
+  line-height: 1.45;
+}
+
+.ks-help {
+  display: flex;
+  gap: var(--ks-sp-1);
+  font-size: var(--ks-fs-xs);
+  color: var(--ks-ink-3);
+}
+
+/* --------------------------------------------------------------------------
+   3. Inputs
+   -------------------------------------------------------------------------- */
+.ks-input,
+.ks-select,
+.ks-textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid var(--ks-line-strong);
+  border-radius: var(--ks-r-md);
+  background: var(--ks-surface);
+  color: var(--ks-ink);
+  font-size: var(--ks-fs-base);
+  line-height: 1.4;
+  transition: border-color var(--ks-transition), box-shadow var(--ks-transition);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.ks-input::placeholder,
+.ks-textarea::placeholder { color: #9aa8a0; }
+
+.ks-input:hover,
+.ks-select:hover,
+.ks-textarea:hover { border-color: var(--ks-green-500); }
+
+.ks-input:focus,
+.ks-select:focus,
+.ks-textarea:focus {
+  outline: none;
+  border-color: var(--ks-green-600);
+  box-shadow: var(--ks-ring);
+}
+
+.ks-textarea {
+  min-height: 110px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* Native select needs an explicit chevron since appearance is none. */
+.ks-select {
+  padding-right: 2.25rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath fill='%236b7a70' d='M1.4 1.4 6 6l4.6-4.6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.85rem center;
+  background-size: 12px 8px;
+  cursor: pointer;
+}
+
+/* Numeric inputs: hide spinners, they are unusable on touch screens. */
+.ks-input[type="number"] { -moz-appearance: textfield; }
+.ks-input[type="number"]::-webkit-outer-spin-button,
+.ks-input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Date inputs on iOS need an explicit minimum height or they collapse. */
+.ks-input[type="date"],
+.ks-input[type="month"] { min-height: 48px; }
+
+/* Input with a leading unit or icon slot. */
+.ks-input-group {
+  display: flex;
+  align-items: stretch;
+}
+
+.ks-input-group .ks-input {
+  border-radius: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.ks-input-group > :first-child { border-radius: var(--ks-r-md) 0 0 var(--ks-r-md); }
+.ks-input-group > :last-child { border-radius: 0 var(--ks-r-md) var(--ks-r-md) 0; }
+
+.ks-input-group .ks-input:not(:first-child) { margin-left: -1px; }
+
+.ks-input-affix {
+  display: grid;
+  place-items: center;
+  padding: 0 var(--ks-sp-3);
+  border: 1px solid var(--ks-line-strong);
+  background: var(--ks-surface-3);
+  color: var(--ks-ink-3);
+  font-size: var(--ks-fs-sm);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Disabled / read-only states. */
+.ks-input:disabled,
+.ks-select:disabled,
+.ks-textarea:disabled {
+  background: var(--ks-surface-3);
+  color: var(--ks-ink-3);
+  cursor: not-allowed;
+}
+
+.ks-input[readonly] { background: var(--ks-surface-3); }
+
+/* --------------------------------------------------------------------------
+   4. Validation
+   -------------------------------------------------------------------------- */
+.ks-field[data-invalid="true"] .ks-input,
+.ks-field[data-invalid="true"] .ks-select,
+.ks-field[data-invalid="true"] .ks-textarea {
+  border-color: var(--ks-danger);
+  background: var(--ks-danger-bg);
+}
+
+.ks-field[data-invalid="true"] .ks-input:focus,
+.ks-field[data-invalid="true"] .ks-select:focus,
+.ks-field[data-invalid="true"] .ks-textarea:focus {
+  box-shadow: 0 0 0 3px rgba(179, 38, 30, 0.24);
+}
+
+.ks-error {
+  display: flex;
+  gap: var(--ks-sp-1);
+  align-items: flex-start;
+  font-size: var(--ks-fs-xs);
+  font-weight: 500;
+  color: var(--ks-danger);
+}
+
+.ks-error-icon { flex: none; font-weight: 700; }
+
+.ks-field[data-invalid="true"] .ks-hint { display: none; }
+
+/* Form-level error summary (server validation errors land here). */
+.ks-error-summary {
+  padding: var(--ks-sp-3) var(--ks-sp-4);
+  border: 1px solid #f5c6c2;
+  border-radius: var(--ks-r-md);
+  background: var(--ks-danger-bg);
+  color: var(--ks-danger);
+  font-size: var(--ks-fs-sm);
+}
+
+.ks-error-summary strong { display: block; margin-bottom: var(--ks-sp-1); }
+.ks-error-summary ul { margin: 0; padding-left: 1.1rem; }
+
+/* Inline success confirmation. */
+.ks-field[data-valid="true"] .ks-input,
+.ks-field[data-valid="true"] .ks-select {
+  border-color: var(--ks-ok);
+}
+
+/* --------------------------------------------------------------------------
+   5. Checkboxes & radios
+   -------------------------------------------------------------------------- */
+.ks-check,
+.ks-radio {
+  display: flex;
+  gap: var(--ks-sp-3);
+  align-items: flex-start;
+  padding: var(--ks-sp-2) 0;
+  font-size: var(--ks-fs-sm);
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.ks-check input,
+.ks-radio input {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin: 1px 0 0;
+  accent-color: var(--ks-green-600);
+  cursor: pointer;
+}
+
+.ks-check-text { min-width: 0; }
+.ks-check-title { display: block; font-weight: 600; color: var(--ks-ink); }
+.ks-check-desc { display: block; font-size: var(--ks-fs-xs); color: var(--ks-ink-3); }
+
+/* Horizontally wrapping checkbox grid for multi-select lists. */
+.ks-check-grid {
+  display: grid;
+  gap: var(--ks-sp-1);
+  grid-template-columns: 1fr;
+  padding: var(--ks-sp-3);
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-r-md);
+  background: var(--ks-surface-2);
+}
+
+@media (min-width: 560px) {
+  .ks-check-grid--2 { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Consent block: visually separated because it gates data processing. */
+.ks-consent {
+  padding: var(--ks-sp-3);
+  border: 1px solid var(--ks-line-strong);
+  border-left: 4px solid var(--ks-green-500);
+  border-radius: var(--ks-r-md);
+  background: var(--ks-green-50);
+}
+
+.ks-consent--required { border-left-color: var(--ks-warn); background: var(--ks-warn-bg); }
+
+/* Radio card group - larger tap targets for important choices. */
+.ks-radio-cards {
+  display: grid;
+  gap: var(--ks-sp-2);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 560px) {
+  .ks-radio-cards--2 { grid-template-columns: repeat(2, 1fr); }
+  .ks-radio-cards--3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+.ks-radio-card {
+  position: relative;
+  display: flex;
+  gap: var(--ks-sp-3);
+  align-items: flex-start;
+  padding: var(--ks-sp-3);
+  border: 1px solid var(--ks-line-strong);
+  border-radius: var(--ks-r-md);
+  background: var(--ks-surface);
+  cursor: pointer;
+  transition: border-color var(--ks-transition), background var(--ks-transition);
+}
+
+.ks-radio-card:hover { border-color: var(--ks-green-500); }
+
+.ks-radio-card input { margin-top: 2px; }
+
+.ks-radio-card:has(input:checked) {
+  border-color: var(--ks-green-600);
+  background: var(--ks-green-50);
+  box-shadow: inset 0 0 0 1px var(--ks-green-600);
+}
+
+.ks-radio-card-title { display: block; font-weight: 650; color: var(--ks-ink); }
+.ks-radio-card-desc { display: block; font-size: var(--ks-fs-xs); color: var(--ks-ink-3); }
+
+/* --------------------------------------------------------------------------
+   6. Segmented control (filters / view switch)
+   -------------------------------------------------------------------------- */
+.ks-segmented {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-r-md);
+  background: var(--ks-surface-3);
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.ks-segmented button {
+  padding: 0.4rem 0.85rem;
+  border: 0;
+  border-radius: var(--ks-r-sm);
+  background: none;
+  color: var(--ks-ink-2);
+  font-size: var(--ks-fs-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--ks-transition), color var(--ks-transition);
+}
+
+.ks-segmented button:hover { color: var(--ks-green-800); }
+
+.ks-segmented button[aria-pressed="true"] {
+  background: var(--ks-surface);
+  color: var(--ks-green-800);
+  box-shadow: var(--ks-shadow-sm);
+}
+
+/* --------------------------------------------------------------------------
+   7. Filter bar
+   -------------------------------------------------------------------------- */
+.ks-filter-bar {
+  display: grid;
+  gap: var(--ks-sp-3);
+  grid-template-columns: 1fr;
+  padding: var(--ks-sp-3);
+  margin-bottom: var(--ks-sp-4);
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-r-md);
+  background: var(--ks-surface-2);
+}
+
+@media (min-width: 720px) {
+  .ks-filter-bar { grid-template-columns: repeat(3, 1fr); align-items: end; }
+  .ks-filter-bar .ks-field--actions { grid-column: 1 / -1; }
+}
+
+.ks-filter-bar .ks-input,
+.ks-filter-bar .ks-select { min-height: 42px; }
+
+/* Search input with an inline magnifier. */
+.ks-search {
+  position: relative;
+}
+
+.ks-search .ks-input { padding-left: 2.25rem; }
+
+.ks-search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ks-ink-3);
+  pointer-events: none;
+  font-size: var(--ks-fs-sm);
+}
+
+/* --------------------------------------------------------------------------
+   8. File upload / dropzone
+   -------------------------------------------------------------------------- */
+.ks-dropzone {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ks-sp-2);
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  padding: var(--ks-sp-5) var(--ks-sp-4);
+  border: 2px dashed var(--ks-line-strong);
+  border-radius: var(--ks-r-lg);
+  background: var(--ks-surface-2);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color var(--ks-transition), background var(--ks-transition);
+}
+
+.ks-dropzone:hover,
+.ks-dropzone.is-dragover {
+  border-color: var(--ks-green-500);
+  background: var(--ks-green-50);
+}
+
+.ks-dropzone.is-invalid {
+  border-color: var(--ks-danger);
+  background: var(--ks-danger-bg);
+}
+
+.ks-dropzone input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ks-dropzone-icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--ks-green-100);
+  color: var(--ks-green-700);
+  font-size: 1.5rem;
+}
+
+.ks-dropzone-title { font-weight: 650; color: var(--ks-green-900); }
+.ks-dropzone-hint { font-size: var(--ks-fs-xs); color: var(--ks-ink-3); }
+
+.ks-dropzone-hint code {
+  background: var(--ks-surface-3);
+  padding: 0.05rem 0.3rem;
+  border-radius: 4px;
+}
+
+/* Compact dropzone variant for single small images. */
+.ks-dropzone--sm { min-height: 120px; }
+
+/* Upload progress bar. */
+.ks-progress {
+  height: 8px;
+  border-radius: var(--ks-r-pill);
+  background: var(--ks-surface-3);
+  overflow: hidden;
+}
+
+.ks-progress-bar {
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: var(--ks-green-600);
+  transition: width 200ms ease;
+}
+
+/* Thumbnail grid shown after a successful upload. */
+.ks-upload-preview {
+  position: relative;
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-r-md);
+  overflow: hidden;
+  background: var(--ks-surface);
+}
+
+.ks-upload-preview img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  background: var(--ks-surface-3);
+}
+
+.ks-upload-preview-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ks-sp-2);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ks-sp-2) var(--ks-sp-3);
+  font-size: var(--ks-fs-xs);
+  color: var(--ks-ink-3);
+  border-top: 1px solid var(--ks-line);
+}
+
+.ks-upload-remove {
+  position: absolute;
+  top: var(--ks-sp-2);
+  right: var(--ks-sp-2);
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(22, 33, 26, 0.72);
+  color: #fff;
+  font-size: var(--ks-fs-base);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ks-upload-remove:hover { background: var(--ks-danger); }
+
+/* --------------------------------------------------------------------------
+   9. Multi-step wizard
+   -------------------------------------------------------------------------- */
+.ks-steps {
+  display: flex;
+  gap: var(--ks-sp-2);
+  margin-bottom: var(--ks-sp-5);
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+}
+
+.ks-step {
+  display: flex;
+  align-items: center;
+  gap: var(--ks-sp-2);
+  padding: var(--ks-sp-2) var(--ks-sp-3);
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-r-pill);
+  background: var(--ks-surface);
+  font-size: var(--ks-fs-xs);
+  font-weight: 600;
+  color: var(--ks-ink-3);
+  white-space: nowrap;
+}
+
+.ks-step-num {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--ks-surface-3);
+  color: var(--ks-ink-3);
+  font-size: var(--ks-fs-xs);
+  font-weight: 700;
+}
+
+.ks-step[data-state="active"] {
+  border-color: var(--ks-green-600);
+  background: var(--ks-green-50);
+  color: var(--ks-green-800);
+}
+
+.ks-step[data-state="active"] .ks-step-num { background: var(--ks-green-600); color: #fff; }
+
+.ks-step[data-state="done"] { color: var(--ks-ok); border-color: #bfe3cf; background: var(--ks-ok-bg); }
+.ks-step[data-state="done"] .ks-step-num { background: var(--ks-ok); color: #fff; }
+
+/* --------------------------------------------------------------------------
+   10. Result panel (shown after a form computes something)
+   -------------------------------------------------------------------------- */
+.ks-result {
+  margin-top: var(--ks-sp-4);
+  padding: var(--ks-sp-4);
+  border: 1px solid var(--ks-green-300);
+  border-radius: var(--ks-r-lg);
+  background: var(--ks-green-50);
+}
+
+.ks-result-head {
+  display: flex;
+  gap: var(--ks-sp-2);
+  align-items: center;
+  margin-bottom: var(--ks-sp-3);
+  font-weight: 650;
+  color: var(--ks-green-800);
+}
+
+.ks-result-head .ks-badge { margin-left: auto; }
+
+/* Key/value definition rows used throughout result panels. */
+.ks-datalist {
+  display: grid;
+  gap: 0;
+  margin: 0;
+}
+
+.ks-datalist > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ks-sp-2);
+  justify-content: space-between;
+  padding: var(--ks-sp-2) 0;
+  border-bottom: 1px solid var(--ks-line);
+  font-size: var(--ks-fs-sm);
+}
+
+.ks-datalist > div:last-child { border-bottom: 0; }
+
+.ks-datalist dt { color: var(--ks-ink-2); margin: 0; }
+.ks-datalist dd {
+  margin: 0;
+  font-weight: 650;
+  color: var(--ks-ink);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Two-column datalist on wide screens. */
+@media (min-width: 720px) {
+  .ks-datalist--2 { grid-template-columns: repeat(2, 1fr); column-gap: var(--ks-sp-5); }
+}
+
+/* --------------------------------------------------------------------------
+   11. Authentication screens
+   -------------------------------------------------------------------------- */
+.ks-auth-wrap {
+  display: grid;
+  gap: var(--ks-sp-5);
+  align-items: center;
+  min-height: calc(100vh - var(--ks-nav-h) - 80px);
+  padding: var(--ks-sp-5) 0;
+}
+
+@media (min-width: 900px) {
+  .ks-auth-wrap--split { grid-template-columns: 1fr 1fr; }
+}
+
+.ks-auth-pitch h1 { font-size: var(--ks-fs-3xl); }
+.ks-auth-pitch .ks-lede { font-size: var(--ks-fs-lg); color: var(--ks-ink-2); }
+
+.ks-auth-features { list-style: none; padding: 0; margin: var(--ks-sp-4) 0 0; }
+.ks-auth-features li {
+  display: flex;
+  gap: var(--ks-sp-3);
+  align-items: flex-start;
+  padding: var(--ks-sp-2) 0;
+  font-size: var(--ks-fs-sm);
+  color: var(--ks-ink-2);
+}
+
+.ks-auth-features li::before {
+  content: "\2713";
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--ks-green-100);
+  color: var(--ks-green-700);
+  font-size: var(--ks-fs-xs);
+  font-weight: 700;
+}
+
+/* Password strength meter. */
+.ks-strength {
+  display: flex;
+  gap: 4px;
+  margin-top: var(--ks-sp-2);
+}
+
+.ks-strength-seg {
+  flex: 1;
+  height: 4px;
+  border-radius: var(--ks-r-pill);
+  background: var(--ks-line);
+  transition: background var(--ks-transition);
+}
+
+.ks-strength[data-score="1"] .ks-strength-seg:nth-child(1) { background: var(--ks-danger); }
+.ks-strength[data-score="2"] .ks-strength-seg:nth-child(-n+2) { background: var(--ks-warn); }
+.ks-strength[data-score="3"] .ks-strength-seg:nth-child(-n+3) { background: var(--ks-earth-500); }
+.ks-strength[data-score="4"] .ks-strength-seg { background: var(--ks-ok); }
+
+.ks-strength-label {
+  margin-top: var(--ks-sp-1);
+  font-size: var(--ks-fs-xs);
+  color: var(--ks-ink-3);
+}
+
+/* Demo credential hint block. */
+.ks-demo-hint {
+  margin-top: var(--ks-sp-4);
+  padding: var(--ks-sp-3);
+  border: 1px dashed var(--ks-line-strong);
+  border-radius: var(--ks-r-md);
+  background: var(--ks-surface-2);
+  font-size: var(--ks-fs-xs);
+  color: var(--ks-ink-3);
+}
+
+.ks-demo-hint code { color: var(--ks-green-800); font-weight: 600; }
+
+/* Language switcher (English / Hindi). */
+.ks-lang {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--ks-r-pill);
+  background: var(--ks-surface-3);
+}
+
+.ks-lang button {
+  padding: 0.25rem 0.7rem;
+  border: 0;
+  border-radius: var(--ks-r-pill);
+  background: none;
+  color: var(--ks-ink-2);
+  font-size: var(--ks-fs-xs);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ks-lang button[aria-pressed="true"] {
+  background: var(--ks-surface);
+  color: var(--ks-green-800);
+  box-shadow: var(--ks-shadow-sm);
+}
+
+
+
+
+/* ==========================================================================
+   9. Auth screens, consent blocks and form sections
+
+   login.html and register.html build their layout from .ks-auth* hooks which
+   had no rules; .ks-form-card / .ks-form-card--wide below remain the narrower
+   form primitives they delegate to.
+
+   ========================================================================== */
+
+.ks-auth {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ks-sp-5);
+  padding-top: var(--ks-sp-5);
+}
+.ks-auth-card {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  padding: var(--ks-sp-5);
+  background: var(--ks-surface);
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-r-lg);
+  box-shadow: var(--ks-shadow-md);
+}
+.ks-auth-card--wide { max-width: 620px; }
+
+.ks-auth-alt {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ks-sp-2) var(--ks-sp-4);
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: var(--ks-fs-sm);
+  color: var(--ks-ink-2);
+}
+.ks-auth-alt a { color: var(--ks-green-700); font-weight: 600; }
+
+/* Consent block on the registration screen. */
+.ks-consent-heading {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ks-sp-2);
+  margin: 0 0 var(--ks-sp-3);
+  font-size: var(--ks-fs-base);
+  font-weight: 650;
+  color: var(--ks-green-900);
+}
+.ks-consent-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ks-sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ks-consent-list .ks-consent {
+  margin: 0;
+  padding: var(--ks-sp-3);
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-r-md);
+  background: var(--ks-surface-2);
+}
+
+/* Grouping for a run of related fields inside a long form. */
+.ks-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ks-sp-4);
+  padding: var(--ks-sp-4);
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-r-lg);
+  background: var(--ks-surface-2);
+}
+.ks-form-section > h2,
+.ks-form-section > h3,
+.ks-form-section > .ks-legend {
+  margin: 0;
+  font-size: var(--ks-fs-base);
+  font-weight: 650;
+  color: var(--ks-green-900);
+}
+
+/* Supporting line inside a dropzone, below the icon and title. */
+.ks-dropzone-text {
+  margin: 0;
+  max-width: 46ch;
+  font-size: var(--ks-fs-sm);
+  line-height: 1.55;
+  color: var(--ks-ink-2);
+}

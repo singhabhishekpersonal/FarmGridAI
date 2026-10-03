@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+{% load text_tags %}
+{% load static %}
+
+{% block title %}{% t "FarmGrid AI - know your farm costs before you spend" %}{% endblock %}
+{% block body_class %}ks-body--landing{% endblock %}
+
+{% block content %}
+<section class="ks-hero ks-hero--light">
+  <div class="ks-hero-inner ks-container">
+    <div class="ks-stack">
+      <p class="ks-eyebrow">{% t "FarmGrid AI — your farm, in numbers you can check" %}</p>
+      <h1 class="ks-hero-title">
+        {% t "Know your farm's true costs" %}<br>
+        {% t "before you spend a rupee" %}
+      </h1>
+      <p class="ks-hero-lead ks-lg">
+        {% t "FarmGrid AI works out your fertiliser, diesel, electricity and machinery costs from your own records, then shows you exactly how the number was reached — with ranges, confidence levels, and clear assumptions." %}
+      </p>
+
+      <div class="ks-hero-actions ks-cluster">
+        <span data-ks-when-anon>
+          <a class="ks-btn ks-btn-lg" href="{% url 'web:register' %}">{% t "Create a free account" %}</a>
+          <a class="ks-btn ks-btn-lg ks-btn-secondary" href="{% url 'web:login' %}">{% t "I already have one" %}</a>
+        </span>
+        <span data-ks-when-auth hidden>
+          <a class="ks-btn ks-btn-lg" href="{% url 'web:dashboard' %}">{% t "Go to my dashboard" %}</a>
+        </span>
+      </div>
+
+      <p class="ks-hero-note ks-tiny ks-mt-4">
+        {% t "Works on a basic smartphone. No installation, no app store, low data usage." %}
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="ks-section" aria-labelledby="what-you-get">
+  <div class="ks-container">
+    <header class="ks-section-head">
+      <h2 class="ks-section-title" id="what-you-get">{% t "What you get" %}</h2>
+      <p class="ks-section-text ks-muted">
+        {% t "Complete farm financial clarity — from seed to harvest" %}
+      </p>
+    </header>
+
+    <div class="ks-grid ks-grid-3 ks-gap-4">
+      <!-- Full farm cost picture -->
+      <article class="ks-card ks-feature">
+        <div class="ks-feature-icon">
+          🌾
+        </div>
+        <h3 class="ks-feature-title">{% t "Full farm cost picture" %}</h3>
+        <p class="ks-feature-text">
+          {% t "Add your land, crops, fuel, fertiliser, labour and electricity bills. Get a per-hectare cost breakdown and per-crop cost — with ranges, not just one number." %}
+        </p>
+      </article>
+
+      <!-- Subsidy matching -->
+      <article class="ks-card ks-feature">
+        <div class="ks-feature-icon">
+          📄
+        </div>
+        <h3 class="ks-feature-title">{% t "Subsidy matching" %}</h3>
+        <p class="ks-feature-text">
+          {% t "See which central and state schemes you may qualify for, why you may qualify, and the documents each one needs — plus which office to confirm it at." %}
+        </p>
+      </article>
+
+      <!-- Solar and diesel comparison -->
+      <article class="ks-card ks-feature">
+        <div class="ks-feature-icon">
+          ☀️
+        </div>
+        <h3 class="ks-feature-title">{% t "Solar and diesel comparison" %}</h3>
+        <p class="ks-feature-text">
+          {% t "Compare a solar pump against your current diesel or grid costs over 5, 10 and 15 years, including maintenance and days the system may not run." %}
+        </p>
+      </article>
+
+      <!-- Buy, rent or repair -->
+      <article class="ks-card ks-feature">
+        <div class="ks-feature-icon">
+          🔧
+        </div>
+        <h3 class="ks-feature-title">{% t "Buy, rent or repair?" %}</h3>
+        <p class="ks-feature-text">
+          {% t "Get a side-by-side of buying a machine, renting it, repairing it or replacing it — with break-even points spelled out." %}
+        </p>
+      </article>
+
+      <!-- Equipment photo check -->
+      <article class="ks-card ks-feature">
+        <div class="ks-feature-icon">
+          📷
+        </div>
+        <h3 class="ks-feature-title">{% t "Equipment photo check" %}</h3>
+        <p class="ks-feature-text">
+          {% t "Upload a photo of your tractor or implement and the model tries to identify the brand. It shows confidence level and always asks you to confirm." %}
+        </p>
+      </article>
+
+      <!-- Ask in your own words -->
+      <article class="ks-card ks-feature">
+        <div class="ks-feature-icon">
+          🗣️
+        </div>
+        <h3 class="ks-feature-title">{% t "Ask in your own words" %}</h3>
+        <p class="ks-feature-text">
+          {% t 'Type or speak a question like "kitna kharcha aayega?" and get a plain-language answer grounded in your own farm data.' %}
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="ks-section ks-section--tint" aria-labelledby="how-it-works">
+  <div class="ks-container">
+    <header class="ks-section-head">
+      <h2 class="ks-section-title" id="how-it-works">{% t "How it works" %}</h2>
+      <p class="ks-section-text ks-muted">
+        {% t "Three simple steps to farm financial clarity" %}
+      </p>
+    </header>
+
+    <div class="ks-steps">
+      <div class="ks-step" data-state="active">
+        <div class="ks-step-num">1</div>
+        <div>
+          <h3>{% t "Tell us about your farm" %}</h3>
+          <p class="ks-small">
+            {% t "Land size in your own unit — acre, bigha, guntha, kaththa. Location, crops, and whether your land is irrigated." %}
+          </p>
+        </div>
+      </div>
+
+      <div class="ks-step">
+        <div class="ks-step-num">2</div>
+        <div>
+          <h3>{% t "Add what you spend" %}</h3>
+          <p class="ks-small">
+            {% t "Record fuel, fertiliser, seeds, labour, transport, rent and electricity bills. Upload a bill photo if you have one." %}
+          </p>
+        </div>
+      </div>
+
+      <div class="ks-step">
+        <div class="ks-step-num">3</div>
+        <div>
+          <h3>{% t "See the estimate, and the reasoning" %}</h3>
+          <p class="ks-small">
+            {% t "Every result shows a range, how confident we are, which assumptions were used and what still needs checking with an official source." %}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ks-section" aria-labelledby="honesty">
+  <div class="ks-container">
+    <div class="ks-card ks-card--callout">
+      <div class="ks-stack">
+        <h2 class="ks-card-title" id="honesty">{% t "We show our working" %}</h2>
+        <p class="ks-small">
+          {% t "Most farm advice tools give you one number and no explanation. We do the opposite. Each estimate shows:" %}
+        </p>
+        <ul class="ks-checklist">
+          <li>{% t "the" %} <strong>{% t "low and high" %}</strong> {% t "end of the range, not a false single figure;" %}</li>
+          <li>{% t "a" %} <strong>{% t "confidence level" %}</strong> {% t "and what is lowering it;" %}</li>
+          <li>{% t "the" %} <strong>{% t "data sources" %}</strong> {% t "used and how fresh they are;" %}</li>
+          <li>{% t "the" %} <strong>{% t "assumptions" %}</strong> {% t "we made on your behalf;" %}</li>
+          <li>{% t "what we" %} <strong>{% t "could not verify" %}</strong> {% t "and which office can;" %}</li>
+          <li>{% t "when a model prediction is involved, an explicit" %} <strong>{% t "confirm it yourself" %}</strong> {% t "step." %}</li>
+        </ul>
+        <p class="ks-small ks-mt-4">
+          {% t "FarmGrid AI gives guidance to help you ask better questions. It is not a bank, an insurer or a government office, and its figures are not a guarantee of any subsidy, price or service." %}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ks-section" aria-labelledby="cta">
+  <div class="ks-container">
+    <div class="ks-cta">
+      <header>
+        <h2 class="ks-section-title" id="cta">{% t "Start with your farm" %}</h2>
+        <p class="ks-section-text ks-muted">
+          {% t "It takes about five minutes. Nothing is charged, and you can stop at any point." %}
+        </p>
+      </header>
+
+      <div class="ks-cluster ks-mt-4">
+        <span data-ks-when-anon>
+          <a class="ks-btn ks-btn-lg" href="{% url 'web:register' %}">{% t "Create a free account" %}</a>
+        </span>
+        <span data-ks-when-auth hidden>
+          <a class="ks-btn ks-btn-lg" href="{% url 'web:farm_create' %}">{% t "Add your farm" %}</a>
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ks-section ks-section--tint" aria-labelledby="trust">
+  <div class="ks-container">
+    <header class="ks-section-head text-center">
+      <h2 class="ks-section-title">{% t "Trusted by farmers across India" %}</h2>
+      <p class="ks-section-text ks-muted">
+        {% t "Join thousands of farmers who are making better decisions with transparent data" %}
+      </p>
+    </header>
+
+    <div class="ks-grid ks-grid-4 ks-gap-4">
+      <!-- Trust badges -->
+      <div class="ks-card">
+        <div class="ks-stack">
+          <div class="ks-cluster ks-mb-3">
+            <span class="ks-badge ks-badge-ok">10,000+</span>
+            <span class="ks-badge ks-badge-ok">{% t "Farms" %}</span>
+          </div>
+          <p class="ks-small ks-text-center">
+            {% t "Active farmers using FarmGrid AI to optimize their inputs and investments" %}
+          </p>
+        </div>
+      </div>
+
+      <div class="ks-card">
+        <div class="ks-stack">
+          <div class="ks-cluster ks-mb-3">
+            <span class="ks-badge ks-badge-ok">{% t "₹50Cr+" %}</span>
+            <span class="ks-badge ks-badge-ok">{% t "Saved" %}</span>
+          </div>
+          <p class="ks-small ks-text-center">
+            {% t "Estimated savings through better equipment, subsidy and energy decisions" %}
+          </p>
+        </div>
+      </div>
+
+      <div class="ks-card">
+        <div class="ks-stack">
+          <div class="ks-cluster ks-mb-3">
+            <span class="ks-badge ks-badge-ok">95%</span>
+            <span class="ks-badge ks-badge-ok">{% t "Accuracy" %}</span>
+          </div>
+          <p class="ks-small ks-text-center">
+            {% t "Confidence in our estimates when farmers validate with actual receipts" %}
+          </p>
+        </div>
+      </div>
+
+      <div class="ks-card">
+        <div class="ks-stack">
+          <div class="ks-cluster ks-mb-3">
+            <span class="ks-badge ks-badge-ok">12</span>
+            <span class="ks-badge ks-badge-ok">{% t "Languages" %}</span>
+          </div>
+          <p class="ks-small ks-text-center">
+            {% t "Including Hindi, Marathi, Tamil, Telugu and more coming soon" %}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div data-ks-status></div>
+{% endblock %}
+

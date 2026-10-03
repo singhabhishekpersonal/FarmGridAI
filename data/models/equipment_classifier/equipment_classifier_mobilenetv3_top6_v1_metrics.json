@@ -1,0 +1,95 @@
+{
+  "test_accuracy": 0.81006,
+  "test_balanced_accuracy": 0.69348,
+  "test_macro_precision": 0.83628,
+  "test_macro_recall": 0.69348,
+  "test_macro_f1": 0.7316,
+  "test_weighted_f1": 0.80017,
+  "test_top3_accuracy": 0.98324,
+  "test_samples": 179,
+  "per_class": {
+    "Farmtrac": {
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1": 0.8571,
+      "support": 8
+    },
+    "John Deere": {
+      "precision": 1.0,
+      "recall": 0.8571,
+      "f1": 0.9231,
+      "support": 7
+    },
+    "Mahindra": {
+      "precision": 0.5,
+      "recall": 0.6667,
+      "f1": 0.5714,
+      "support": 15
+    },
+    "New Holland": {
+      "precision": 1.0,
+      "recall": 0.5714,
+      "f1": 0.7273,
+      "support": 7
+    },
+    "Powertrac": {
+      "precision": 0.7143,
+      "recall": 0.8333,
+      "f1": 0.7692,
+      "support": 6
+    },
+    "Sonalika": {
+      "precision": 0.8,
+      "recall": 0.2667,
+      "f1": 0.4,
+      "support": 15
+    },
+    "other": {
+      "precision": 0.8397,
+      "recall": 0.9091,
+      "f1": 0.873,
+      "support": 121
+    }
+  },
+  "confidence_calibration": [
+    {
+      "bin": "0.4-0.5",
+      "count": 1,
+      "mean_confidence": 0.4446,
+      "accuracy": 0.0
+    },
+    {
+      "bin": "0.5-0.6",
+      "count": 6,
+      "mean_confidence": 0.5547,
+      "accuracy": 0.3333
+    },
+    {
+      "bin": "0.6-0.7",
+      "count": 5,
+      "mean_confidence": 0.6266,
+      "accuracy": 0.4
+    },
+    {
+      "bin": "0.7-0.8",
+      "count": 14,
+      "mean_confidence": 0.7547,
+      "accuracy": 0.5714
+    },
+    {
+      "bin": "0.8-0.9",
+      "count": 16,
+      "mean_confidence": 0.8711,
+      "accuracy": 0.8125
+    },
+    {
+      "bin": "0.9-1.0",
+      "count": 132,
+      "mean_confidence": 0.9861,
+      "accuracy": 0.8712
+    }
+  ],
+  "best_epoch": 14,
+  "val_macro_f1_at_best": 0.74584,
+  "actual_epochs_run": 19
+}
